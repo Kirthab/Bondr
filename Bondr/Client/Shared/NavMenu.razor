@@ -1,15 +1,40 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject NavigationManager Navigation
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Bondr</a>
+        <a class="navbar-brand" href="">CarRentalManagement</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
 </div>
-
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <LoginDisplay/>
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
+                        <span class="oi oi-person" aria-hidden="true"></span> Hello, @context.User.Identity?.Name!
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="#" @onclick="BeginLogOut" Match="NavLinkMatch.All">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> Log out
+                    </NavLink>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="authentication/register" Match="NavLinkMatch.All">
+                        <span class="oi oi-person" aria-hidden="true"></span> Register
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="authentication/login" Match="NavLinkMatch.All">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> Log in
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
@@ -27,16 +52,15 @@
         </div>
     </nav>
 </div>
-
-
-
 @code {
     private bool collapseNavMenu = true;
-
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+    private void BeginLogOut(MouseEventArgs args)
+    {
+        Navigation.NavigateToLogout("authentication/logout", "/");
     }
 }
