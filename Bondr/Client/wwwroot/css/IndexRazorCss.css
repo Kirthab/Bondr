@@ -1,0 +1,116 @@
+﻿@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+/* NEW */
+body {
+    background: #f2f2f2;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.topSection {
+    width: 100%;
+    display: flex;
+    align-items: center; /* Center children horizontally */
+}
+
+    .search form {
+        display: flex;
+        width: 100%;
+    }
+
+.searchTerm {
+    width: 1200px;
+    font-size: large;
+    border: 3px solid #6B2D5F;
+    padding: 15px;
+    height: 50px;
+    margin-top: 20px;
+    border-radius: 15px 0 0 15px;
+    outline: none;
+    color: #6B2D5F;
+}
+
+    .searchTerm:focus {
+        color: #6B2D5F;
+    }
+
+.searchButton {
+    margin-top: 20px;
+    width: 90px;
+    height: 50px;
+    text-align: center;
+    font-size: 20px;
+    background: #6B2D5F;
+    border: 1px solid #6B2D5F;
+    color: #fff;
+    border-radius: 0 5px 5px 0;
+}
+
+/* Create post button */
+.createPost {
+    margin-top: 20px;
+    margin-left: 135px;
+    width: 90px;
+    height: 50px;
+    background: #5E5DF0;
+    border-radius: 10px;
+    box-shadow: #5E5DF0 0 10px 20px -10px;
+    padding: 8px 18px;
+    color: #FFFFFF;
+    font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+    font-size: 20px;
+    width: fit-content;
+    font-weight: 700;
+    line-height: 24px;
+    border: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    word-break: break-word;
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide any overflow content */
+    text-overflow: ellipsis; /* Display an ellipsis (...) when text overflows */
+}
+
+/*///////////////////////*/
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+}
+
+p{
+    color: #fff;
+    font-size: 20px;
+}
+
+h5 {
+    color: #fff;
+    font-size: 35px;
+    text-shadow: 0 0 5px #999;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.col {
+    display: flex;
+    align-items: center;
+}
+
+.card {
+    top: 15px;
+    width: 300px;
+    height: 230px;
+    flex-basis: 50%;
+    display: inline-block;
+    border-radius: 10px;
+    padding: 15px 25px;
+    box-sizing: border-box;
+    cursor: pointer;
+    margin: 10px 15px;
+    background-image: url(../Images/indexCardImg.png);
+    background-position: center;
+    background-size: cover;
+    transition: transform 0.5s;
+} .card:hover{
+      transform:translateY(-10px);
+  }
