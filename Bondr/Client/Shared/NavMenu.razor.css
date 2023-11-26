@@ -2,6 +2,19 @@
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+/*
+.bondr-image-icon, .nav-item, .top-row {
+    border-right: 2px solid #FF10F0;
+}
+*/
+
+.bondr-image-icon {
+    
+    height: 100px;
+    width: 250px;
+    background-image: url(../Images/bondr_header.png);
+}
+
 .top-row {
     height: 3.5rem;
     background: radial-gradient(circle at -8.9% 51.2%, #b64926 0%, rgb(255, 124, 0) 15.9%, #ffb03b 15.9%, #ffb03b 24.4%, #d9bf96 24.5%, #d9bf96 66%);
@@ -53,17 +66,19 @@
 
 @media (min-width: 641px) {
     .navbar-toggler {
-        display: none;
+        display: flex;
     }
 
-    .collapse {
-        /* Never collapse the sidebar for wide screens */
-        display: block;
-    }
-    
     .nav-scrollable {
         /* Allow sidebar to scroll for tall menus */
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
+        transition: width 3s ease-in-out; 
     }
+
+        .nav-scrollable.collapse {
+            /* Hide the entire sidebar when collapsed */
+            width: 0;
+            transition: width 3s ease-in-out;
+        }
 }

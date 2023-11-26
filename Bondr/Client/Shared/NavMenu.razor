@@ -1,4 +1,10 @@
-﻿@inject NavigationManager Navigation
+@inject NavigationManager Navigation
+
+<div class="bondr-image-icon">
+</div>
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Hide Menu</a>
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">CarRentalManagement</a>
@@ -13,6 +19,7 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
+                        <span class="oi oi-person" aria-hidden="true"></span> @context.User.Identity?.Name!
                         <span class="oi oi-person" aria-hidden="true"></span> Hello, @context.User.Identity?.Name!
                     </NavLink>
                 </div>
