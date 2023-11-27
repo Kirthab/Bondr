@@ -1,7 +1,7 @@
 ﻿@page "/"
 
 <PageTitle></PageTitle>
-<link rel="stylesheet" href="css/IndexRazorCss.css" />
+<link rel="stylesheet" href="../css/IndexPageCss.css"/>
 
 <div id="container">
     <div class="topSection">
@@ -11,7 +11,7 @@
                 <button type="submit" class="searchButton">Search</button>
             </form>
         </div>
-        <button type="button" class="createPost" onclick="createPostFunction()">Create Post <i class="oi oi-plus"></i></button>
+        <button type="button" class="createPost" onclick="createPostFunction()">Create Post  <i class="oi oi-plus"></i></button>
     </div>
      
    <script>
@@ -20,15 +20,37 @@
                 console.log("Create Post button clicked!");
             }
     </script>
-  
+    
+    <article class="carousel">
+        <div class="carousel-div">
+            <ul>
+                <li><img src="../Images/Carousel/carousel1.jpeg" /></li>
+                <li><img src="../Images/Carousel/carousel2.jpeg" /></li>
+                <li><img src="../Images/Carousel/bondr-founders.png" /></li>
+                <li><img src="../Images/Carousel/carousel3.jpeg" /></li>
+                <li><img src="../Images/Carousel/carousel4.jpeg" /></li>
+            </ul>
+        </div>
+        <div class="carousel-div">
+            <ul>
+                <li><img src="../Images/Carousel/carousel1.jpeg" /></li>
+                <li><img src="../Images/Carousel/carousel2.jpeg" /></li>
+                <li><img src="../Images/Carousel/bondr-founders.png" /></li>
+                <li><img src="../Images/Carousel/carousel3.jpeg" /></li>
+                <li><img src="../Images/Carousel/carousel4.jpeg" /></li>
+            </ul>
+        </div>
+    </article>
+
     <!-- <SurveyPrompt Title="How is Blazor working for you?" /> -->
     <div class="col">
-        <div class="card">
+        <div class="card card1">
             <h5>Discover Communities</h5>
-            <p>Click here to discover new communities!</p>
+            <p>Click here to discover new communities</p>
         </div>
-        <div class="card">
+        <div class="card card2">
             <h5>Manage communities</h5>
             <p>Click here to manage your communities</p>
         </div>
+    </div>
 </div>

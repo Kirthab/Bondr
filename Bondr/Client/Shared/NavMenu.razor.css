@@ -9,15 +9,20 @@
 */
 
 .bondr-image-icon {
-    
     height: 100px;
     width: 250px;
     background-image: url(../Images/bondr_header.png);
+    border-width: 0 2px 0 0;
+    border-style: solid;
+    border-color: #26001B;
 }
 
 .top-row {
     height: 3.5rem;
     background: radial-gradient(circle at -8.9% 51.2%, #b64926 0%, rgb(255, 124, 0) 15.9%, #ffb03b 15.9%, #ffb03b 24.4%, #d9bf96 24.5%, #d9bf96 66%);
+    border-width: 1px 2px 1px 1px;
+    border-style: solid;
+    border-color: #FF005C #26001B #FF005C #FF005C;
 }
 
 .navbar-brand { /* FOR BONDR TOP LEFT */
@@ -35,6 +40,9 @@
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
     background: radial-gradient(circle at 85.4% 50.8%, rgb(14, 72, 222) 0%, rgb(3, 22, 65) 74.2%);
+    border-width: 0 2px 0 0;
+    border-style: solid;
+    border-color: #26001B;
 }
 
     .nav-item:first-of-type {
