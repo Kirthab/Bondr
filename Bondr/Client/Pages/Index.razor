@@ -3,21 +3,16 @@
 <PageTitle></PageTitle>
 <link rel="stylesheet" href="css/IndexRazorCss.css" />
 
-<div class="topSection">
-    <div class="search">
-        <form method="get" action="">
-            <input type="text" class="searchTerm" placeholder="Looking for something?" required>
-            <button type="submit" class="searchButton">Search</button>
-        </form>
+<div id="container">
+    <div class="topSection">
+        <div class="search">
+            <form method="get" action="">
+                <input type="text" class="searchTerm" placeholder="Looking for something?" required>
+                <button type="submit" class="searchButton">Search</button>
+            </form>
+        </div>
+        <button type="button" class="createPost" onclick="createPostFunction()">Create Post <i class="oi oi-plus"></i></button>
     </div>
-    <button type="button" class="createPost" onclick="createPostFunction()">Create Post <i class="oi oi-plus"></i></button>
-    <script>
-        document.getElementById('createPostButton').addEventListener('click', createPostFunction);
-        function createPostFunction() {
-            console.log("Create Post button clicked!");
-        }
-    </script>
-</div>
 
 
 <!-- <SurveyPrompt Title="How is Blazor working for you?" /> -->
