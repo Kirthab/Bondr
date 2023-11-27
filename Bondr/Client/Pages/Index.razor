@@ -13,8 +13,14 @@
         </div>
         <button type="button" class="createPost" onclick="createPostFunction()">Create Post <i class="oi oi-plus"></i></button>
     </div>
-
-
+     
+   <script>
+            document.getElementById('createPostButton').addEventListener('click', createPostFunction);
+            function createPostFunction() {
+                console.log("Create Post button clicked!");
+            }
+    </script>
+  
     <!-- <SurveyPrompt Title="How is Blazor working for you?" /> -->
     <div class="col">
         <div class="card">
@@ -25,5 +31,4 @@
             <h5>Manage communities</h5>
             <p>Click here to manage your communities</p>
         </div>
-</div>
 </div>
