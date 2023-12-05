@@ -46,19 +46,34 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            <NavLink class="nav-link" href="discover">
+                <span class="oi oi-compass" aria-hidden="true"></span> Discover
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            <NavLink class="nav-link" href="help">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Help 
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="settings">
+                <span class="oi oi-wrench" aria-hidden="true"></span> Settings
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="communities">
+                <span class="oi oi-badge" aria-hidden="true"></span> Communities
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="genres">
+                <span class="oi oi-folder" aria-hidden="true"></span> Genres
             </NavLink>
         </div>
     </nav>
 </div>
 @code {
-    private bool collapseNavMenu = true;
+    private bool collapseNavMenu = false;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     private void ToggleNavMenu()
     {

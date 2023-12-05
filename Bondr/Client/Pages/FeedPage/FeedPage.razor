@@ -1,0 +1,70 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+<link rel="stylesheet" href="../css/FeedPage.css">
+
+<div id="container">
+    <div class="topSection">
+        <div class="search">
+            <form method="get" action="">
+                <input type="text" class="searchTerm" placeholder="Looking for something?" required>
+                <button type="submit" class="searchButton">Search</button>
+            </form>
+        </div>
+        <NavLink class="nav-link" href="createpost" Match="NavLinkMatch.All">
+            <button type="button" class="createPost" onclick="createPostFunction()">Create Post  <i class="oi oi-plus"></i></button>
+        </NavLink>
+    </div>
+     
+   <script>
+            document.getElementById('createPostButton').addEventListener('click', createPostFunction);
+            function createPostFunction() {
+                console.log("Create Post button clicked!");
+            }
+    </script>
+    
+    <article class="carousel">
+        <div class="carousel-div">
+            <ul>
+                <li><a href="Discover"><img draggable="false" src="../Images/Carousel/carousel1.jpg" /></a></li>
+                <li><a href="CommunityRequest"><img draggable="false" src="../Images/Carousel/carousel2.jpg" /></a></li>
+                <li><a href="Settings"><img draggable="false" src="../Images/Carousel/carousel3.jpg" /></a></li>
+                <li><a href="SettingsPage"><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></a></li>
+                <li><a href="CommunityForumn"><img draggable="false" src="../Images/Carousel/carousel5.jpg" /></a></li>
+            </ul>
+        </div>
+        <div class="carousel-div">
+            <ul>
+                <li><a href="Discover"><img draggable="false" src="../Images/Carousel/carousel1.jpg" /></a></li>
+                <li><a href="CommunityRequest"><img draggable="false" src="../Images/Carousel/carousel2.jpg" /></a></li>
+                <li><a href="Settings"><img draggable="false" src="../Images/Carousel/carousel3.jpg" /></a></li>
+                <li><a href="SettingsPage"><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></a></li>
+                <li><a href="CommunityForumn"><img draggable="false" src="../Images/Carousel/carousel5.jpg" /></a></li>
+            </ul>
+        </div>
+    </article>
+
+    <!-- <SurveyPrompt Title="How is Blazor working for you?" /> -->
+    <div class="col">
+        <div class="card card1">
+            <h5>Discover Communities</h5>
+            <p>Click here to discover new communities</p>
+        </div>
+        <div class="card card2">
+            <h5>Manage communities</h5>
+            <p>Click here to manage your communities</p>
+        </div>
+    </div>
+
+    <div class="feed">
+        <table>
+            <tr>
+                <th>COMMUNITY POSTS GO IN HERE</th>
+            </tr>
+            <tr>
+                <td>Your content here</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
