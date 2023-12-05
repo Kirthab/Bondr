@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bondr.Server", "Bondr\Server\Bondr.Server.csproj", "{82C05C76-A83E-4952-9A29-EC3AABBF759E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bondr.Server", "Bondr\Server\Bondr.Server.csproj", "{82C05C76-A83E-4952-9A29-EC3AABBF759E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bondr.Client", "Bondr\Client\Bondr.Client.csproj", "{BB761071-8E41-41DE-B532-6866DF139C4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bondr.Client", "Bondr\Client\Bondr.Client.csproj", "{BB761071-8E41-41DE-B532-6866DF139C4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bondr.Shared", "Bondr\Shared\Bondr.Shared.csproj", "{7E7535B0-3AC5-4252-9B3C-D8DE4833F779}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bondr.Shared", "Bondr\Shared\Bondr.Shared.csproj", "{7E7535B0-3AC5-4252-9B3C-D8DE4833F779}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
