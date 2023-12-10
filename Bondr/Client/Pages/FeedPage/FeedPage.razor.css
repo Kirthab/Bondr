@@ -1,8 +1,5 @@
-﻿@import url(https://fonts.googleapis.com/css?family=Open+Sans);
-
-/*Design of the page itself*/
+﻿/*Design of the page itself*/
 #container {
-    height: 150vh; /* 100% of viewport height */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
     border-width: 1px 1px 0 1px;
     border-style: solid;
@@ -14,56 +11,13 @@
 }
 
 body {
-    background-image: url('../Images/index-background.png');
-    /*background-color: #4B001F;*/
+    background-color: #4B001F;
     /*#810034*/
 }
 
-/*Top division with searchbar*/
-.topSection {
-    background: linear-gradient(to top, #3b064a, #25283B);
-    width: 100%;
-    height: 100px;
-    display: flex;
-    padding: 20px;
-}
-
-.search {
-    width: 100%;
-    display: inline;
-}
-
-.searchTerm {
-    font-weight: 700;
-    width: 85%;
-    font-size: large;
-    padding: 15px;
-    height: 50px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: 2px solid #FF005C;
-    /*box-shadow: #FF005C 0px 2px 10px 1px;*/
-    color: #6B2D5F;
-}
-
-    .searchTerm:focus {
-        color: #000;
-    }
-
-.searchButton {
-    margin-top: 9px;
-    margin-left: -8px;
-    width: 12%;
-    height: 50px;
-    font-size: large;
-    background: #6B2D5F;
-    border: 2px solid #FF005C;
-    /* box-shadow: #FF005C 9px 2px 10px -3px, #FF005C 1px 7px 10px -5px, #FF005C -1px -7px 10px -5px;
-    */ color: #fff;
-    font-weight: 700;
-    word-break: break-word;
-    white-space: nowrap; /* Prevent text wrapping */
-    border-radius: 0 5px 5px 0px;
+/*Text in buttons*/
+.createPost{
+    max-width: 100%;
 }
 
 /*Haziq n Kirthan ADSPACE*/
@@ -124,7 +78,6 @@ li {
 /*Create post button*/
 
 .createPost {
-    margin-top: 3px;
     padding: 0px 20px 5px 15px;
     background: #e69812;
     border-radius: 5px;
