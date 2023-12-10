@@ -1,77 +1,66 @@
 @inject NavigationManager Navigation
 
-<div class="bondr-image-icon"></div>
-
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">Hide Menu</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
-                        <span class="oi oi-person" aria-hidden="true"></span> @context.User.Identity?.Name!
-                        <span class="oi oi-person" aria-hidden="true"></span> Hello, @context.User.Identity?.Name!
+                        <p class="oi" aria-hidden="true"></p> @context.User.Identity?.Name
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="#" @onclick="BeginLogOut" Match="NavLinkMatch.All">
-                        <span class="oi oi-account-logout" aria-hidden="true"></span> Log out
+                        <p class="oi" aria-hidden="true"></p> Log out
                     </NavLink>
                 </div>
             </Authorized>
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/register" Match="NavLinkMatch.All">
-                        <span class="oi oi-person" aria-hidden="true"></span> Register
+                        <p class="oi" aria-hidden="true"></p> Register
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/login" Match="NavLinkMatch.All">
-                        <span class="oi oi-account-logout" aria-hidden="true"></span> Log in
+                        <p class="oi" aria-hidden="true"></p> Log in
                     </NavLink>
                 </div>
             </NotAuthorized>
         </AuthorizeView>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <p class="oi" aria-hidden="true"></p> Home
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="discover">
-                <span class="oi oi-compass" aria-hidden="true"></span> Discover
+                <p class="oi" aria-hidden="true"></p> Discover
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="help">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Help 
+                <p class="oi" aria-hidden="true"></p> Help
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="settings">
-                <span class="oi oi-wrench" aria-hidden="true"></span> Settings
+                <p class="oi" aria-hidden="true"></p> Settings
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="communities">
-                <span class="oi oi-badge" aria-hidden="true"></span> Communities
+            <NavLink class="nav-link" href="createcommunity">
+                <p class="oi" aria-hidden="true"></p> Create Community
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="genres">
-                <span class="oi oi-folder" aria-hidden="true"></span> Genres
+            <NavLink class="nav-link" href="communityforum">
+                <p class="oi" aria-hidden="true"></p> Forums
             </NavLink>
         </div>
     </nav>
 </div>
+
 @code {
     private bool collapseNavMenu = false;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
