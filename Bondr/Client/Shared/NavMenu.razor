@@ -9,21 +9,31 @@
                         <p class="oi" aria-hidden="true"></p> @context.User.Identity?.Name
                     </NavLink>
                 </div>
+                @* Logout Page *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="#" @onclick="BeginLogOut" Match="NavLinkMatch.All">
                         <p class="oi" aria-hidden="true"></p> Log out
                     </NavLink>
                 </div>
+                @* Settings Page *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="settings">
                         <p class="oi" aria-hidden="true"></p> Settings
                     </NavLink>
                 </div>
+                @* Communites Discovery Page *@
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="communities"> 
+                        <p class="oi" aria-hidden="true"></p> Communities
+                    </NavLink>
+                </div>
+                @* Create Community Page *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="createcommunity">
                         <p class="oi" aria-hidden="true"></p> Create Community
                     </NavLink>
                 </div>
+                @* Community Forum Page *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="communityforum">
                         <p class="oi" aria-hidden="true"></p> Forums
@@ -31,11 +41,13 @@
                 </div>
             </Authorized>
             <NotAuthorized>
+                @* Register *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/register" Match="NavLinkMatch.All">
                         <p class="oi" aria-hidden="true"></p> Register
                     </NavLink>
                 </div>
+                @* Login *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/login" Match="NavLinkMatch.All">
                         <p class="oi" aria-hidden="true"></p> Log in
@@ -48,11 +60,13 @@
                 <p class="oi" aria-hidden="true"></p> Home
             </NavLink>
         </div>
+        @* Discover Page *@
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="discover">
                 <p class="oi" aria-hidden="true"></p> Discover
             </NavLink>
         </div>
+        @* Help Page *@
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="help">
                 <p class="oi" aria-hidden="true"></p> Help
