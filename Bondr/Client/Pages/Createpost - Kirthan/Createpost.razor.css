@@ -1,0 +1,95 @@
+﻿#container {
+    width: 500px;
+    height: 500px;
+    box-sizing: border-box;
+    justify-content: center;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    margin: auto;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1{
+    color: white;
+}
+
+.post {
+    max-width: 500px;
+    max-height: 500px;
+    padding: 20px;
+}
+
+.post-header {
+    text-align: center;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+#postTitle {
+    width: 450px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 18px;
+    border: 2px solid #FF005C;
+    border-radius: 5px;
+}
+
+#postGenreDropdown {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 14px;
+    border: 2px solid #FF005C;
+    border-radius: 5px;
+}
+
+.post-content {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    box-sizing: border-box;
+}
+
+#postParagraph {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #FF005C;
+    border-radius: 5px;
+    height: 200px;
+    box-sizing: border-box;
+    font-size: 14px;
+    resize: none; /* Prevents textarea resizing by the user */
+}
+
+.publish {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: #e69812;
+    font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+    font-size: large;
+    font-weight: 700;
+    border: 2px solid #FF005C;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .publish:hover {
+        box-shadow: #00ffff 0px 0px 3px 4px;
+    }
