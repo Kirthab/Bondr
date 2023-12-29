@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Pages\FeedPage\FeedPage.razor.css" />
+    <None Remove="Pages\FeedPage - Kirthan\FeedPage.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Pages\FeedPage\FeedPage.razor.css" />
+    <Content Include="Pages\FeedPage - Kirthan\FeedPage.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
