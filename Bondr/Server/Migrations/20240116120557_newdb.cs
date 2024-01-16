@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Bondr.Server.Migrations
 {
     /// <inheritdoc />
@@ -32,10 +34,6 @@ namespace Bondr.Server.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: false),
-                    Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -57,6 +55,40 @@ namespace Bondr.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Comment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Vote = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    PostId = table.Column<int>(type: "int", nullable: true),
+                    StaffId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comment", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Community",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StaffId = table.Column<int>(type: "int", nullable: true),
+                    SubcriptionId = table.Column<int>(type: "int", nullable: true),
+                    PostId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Community", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DeviceCodes",
                 columns: table => new
                 {
@@ -73,20 +105,6 @@ namespace Bondr.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DeviceCodes", x => x.UserCode);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Genre",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Genre", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -234,43 +252,33 @@ namespace Bondr.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comment",
+                name: "Post",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Vote = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    PostId = table.Column<int>(type: "int", nullable: true),
-                    StaffId = table.Column<int>(type: "int", nullable: true)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Vote = table.Column<int>(type: "int", nullable: true),
+                    GenreId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    StaffId = table.Column<int>(type: "int", nullable: true),
+                    CommentId = table.Column<int>(type: "int", nullable: true),
+                    CommunityId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comment", x => x.Id);
+                    table.PrimaryKey("PK_Post", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comment_AspNetUsers_ApplicationUserId1",
-                        column: x => x.ApplicationUserId1,
-                        principalTable: "AspNetUsers",
+                        name: "FK_Post_Comment_CommentId",
+                        column: x => x.CommentId,
+                        principalTable: "Comment",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Community",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StaffId = table.Column<int>(type: "int", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    PostId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Community", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Post_Community_CommunityId",
+                        column: x => x.CommunityId,
+                        principalTable: "Community",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -279,18 +287,12 @@ namespace Bondr.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
                     CommunityId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Subscription", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Subscription_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Subscription_Community_CommunityId",
                         column: x => x.CommunityId,
@@ -299,46 +301,23 @@ namespace Bondr.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Post",
+                name: "Genre",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Vote = table.Column<int>(type: "int", nullable: false),
-                    GenreId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CommentID = table.Column<int>(type: "int", nullable: false),
-                    CommunityId = table.Column<int>(type: "int", nullable: true),
-                    StaffId = table.Column<int>(type: "int", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PostId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Post", x => x.Id);
+                    table.PrimaryKey("PK_Genre", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Post_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "AspNetUsers",
+                        name: "FK_Genre_Post_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Post",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Post_Comment_CommentID",
-                        column: x => x.CommentID,
-                        principalTable: "Comment",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Post_Community_CommunityId",
-                        column: x => x.CommunityId,
-                        principalTable: "Community",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Post_Genre_GenreId",
-                        column: x => x.GenreId,
-                        principalTable: "Genre",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -347,15 +326,16 @@ namespace Bondr.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Position = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Salary = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Position = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Salary = table.Column<double>(type: "float", nullable: true),
+                    Age = table.Column<int>(type: "int", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PostId = table.Column<int>(type: "int", nullable: true),
-                    CommentId = table.Column<int>(type: "int", nullable: true)
+                    CommentId = table.Column<int>(type: "int", nullable: true),
+                    CommunityId = table.Column<int>(type: "int", nullable: true),
+                    PostId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -366,11 +346,90 @@ namespace Bondr.Server.Migrations
                         principalTable: "Comment",
                         principalColumn: "Id");
                     table.ForeignKey(
+                        name: "FK_Staff_Community_CommunityId",
+                        column: x => x.CommunityId,
+                        principalTable: "Community",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Staff_Post_PostId",
                         column: x => x.PostId,
                         principalTable: "Post",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Age = table.Column<int>(type: "int", nullable: true),
+                    Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CommentId = table.Column<int>(type: "int", nullable: true),
+                    PostId = table.Column<int>(type: "int", nullable: true),
+                    SubscriptionId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_User_Comment_CommentId",
+                        column: x => x.CommentId,
+                        principalTable: "Comment",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_User_Post_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Post",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_User_Subscription_SubscriptionId",
+                        column: x => x.SubscriptionId,
+                        principalTable: "Subscription",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "ad2bcf0c-20db-474f-8407-5a6b159518ba", null, "Administrator", "ADMINISTRATOR" },
+                    { "bd2bcf0c-20db-474f-8407-5a6b159518bb", null, "User", "USER" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "cfabb152-6923-4af6-9253-b1fa9f059ba4", "admin@localhost.com", false, "Admin", "User", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAELw3X3hF9kbi0LrMkDJx1jPcDPZRfIyc3g92WPECqMXGk/pS13XFgqHALWfna0ZDxA==", null, false, "f09c4f67-a159-4dff-a810-27aa6c1c92ea", false, "admin@localhost.com" });
+
+            migrationBuilder.InsertData(
+                table: "Genre",
+                columns: new[] { "Id", "Description", "Name", "PostId" },
+                values: new object[,]
+                {
+                    { 1, "For Gamers. By Gamers.", "Gaming", null },
+                    { 2, "For Chefs. By Chefs.", "Cooking", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Staff",
+                columns: new[] { "Id", "Age", "CommentId", "CommunityId", "Email", "Gender", "Name", "Password", "Position", "PostId", "Salary" },
+                values: new object[,]
+                {
+                    { 1, null, null, null, "anitamaxwynn@hotmail.com", "Female", "Anita Max Wynn", "champagnepapi21", "CEO", null, 5500.0 },
+                    { 2, null, null, null, "aethelh@hotmail.com", "Male", "Aethelheimarl Hilmard", "meadowviking16", "Back-End Engineer", null, 4500.0 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "ad2bcf0c-20db-474f-8407-5a6b159518ba", "3781efa7-66dc-47f0-860f-e506d04102e4" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -412,36 +471,6 @@ namespace Bondr.Server.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comment_ApplicationUserId1",
-                table: "Comment",
-                column: "ApplicationUserId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comment_PostId",
-                table: "Comment",
-                column: "PostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comment_StaffId",
-                table: "Comment",
-                column: "StaffId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Community_PostId",
-                table: "Community",
-                column: "PostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Community_StaffId",
-                table: "Community",
-                column: "StaffId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Community_SubscriptionId",
-                table: "Community",
-                column: "SubscriptionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_DeviceCode",
                 table: "DeviceCodes",
                 column: "DeviceCode",
@@ -451,6 +480,11 @@ namespace Bondr.Server.Migrations
                 name: "IX_DeviceCodes_Expiration",
                 table: "DeviceCodes",
                 column: "Expiration");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Genre_PostId",
+                table: "Genre",
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Keys_Use",
@@ -478,9 +512,9 @@ namespace Bondr.Server.Migrations
                 columns: new[] { "SubjectId", "SessionId", "Type" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Post_CommentID",
+                name: "IX_Post_CommentId",
                 table: "Post",
-                column: "CommentID");
+                column: "CommentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Post_CommunityId",
@@ -488,24 +522,14 @@ namespace Bondr.Server.Migrations
                 column: "CommunityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Post_GenreId",
-                table: "Post",
-                column: "GenreId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Post_StaffId",
-                table: "Post",
-                column: "StaffId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Post_UserId1",
-                table: "Post",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Staff_CommentId",
                 table: "Staff",
                 column: "CommentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Staff_CommunityId",
+                table: "Staff",
+                column: "CommunityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Staff_PostId",
@@ -518,95 +542,24 @@ namespace Bondr.Server.Migrations
                 column: "CommunityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subscription_UserId1",
-                table: "Subscription",
-                column: "UserId1");
+                name: "IX_User_CommentId",
+                table: "User",
+                column: "CommentId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Comment_Post_PostId",
-                table: "Comment",
-                column: "PostId",
-                principalTable: "Post",
-                principalColumn: "Id");
+            migrationBuilder.CreateIndex(
+                name: "IX_User_PostId",
+                table: "User",
+                column: "PostId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Comment_Staff_StaffId",
-                table: "Comment",
-                column: "StaffId",
-                principalTable: "Staff",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Community_Post_PostId",
-                table: "Community",
-                column: "PostId",
-                principalTable: "Post",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Community_Staff_StaffId",
-                table: "Community",
-                column: "StaffId",
-                principalTable: "Staff",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Community_Subscription_SubscriptionId",
-                table: "Community",
-                column: "SubscriptionId",
-                principalTable: "Subscription",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Post_Staff_StaffId",
-                table: "Post",
-                column: "StaffId",
-                principalTable: "Staff",
-                principalColumn: "Id");
+            migrationBuilder.CreateIndex(
+                name: "IX_User_SubscriptionId",
+                table: "User",
+                column: "SubscriptionId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Comment_AspNetUsers_ApplicationUserId1",
-                table: "Comment");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Post_AspNetUsers_UserId1",
-                table: "Post");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Subscription_AspNetUsers_UserId1",
-                table: "Subscription");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Comment_Post_PostId",
-                table: "Comment");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Community_Post_PostId",
-                table: "Community");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Staff_Post_PostId",
-                table: "Staff");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Comment_Staff_StaffId",
-                table: "Comment");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Community_Staff_StaffId",
-                table: "Community");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Community_Subscription_SubscriptionId",
-                table: "Community");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -626,10 +579,19 @@ namespace Bondr.Server.Migrations
                 name: "DeviceCodes");
 
             migrationBuilder.DropTable(
+                name: "Genre");
+
+            migrationBuilder.DropTable(
                 name: "Keys");
 
             migrationBuilder.DropTable(
                 name: "PersistedGrants");
+
+            migrationBuilder.DropTable(
+                name: "Staff");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -641,16 +603,10 @@ namespace Bondr.Server.Migrations
                 name: "Post");
 
             migrationBuilder.DropTable(
-                name: "Genre");
-
-            migrationBuilder.DropTable(
-                name: "Staff");
+                name: "Subscription");
 
             migrationBuilder.DropTable(
                 name: "Comment");
-
-            migrationBuilder.DropTable(
-                name: "Subscription");
 
             migrationBuilder.DropTable(
                 name: "Community");
