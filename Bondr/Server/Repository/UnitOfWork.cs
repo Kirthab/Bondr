@@ -22,7 +22,7 @@ namespace Bondr.Server.Repository
         private IGenericRepository<Post> _posts;
         private IGenericRepository<Staff> _staffs;
         private IGenericRepository<Subscription> _subscriptions;
-        private IGenericRepository<User> _users;
+        private IGenericRepository<Visitor> _visitors;
 
         private UserManager<ApplicationUser> _userManager;
 
@@ -44,8 +44,8 @@ namespace Bondr.Server.Repository
             => _staffs ??= new GenericRepository<Staff>(_context);
         public IGenericRepository<Subscription> Subscription
             => _subscriptions ??= new GenericRepository<Subscription>(_context);
-        public IGenericRepository<User> User
-            => _users ??= new GenericRepository<User>(_context);
+        public IGenericRepository<Visitor> Visitor
+            => _visitors ??= new GenericRepository<Visitor>(_context);
 
         public async Task Save(HttpContext httpContext)
         {

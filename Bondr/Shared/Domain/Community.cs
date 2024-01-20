@@ -9,7 +9,7 @@
         public int? SubcriptionId { get; set; }
         public virtual List<Subscription>? Subscriptions { get; set; }
         public int? PostId { get; set; }
-        public virtual List<Post> Posts { get; set; }
+        public virtual List<Post>? Posts { get; set; }
         
 
 

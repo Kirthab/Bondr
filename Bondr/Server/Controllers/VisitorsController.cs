@@ -14,56 +14,56 @@ namespace Bondr.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class VisitorsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public UsersController(IUnitOfWork unitOfWork)
+        public VisitorsController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        // GET: api/Users
+        // GET: api/Visitors
         [HttpGet]
-        public async Task<IActionResult> GetUser()
+        public async Task<IActionResult> GetVisitor()
         {
-          if (_unitOfWork.User == null)
+          if (_unitOfWork.Visitor == null)
           {
               return NotFound();
           }
-            var Users = await _unitOfWork.User.GetAll();
-            return Ok(Users);
+            var Visitors = await _unitOfWork.Visitor.GetAll();
+            return Ok(Visitors);
         }
 
-        // GET: api/Users/5
+        // GET: api/Visitors/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(int id)
+        public async Task<IActionResult> GetVisitor(int id)
         {
-          if (_unitOfWork.User == null)
+          if (_unitOfWork.Visitor == null)
           {
               return NotFound();
           }
-            var User = await _unitOfWork.User.Get(q => q.Id == id);
+            var Visitor = await _unitOfWork.Visitor.Get(q => q.Id == id);
 
-            if (User == null)
+            if (Visitor == null)
             {
                 return NotFound();
             }
 
-            return Ok(User);
+            return Ok(Visitor);
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Visitors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User User)
+        public async Task<IActionResult> PutVisitor(int id, Visitor Visitor)
         {
-            if (id != User.Id)
+            if (id != Visitor.Id)
             {
                 return BadRequest();
             }
 
-            _unitOfWork.User.Update(User);
+            _unitOfWork.Visitor.Update(Visitor);
 
             try
             {
@@ -71,7 +71,7 @@ namespace Bondr.Server.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await UserExists(id))
+                if (!await VisitorExists(id))
                 {
                     return NotFound();
                 }
@@ -84,44 +84,44 @@ namespace Bondr.Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/Visitors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User User)
+        public async Task<ActionResult<Visitor>> PostVisitor(Visitor Visitor)
         {
-          if (_unitOfWork.User == null)
+          if (_unitOfWork.Visitor == null)
           {
-              return Problem("Entity set 'ApplicationDbContext.User'  is null.");
+              return Problem("Entity set 'ApplicationDbContext.Visitor'  is null.");
           }
-            await _unitOfWork.User.Insert(User);
+            await _unitOfWork.Visitor.Insert(Visitor);
             await _unitOfWork.Save(HttpContext);
 
-            return CreatedAtAction("GetUser", new { id = User.Id }, User);
+            return CreatedAtAction("GetVisitor", new { id = Visitor.Id }, Visitor);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/Visitors/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteVisitor(int id)
         {
-            if (_unitOfWork.User == null)
+            if (_unitOfWork.Visitor == null)
             {
                 return NotFound();
             }
-            var User = await _unitOfWork.User.Get(q => q.Id == id);
-            if (User == null)
+            var Visitor = await _unitOfWork.Visitor.Get(q => q.Id == id);
+            if (Visitor == null)
             {
                 return NotFound();
             }
 
-            await _unitOfWork.User.Delete(id);
+            await _unitOfWork.Visitor.Delete(id);
             await _unitOfWork.Save(HttpContext);
 
             return NoContent();
         }
 
-        private async Task<bool> UserExists(int id)
+        private async Task<bool> VisitorExists(int id)
         {
-            var make = await _unitOfWork.User.Get(q => q.Id == id);
+            var make = await _unitOfWork.Visitor.Get(q => q.Id == id);
             return make != null;
         }
     }

@@ -1,12 +1,15 @@
 ﻿@inject NavigationManager Navigation
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
 
 @page "/"
 
 <PageTitle>Home</PageTitle>
 
 <div id="container">
-    <button type="button" class="createPost" @onclick="CreatePost">Create Post <i class="oi oi-plus"></i></button>
-
     <article class="carousel">
         <div class="carousel-div">
             <ul>
@@ -40,22 +43,131 @@
         </div>
     </div>
 
+    <button type="button" class="createPost" @onclick="CreatePost">Create Post <i class="oi oi-plus"></i></button>
+    
     <div class="feed">
-        <table>
-            <tr>
-                <th>COMMUNITY POSTS GO IN HERE</th>
-            </tr>
-            <tr>
-                <td>Your content here</td>
-            </tr>
-        </table>
-    </div>
+        @if (Posts == null || !Posts.Any())
+        {
+            <div class="alert alert-info">No posts here hombre...</div>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>Vote</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var post in DisplayedPosts)
+                    {
+                        <tr>
+                            <td>@post.Title</td>
+                            <td>@post.Content</td>
+                            <td>@post.Vote</td>
+                            <td>
+                                <a href="/post/view/@post.Id" class="btn btn-primary">
+                                <span class="oi oi-book"></span>    
+                                </a>
+                                <a href="/post/edit/@post.Id" class="btn btn-warning">
+                                <span class="oi oi-pencil"></span>
+                                </a>
+                                <button class="btn btn-danger" @onclick="@(()=>Delete(post.Id))"></button>
+                                <span class="oi oi-delete"></span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
+            <!-- Pagination controls -->
+            <div class="pagination">
+                <button disabled="@IsFirstPage" @onclick="PreviousPage">Previous</button>
+                <span>Page @currentPage of @totalPages</span>
+                <button disabled="@IsLastPage" @onclick="NextPage">Next</button>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
+
+    private List<Post>? Posts;
+    private List<Post> DisplayedPosts;
+    private int postsPerPage = 10;
+    private int currentPage = 1;
+
+    private int totalPages => (int)Math.Ceiling((double)(Posts?.Count ?? 0) / postsPerPage);
+
+    private bool IsFirstPage => currentPage == 1;
+    private bool IsLastPage => currentPage == totalPages;
+
+    protected override void OnParametersSet()
+    {
+        UpdateDisplayedPosts();
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            UpdateDisplayedPosts();
+        }
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            UpdateDisplayedPosts();
+        }
+    }
+
+    private void UpdateDisplayedPosts()
+    {
+        int startIndex = (currentPage - 1) * postsPerPage;
+        DisplayedPosts = Posts?.Skip(startIndex).Take(postsPerPage).ToList() ?? new List<Post>();
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            Posts = await _client.GetFromJsonAsync<List<Post>>(Endpoints.PostEndpoint);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching posts: {ex.Message}");
+            Posts = new List<Post>();
+        }
+    }
+
+
+    async Task Delete(int PostId)
+    {
+        if (Posts != null)
+        {
+            var Post = Posts.First(q => q.Id == PostId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {Post.Title}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.PostEndpoint}/{PostId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+
     private void CreatePost()
     {
-        Navigation.NavigateTo("createpost");
+        Navigation.NavigateTo("/feed/newpost");
     }
 }

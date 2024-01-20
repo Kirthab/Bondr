@@ -91,7 +91,6 @@ li {
     height: 48px;
     text-align: center;
     font-size: large;
-    /*box-shadow: #FF005C 0px 2px 15px 1px;*/
     color: #fff;
 }
 
@@ -146,15 +145,8 @@ h5 {
     box-shadow: #00A9FF 3px 1px 20px;
 }
 
-/*Content Feed CSS*/
 .feed{
-    padding: 30px;
+    color: white;
+    border: solid 2px white;
+    font-size: 20px;
 }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 15px solid white;
-}th,td{
-     color: white;
- }

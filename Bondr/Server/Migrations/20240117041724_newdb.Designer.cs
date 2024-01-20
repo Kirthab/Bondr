@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bondr.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240116124035_base-domain-model-update")]
-    partial class basedomainmodelupdate
+    [Migration("20240117041724_newdb")]
+    partial class newdb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,11 +45,9 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -102,7 +100,7 @@ namespace Bondr.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a67ffa49-ef84-4dad-8753-c838dc5e7364",
+                            ConcurrencyStamp = "98e5557d-ec5b-4860-b47e-2d5ba505cd52",
                             Email = "admin@localhost.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -110,9 +108,9 @@ namespace Bondr.Server.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBwPdLNQlAFZ+ll70A6F7DpVdg7FsFMNxL3md5PXMl3YCEF+V4ppQJGRm9jZ+3o7Cg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEF80rUtAcspbCe4Auj19cT+QvFHsvNvQdfgrynObxMznkl304VE0y8gyAnuJCjjTGA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e679e1bc-47c8-4190-8ea0-b5e324b161ad",
+                            SecurityStamp = "fedd8c31-5557-441f-974d-e7e56a9e7236",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -425,7 +423,7 @@ namespace Bondr.Server.Migrations
                     b.ToTable("Subscription");
                 });
 
-            modelBuilder.Entity("Bondr.Shared.Domain.User", b =>
+            modelBuilder.Entity("Bondr.Shared.Domain.Visitor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -483,7 +481,7 @@ namespace Bondr.Server.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("User");
+                    b.ToTable("Visitor");
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -825,7 +823,7 @@ namespace Bondr.Server.Migrations
                         .HasForeignKey("CommunityId");
                 });
 
-            modelBuilder.Entity("Bondr.Shared.Domain.User", b =>
+            modelBuilder.Entity("Bondr.Shared.Domain.Visitor", b =>
                 {
                     b.HasOne("Bondr.Shared.Domain.Comment", null)
                         .WithMany("Users")

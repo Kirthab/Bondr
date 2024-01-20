@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Bondr.Shared.Domain
 {
-    public class User : BaseDomainModel
+    public class Visitor : BaseDomainModel
     {
         public string? Username { get; set; }   
         public string? Gender { get; set; }
