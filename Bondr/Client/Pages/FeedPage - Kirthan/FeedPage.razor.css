@@ -15,11 +15,6 @@ body {
     /*#810034*/
 }
 
-/*Text in buttons*/
-.createPost{
-    max-width: 100%;
-}
-
 /*Haziq n Kirthan ADSPACE*/
 img {
     width: 100%;
@@ -77,6 +72,9 @@ li {
 /*Create post button*/
 
 .createPost {
+    margin-top: 20px;
+    max-width: 100%;
+    margin-left: 1030px; /* This pushes the element to the right */
     padding: 0px 20px 5px 15px;
     background: #e69812;
     border-radius: 5px;
@@ -147,6 +145,76 @@ h5 {
 
 .feed{
     color: white;
-    border: solid 2px white;
     font-size: 20px;
+}
+
+.post-link {
+    color: white; /* Use the default text color */
+    text-decoration: none; /* Remove underline by default */
+    background-color: transparent;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+}
+
+th,
+td {
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+th {
+    text-align: left;
+}
+
+thead th {
+    background-color: #55608f;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+td {
+    position: relative;
+    &:hover:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -9999px;
+    bottom: -9999px;
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: -1;
+    }
+}
+
+.page-button {
+    background: transparent;
+    border-radius: 5px;
+    font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+    font-size: large;
+    font-weight: 700;
+    line-height: 0px;
+    border: 2px solid white;
+    text-align: center;
+    color: #fff;
+    padding:10px;
+}
+
+.pagination {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+span {
+    margin: 0 10px;
 }

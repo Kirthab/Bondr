@@ -16,7 +16,9 @@ namespace Bondr.Shared.Domain
         public virtual List<Visitor>? User { get; set; }
         public int? StaffId { get; set; }
         public virtual List<Staff>? Staffs { get; set;}
-        
+        public int? CommentId { get; set; }
+        public virtual List<Comment>? Comments { get; set; }
+
 
     }
 }

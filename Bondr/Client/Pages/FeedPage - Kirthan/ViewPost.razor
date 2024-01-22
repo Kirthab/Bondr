@@ -1,0 +1,96 @@
+﻿@page "/post/viewpost/{postId}"
+
+@inject NavigationManager _navManager
+@inject HttpClient _client
+
+<div id="container">
+    <div id="top">
+        <div id="post-container">
+           <h4 id="username">#Username</h4>
+            @if (Post != null)
+            {
+                <h1 id="title">@Post.Title</h1>
+                <p id="content">@Post.Content</p>
+                <div id="post-buttons">
+                    <button id="arrow-button" @onclick="Upvote">&#129093;</button>
+                    <p id="vote-count">@Post.Vote</p>
+                    <button id="arrow-button" @onclick="Downvote">&#x1F847;</button>
+                </div>
+            }
+            else
+            {
+                <p>No content here</p>
+            }
+        </div>
+    </div>
+    <div id="comments-container">
+        <button>Add comment</button>
+        @if (Comments == null || !Comments.Any())
+        {
+            <div id="no-comments">No comments here</div>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Vote</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var comment in DisplayedComments)
+                    {
+                        <tr>
+                            <td>@comment.Text</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string postId { get; set; }
+    private Post Post;
+
+    private List<Comment>? Comments;
+    private List<Comment> DisplayedComments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Use postId to construct the URL for the specific post
+            string postUrl = $"{Endpoints.PostEndpoint}/{postId}";
+            Post = await _client.GetFromJsonAsync<Post>(postUrl);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching post: {ex.Message}");
+        }
+
+        try
+        {
+            Comments = await _client.GetFromJsonAsync<List<Comment>>(Endpoints.CommentsEndpoint);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching posts: {ex.Message}");
+            Comments = new List<Comment>();
+        }
+    }
+
+    private async Task Upvote()
+    {
+        Post.Vote = Post.Vote + 1;
+    }
+
+    private async Task Downvote()
+    {
+        Post.Vote = Post.Vote - 1;
+    }
+
+}

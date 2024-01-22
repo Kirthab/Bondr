@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bondr.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240117041724_newdb")]
+    [Migration("20240122160506_newdb")]
     partial class newdb
     {
         /// <inheritdoc />
@@ -100,7 +100,7 @@ namespace Bondr.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "98e5557d-ec5b-4860-b47e-2d5ba505cd52",
+                            ConcurrencyStamp = "19e1cc64-0f2d-443d-b082-c293656cce02",
                             Email = "admin@localhost.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -108,9 +108,9 @@ namespace Bondr.Server.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF80rUtAcspbCe4Auj19cT+QvFHsvNvQdfgrynObxMznkl304VE0y8gyAnuJCjjTGA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKlLzkUSxz4RNB8TqzbOOMjC4p3Q+S4aADy2k5Bexx/sIrDqNJdGYvfTUYlL/kKnSQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fedd8c31-5557-441f-974d-e7e56a9e7236",
+                            SecurityStamp = "cb30ae7f-2bc2-4ef8-97b4-46574a2e2b59",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -152,6 +152,8 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PostId");
 
                     b.ToTable("Comment");
                 });
@@ -265,6 +267,7 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
@@ -283,6 +286,7 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -295,8 +299,6 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CommentId");
 
                     b.HasIndex("CommunityId");
 
@@ -783,6 +785,13 @@ namespace Bondr.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Bondr.Shared.Domain.Comment", b =>
+                {
+                    b.HasOne("Bondr.Shared.Domain.Post", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId");
+                });
+
             modelBuilder.Entity("Bondr.Shared.Domain.Genre", b =>
                 {
                     b.HasOne("Bondr.Shared.Domain.Post", null)
@@ -792,10 +801,6 @@ namespace Bondr.Server.Migrations
 
             modelBuilder.Entity("Bondr.Shared.Domain.Post", b =>
                 {
-                    b.HasOne("Bondr.Shared.Domain.Comment", null)
-                        .WithMany("Posts")
-                        .HasForeignKey("CommentId");
-
                     b.HasOne("Bondr.Shared.Domain.Community", null)
                         .WithMany("Posts")
                         .HasForeignKey("CommunityId");
@@ -891,8 +896,6 @@ namespace Bondr.Server.Migrations
 
             modelBuilder.Entity("Bondr.Shared.Domain.Comment", b =>
                 {
-                    b.Navigation("Posts");
-
                     b.Navigation("Staffs");
 
                     b.Navigation("Users");
@@ -909,6 +912,8 @@ namespace Bondr.Server.Migrations
 
             modelBuilder.Entity("Bondr.Shared.Domain.Post", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Genre");
 
                     b.Navigation("Staffs");

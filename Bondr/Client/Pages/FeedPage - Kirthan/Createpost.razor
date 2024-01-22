@@ -47,6 +47,7 @@
 
     private async Task CreatePost()
     {
+        post.Vote = 0;
         await _client.PostAsJsonAsync(Endpoints.PostEndpoint, post);
         _navManager.NavigateTo("/");
     }

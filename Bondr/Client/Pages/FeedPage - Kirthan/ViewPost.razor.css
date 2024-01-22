@@ -1,0 +1,76 @@
+﻿#container {
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden; /* Hide content overflowing from the border */
+    position: relative;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+}
+
+#top {
+    #background: #460558;
+    background: #3b054a;
+    padding: 10px;
+}
+
+#username {
+    color: #faf9e3;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size:15px;
+}
+
+#title {
+    font-size: 30px;
+    font-family: "Arial Black", sans-serif;
+}
+
+#content {
+    color: #fafafa;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 15px;
+}
+
+#post-container {
+    color: white;
+    padding: 10px;
+}
+
+#post-buttons {
+    display: flex;
+}
+
+    #post-buttons button {
+        margin: 0 5px; /* Add some spacing between the buttons */
+    }
+
+#vote-count {
+    font-family: 'Gill Sans', sans-serif;
+    margin: 0; /* Remove default margins for these elements */
+}
+
+#arrow-button {
+    background-color: transparent;
+    color: white;
+    border: solid white 1px;
+    cursor: pointer;
+    user-select: none;
+} #arrow-button:hover {
+    color: orangered;
+    border: solid orangered 1px;
+}#arrow-button:disabled {
+    color: orangered;
+    border: solid orangered 1px;
+}
+
+#comments-containter {
+    color: white;
+    padding: 10px;
+}
+
+#no-comments{
+    color:white;
+    text-align:center;
+    font-size:20px;
+}

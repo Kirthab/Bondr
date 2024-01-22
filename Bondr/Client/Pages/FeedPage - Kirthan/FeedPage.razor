@@ -48,7 +48,7 @@
     <div class="feed">
         @if (Posts == null || !Posts.Any())
         {
-            <div class="alert alert-info">No posts here hombre...</div>
+            <div class="alert alert-info">No posts yet</div>
         }
         else
         {
@@ -56,39 +56,33 @@
                 <thead>
                     <tr>
                         <th>Title</th>
-                        <th>Content</th>
                         <th>Vote</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var post in DisplayedPosts)
                     {
                         <tr>
-                            <td>@post.Title</td>
-                            <td>@post.Content</td>
-                            <td>@post.Vote</td>
                             <td>
-                                <a href="/post/view/@post.Id" class="btn btn-primary">
-                                <span class="oi oi-book"></span>    
-                                </a>
-                                <a href="/post/edit/@post.Id" class="btn btn-warning">
-                                <span class="oi oi-pencil"></span>
-                                </a>
-                                <button class="btn btn-danger" @onclick="@(()=>Delete(post.Id))"></button>
-                                <span class="oi oi-delete"></span>
-                            </td>
+                                <a href="/post/viewpost/@post.Id" class="post-link">
+                                <div>
+                                    @post.Title
+                                 </div>
+                                 </a>
+                             </td>
+                            <td>@post.Vote</td>
                         </tr>
                     }
                 </tbody>
             </table>
-
+            <br/>
             <!-- Pagination controls -->
             <div class="pagination">
-                <button disabled="@IsFirstPage" @onclick="PreviousPage">Previous</button>
+                <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
                 <span>Page @currentPage of @totalPages</span>
-                <button disabled="@IsLastPage" @onclick="NextPage">Next</button>
+                <button disabled="@IsLastPage" class="page-button" @onclick="NextPage">Next &#x21E2;</button>
             </div>
+            <br />
         }
     </div>
 </div>
@@ -97,7 +91,7 @@
 
     private List<Post>? Posts;
     private List<Post> DisplayedPosts;
-    private int postsPerPage = 10;
+    private int postsPerPage = 20;
     private int currentPage = 1;
 
     private int totalPages => (int)Math.Ceiling((double)(Posts?.Count ?? 0) / postsPerPage);
