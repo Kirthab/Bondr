@@ -299,8 +299,8 @@ namespace Bondr.Server.Migrations
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Vote = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: true),
-                    StaffId = table.Column<int>(type: "int", nullable: true),
                     PostId = table.Column<int>(type: "int", nullable: true),
+                    StaffId = table.Column<int>(type: "int", nullable: true),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -434,7 +434,7 @@ namespace Bondr.Server.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "19e1cc64-0f2d-443d-b082-c293656cce02", "admin@localhost.com", false, "Admin", "User", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEKlLzkUSxz4RNB8TqzbOOMjC4p3Q+S4aADy2k5Bexx/sIrDqNJdGYvfTUYlL/kKnSQ==", null, false, "cb30ae7f-2bc2-4ef8-97b4-46574a2e2b59", false, "admin@localhost.com" });
+                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "582dc68c-247c-4362-b5f6-b5fb62115341", "admin@localhost.com", false, "Admin", "User", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEHsHCZxlCgt3FZ/u+dVk0LXYelLYdykwCUyv3Xz7Zks6dPF9pyGmlqHlFxj8QFmr9Q==", null, false, "ab4ee3e1-31d0-411e-8ae3-960ffe1cc555", false, "admin@localhost.com" });
 
             migrationBuilder.InsertData(
                 table: "Genre",
