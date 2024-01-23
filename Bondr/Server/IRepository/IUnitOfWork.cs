@@ -16,6 +16,6 @@ namespace Bondr.Server.IRepository
         IGenericRepository<Post> Post { get; }
         IGenericRepository<Staff> Staff { get; }
         IGenericRepository<Subscription> Subscription { get; }
-        IGenericRepository<User> User { get; }
+        IGenericRepository<Visitor> Visitor { get; }
     }
 }

@@ -1,0 +1,187 @@
+﻿#container {
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden; /* Hide content overflowing from the border */
+    position: relative;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+}
+
+#top {
+    #background: #460558;
+    background: #3b054a;
+    padding: 10px;
+}
+
+#username {
+    color: #faf9e3;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size:15px;
+}
+
+#title {
+    font-size: 30px;
+    font-family: "Arial Black", sans-serif;
+}
+
+#content {
+    color: #fafafa;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 15px;
+}
+
+#post-container {
+    color: white;
+    padding: 10px;
+}
+
+#post-buttons {
+    display: flex;
+}
+
+    #post-buttons button {
+        margin: 0 5px; /* Add some spacing between the buttons */
+    }
+
+#vote-count {
+    font-family: 'Gill Sans', sans-serif;
+    margin: 0; /* Remove default margins for these elements */
+}
+
+#arrow-button {
+    background-color: transparent;
+    color: white;
+    border: solid white 1px;
+    cursor: pointer;
+    user-select: none;
+} #arrow-button:hover {
+    color: orangered;
+    border: solid orangered 1px;
+}#arrow-button:disabled {
+    color: orangered;
+    border: solid orangered 1px;
+}
+
+#add-comment {
+    background-color: transparent;
+    color: white;
+    border: solid white 1px;
+    cursor: pointer;
+    user-select: none;
+}
+
+#comments-containter {
+    color: white;
+    padding: 10px;
+}
+
+#no-comments{
+    color:white;
+    text-align:center;
+    font-size:20px;
+}
+
+.collapsible-create-comment{
+    padding:10px;
+}
+
+.comment-para {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 5px;
+    height: 200px;
+    box-sizing: border-box;
+    font-size: 14px;
+    resize: none;
+}
+
+#upload-comment {
+    max-width: 100%;
+    margin-left: 1100px; /* This pushes the element to the right */
+    padding: 10px;
+    background: transparent;
+    border-radius: 5px;
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 700;
+    line-height: 0px;
+    border: 2px solid white;
+    word-break: break-word;
+    white-space: nowrap; /* Prevent text wrapping */
+    width: fit-content;
+    height: 40px;
+    text-align: center;
+    font-size: large;
+    color: #fff;
+}
+
+.page-button {
+    background: transparent;
+    border-radius: 5px;
+    font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+    font-size: large;
+    font-weight: 700;
+    line-height: 0px;
+    border: 2px solid white;
+    text-align: center;
+    color: #fff;
+    padding: 10px;
+}
+
+.pagination {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+}
+
+th,
+td {
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+th {
+    text-align: left;
+}
+
+thead th {
+    background-color: #55608f;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+td {
+    position: relative;
+    &:hover:before
+
+{
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -9999px;
+    bottom: -9999px;
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: -1;
+}
+}
+
+span {
+    margin: 0 10px;
+    color: white;
+}

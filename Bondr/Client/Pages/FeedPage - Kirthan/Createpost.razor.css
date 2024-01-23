@@ -40,7 +40,7 @@ h1{
     font-family: 'Comic Sans MS', cursive, sans-serif;
 }
 
-#postTitle {
+.postTitle {
     width: 450px;
     padding: 10px;
     margin-bottom: 10px;
@@ -51,7 +51,7 @@ h1{
     border-radius: 5px;
 }
 
-#postGenreDropdown {
+.postGenreDropdown {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -62,12 +62,13 @@ h1{
     border-radius: 5px;
 }
 
+
 .post-content {
     font-family: 'Comic Sans MS', cursive, sans-serif;
     box-sizing: border-box;
 }
 
-#postParagraph {
+.postParagraph {
     width: 100%;
     padding: 10px;
     border: 2px solid #FF005C;
@@ -75,7 +76,7 @@ h1{
     height: 200px;
     box-sizing: border-box;
     font-size: 14px;
-    resize: none; /* Prevents textarea resizing by the user */
+    resize: none;
 }
 
 .publish {
@@ -91,5 +92,5 @@ h1{
 }
 
     .publish:hover {
-        box-shadow: #00ffff 0px 0px 3px 4px;
+        box-shadow: #00A9FF 0px 0px 3px 4px;
     }

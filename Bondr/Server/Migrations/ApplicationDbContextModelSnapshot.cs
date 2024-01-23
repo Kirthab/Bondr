@@ -42,11 +42,9 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -99,7 +97,7 @@ namespace Bondr.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a67ffa49-ef84-4dad-8753-c838dc5e7364",
+                            ConcurrencyStamp = "582dc68c-247c-4362-b5f6-b5fb62115341",
                             Email = "admin@localhost.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -107,9 +105,9 @@ namespace Bondr.Server.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBwPdLNQlAFZ+ll70A6F7DpVdg7FsFMNxL3md5PXMl3YCEF+V4ppQJGRm9jZ+3o7Cg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHsHCZxlCgt3FZ/u+dVk0LXYelLYdykwCUyv3Xz7Zks6dPF9pyGmlqHlFxj8QFmr9Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e679e1bc-47c8-4190-8ea0-b5e324b161ad",
+                            SecurityStamp = "ab4ee3e1-31d0-411e-8ae3-960ffe1cc555",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -151,6 +149,8 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PostId");
 
                     b.ToTable("Comment");
                 });
@@ -264,6 +264,7 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
@@ -282,6 +283,7 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -294,8 +296,6 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CommentId");
 
                     b.HasIndex("CommunityId");
 
@@ -422,7 +422,7 @@ namespace Bondr.Server.Migrations
                     b.ToTable("Subscription");
                 });
 
-            modelBuilder.Entity("Bondr.Shared.Domain.User", b =>
+            modelBuilder.Entity("Bondr.Shared.Domain.Visitor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -480,7 +480,7 @@ namespace Bondr.Server.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("User");
+                    b.ToTable("Visitor");
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -782,6 +782,13 @@ namespace Bondr.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Bondr.Shared.Domain.Comment", b =>
+                {
+                    b.HasOne("Bondr.Shared.Domain.Post", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId");
+                });
+
             modelBuilder.Entity("Bondr.Shared.Domain.Genre", b =>
                 {
                     b.HasOne("Bondr.Shared.Domain.Post", null)
@@ -791,10 +798,6 @@ namespace Bondr.Server.Migrations
 
             modelBuilder.Entity("Bondr.Shared.Domain.Post", b =>
                 {
-                    b.HasOne("Bondr.Shared.Domain.Comment", null)
-                        .WithMany("Posts")
-                        .HasForeignKey("CommentId");
-
                     b.HasOne("Bondr.Shared.Domain.Community", null)
                         .WithMany("Posts")
                         .HasForeignKey("CommunityId");
@@ -822,7 +825,7 @@ namespace Bondr.Server.Migrations
                         .HasForeignKey("CommunityId");
                 });
 
-            modelBuilder.Entity("Bondr.Shared.Domain.User", b =>
+            modelBuilder.Entity("Bondr.Shared.Domain.Visitor", b =>
                 {
                     b.HasOne("Bondr.Shared.Domain.Comment", null)
                         .WithMany("Users")
@@ -890,8 +893,6 @@ namespace Bondr.Server.Migrations
 
             modelBuilder.Entity("Bondr.Shared.Domain.Comment", b =>
                 {
-                    b.Navigation("Posts");
-
                     b.Navigation("Staffs");
 
                     b.Navigation("Users");
@@ -908,6 +909,8 @@ namespace Bondr.Server.Migrations
 
             modelBuilder.Entity("Bondr.Shared.Domain.Post", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Genre");
 
                     b.Navigation("Staffs");

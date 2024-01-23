@@ -1,0 +1,54 @@
+﻿@page "/feed/newpost"
+
+@inject NavigationManager _navManager
+@inject HttpClient _client
+
+<EditForm Model="@post" OnValidSubmit="CreatePost">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div id="container">
+        <div class="post">
+            <div class="post-header">
+                <h1>NEW POST</h1>
+                <input type="text" class="postTitle" @bind="post.Title" placeholder="Enter Post Title">
+                <select class="postGenreDropdown" @bind="post.GenreId">
+                    @if (Genres != null && Genres.Any())
+                    {
+                        var firstGenre = Genres.First(); // Get the first genre
+
+                        <option value="@firstGenre.Id" selected>@firstGenre.Name</option>
+
+                        @foreach (var genre in Genres.Skip(1)) // Skip the first genre in the loop
+                        {
+                            <option value="@genre.Id">@genre.Name</option>
+                        }
+                    }
+                </select>
+                <div class="post-content">
+                    <textarea class="postParagraph" @bind="post.Content" placeholder="Enter Post Paragraph (2000 characters max)" maxlength="2000"></textarea>
+                </div>
+                <button type="submit" class="publish">Create</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    Post post = new Post();
+    private IList<Genre>? Genres;
+    private IList<Post>? Posts;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
+        Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostEndpoint}");
+    }
+
+    private async Task CreatePost()
+    {
+        post.Vote = 0;
+        await _client.PostAsJsonAsync(Endpoints.PostEndpoint, post);
+        _navManager.NavigateTo("/");
+    }
+}

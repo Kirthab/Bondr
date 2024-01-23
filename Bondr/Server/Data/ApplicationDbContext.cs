@@ -22,7 +22,7 @@ namespace Bondr.Server.Data
         public DbSet<Comment> Comment { get; set; }
         public DbSet<Community> Community { get; set; }
         public DbSet<Subscription> Subscription { get; set; }
-        public DbSet<User> User {  get; set; }
+        public DbSet<Visitor> Visitor {  get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
