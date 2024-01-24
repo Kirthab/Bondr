@@ -4,11 +4,15 @@
 @inject HttpClient _client
 @inject HttpInterceptorService _interceptor
 @implements IDisposable
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime js
 
 <div id="container">
     <div id="top">
         <div id="post-container">
-           <h4 id="username">#Username</h4>
+            @if (visitor != null){
+                <h4 id="username">@@@visitor.Username</h4>
+            }
             @if (Post != null)
             {
                 <h1 id="title">@Post.Title</h1>
@@ -18,6 +22,10 @@
                     <p id="vote-count">@Post.Vote</p>
                     <button id="arrow-button" @onclick="Downvote">&#x1F847;</button>
                     <button id="add-comment" @onclick="ToggleDropdown" >Add Comment &#43;</button>
+                    @if(@visitor.Id == @Post.UserId){
+                        <button id="edit-post" @onclick="ToggleDropdownEdit">Edit Post</button>
+                        <button id="del-post" @onclick="DeletePost">Delete Post</button>
+                    }
                 </div>
             }
             else
@@ -28,15 +36,43 @@
     </div>
     @if (ShowDiv)
     {
-        <EditForm Model="@comment" OnValidSubmit="CreateComment">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+        if(WhichDiv == 1){
+            <EditForm Model="@comment" OnValidSubmit="CreateComment">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-            <div class="collapsible-create-comment">
-                <textarea class="comment-para" @bind="comment.Text" placeholder="Enter Comment (2000 characters max)" maxlength="2000"></textarea>
-                <button type="submit" id="upload-comment">Submit</button>
-            </div>
-        </EditForm>
+                <div class="collapsible-create-comment">
+                    <textarea class="comment-para" @bind="comment.Text" placeholder="Enter Comment (2000 characters max)" maxlength="2000"></textarea>
+                    <button type="submit" id="upload-comment">Submit</button>
+                </div>
+            </EditForm>
+        }
+        else if(WhichDiv == 2)
+        {
+            <EditForm Model="@Post" OnValidSubmit="EditPost">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="collapsible-create-comment">
+                    <textarea class="edit-title" @bind="editPost.Title" placeholder="Enter Title"></textarea>
+                    <textarea class="edit-para" @bind="editPost.Content" placeholder="Enter Comment (2000 characters max)" maxlength="2000"></textarea>
+                    <button type="submit" id="upload-comment">Update</button>
+                </div>
+            </EditForm>
+        }
+        else if(WhichDiv == 999)
+        {
+            <EditForm Model="@comment" OnValidSubmit="@(async () => await UpdateComment(comment.Id))">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="collapsible-create-comment">
+                    <textarea class="comment-para" @bind="comment.Text" placeholder="Enter Comment (2000 characters max)" maxlength="2000"></textarea>
+                    <button type="submit" @onclick="@(()=>UpdateComment(comment.Id))" id="upload-comment">Update</button>
+                </div>
+            </EditForm>
+
+        }
     }
     <div id="comments-container">
         @if (Comments == null || !Comments.Any())
@@ -50,8 +86,9 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Title</th>
-                        <th>Vote</th>
+                        <th id="headerNon">Title</th>
+                        <th style="width: 300px;" colspan="10"></th>
+                        <th id="voteNon">Vote</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,7 +96,18 @@
                     {
                         <tr>
                             <td>@comment.Text</td>
-                            <td>@comment.Vote</td>
+                            <td colspan="10" style="text-align: right;">
+                                @if (@visitor.Id == @comment.UserId)
+                                {
+                                    <button id="edit" @onclick="@(()=>EditComment(comment.Id))">Edit</button>
+                                    <button id="delete" @onclick="@(()=>DeleteComment(comment.Id))">Delete</button>
+                                }
+                            </td>
+                            <td>
+                                <button id="arrow-button" @onclick="@(()=>CommentUpvote(comment.Id))">&#129093;</button>
+                                @comment.Vote
+                                <button id="arrow-button" @onclick="@(()=>CommentDownvote(comment.Id))">&#x1F847;</button>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -86,15 +134,25 @@
     private List<Comment> DisplayedComments;
     private string newCommentText;
     private bool ShowDiv = false;
+    private int WhichDiv = 0;
+    private Post editPost = new Post();
+    private Comment updateComment = new Comment();
 
     private int commentsPerPage = 20;
     private int currentPage = 1;
     private int totalPages => (int)Math.Ceiling((double)(Comments?.Count ?? 0) / commentsPerPage);
     private bool IsFirstPage => currentPage == 1;
     private bool IsLastPage => currentPage == totalPages;
+    private IList<Visitor>? Visitors;
+    private Visitor visitor;
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+        visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
+
         try
         {
             // Use postId to construct the URL for the specific post
@@ -158,7 +216,41 @@
 
     private void ToggleDropdown()
     {
-        ShowDiv = !ShowDiv;
+        if (ShowDiv == true)
+        {
+            if (WhichDiv == 2)
+            {
+                WhichDiv = 1;
+            }
+            else
+            {
+                ShowDiv = !ShowDiv;
+            }
+        }
+        else
+        {
+            ShowDiv = true;
+            WhichDiv = 1;
+        }
+    }
+    private void ToggleDropdownEdit()
+    {
+        if (ShowDiv == true)
+        {
+            if (WhichDiv == 1)
+            {
+                WhichDiv = 2;
+            }
+            else if(WhichDiv == 2)
+            {
+                ShowDiv = !ShowDiv;
+            }
+        }
+        else
+        {
+            ShowDiv = true;
+            WhichDiv = 2;
+        }
     }
 
     public void Dispose()
@@ -169,17 +261,65 @@
     private async Task Upvote()
     {
         Post.Vote = Post.Vote + 1;
+        // Send the update to the server
+        await _client.PutAsJsonAsync($"{Endpoints.PostEndpoint}/{Post.Id}", Post);
     }
 
     private async Task Downvote()
     {
         Post.Vote = Post.Vote - 1;
+        await _client.PutAsJsonAsync($"{Endpoints.PostEndpoint}/{Post.Id}", Post);
+    }
+
+    private async Task CommentUpvote(int commentId)
+    {
+        updateComment = await _client.GetFromJsonAsync<Comment>($"{Endpoints.CommentsEndpoint}/{commentId}");
+        updateComment.Vote = updateComment.Vote + 1;
+
+        // Send the update to the server
+        await _client.PutAsJsonAsync($"{Endpoints.CommentsEndpoint}/{commentId}", updateComment);
+
+        AllComments = await _client.GetFromJsonAsync<List<Comment>>(Endpoints.CommentsEndpoint);
+        Comments = new List<Comment>();
+
+        foreach (var item in AllComments)
+        {
+            if (item.PostId == Post.Id)
+            {
+                Comments.Add(item);
+            }
+        }
+
+        UpdateDisplayedComments();
+    }
+
+    private async Task CommentDownvote(int commentId)
+    {
+        updateComment = await _client.GetFromJsonAsync<Comment>($"{Endpoints.CommentsEndpoint}/{commentId}");
+        updateComment.Vote = updateComment.Vote - 1;
+
+        // Send the update to the server
+        await _client.PutAsJsonAsync($"{Endpoints.CommentsEndpoint}/{commentId}", updateComment);
+
+        AllComments = await _client.GetFromJsonAsync<List<Comment>>(Endpoints.CommentsEndpoint);
+        Comments = new List<Comment>();
+
+        foreach (var item in AllComments)
+        {
+            if (item.PostId == Post.Id)
+            {
+                Comments.Add(item);
+            }
+        }
+
+        UpdateDisplayedComments();
     }
 
     private async Task CreateComment()
     {
         comment.Vote = 0;
         comment.PostId = Post.Id;
+        comment.UserId = visitor.Id;
 
         try
         {
@@ -191,11 +331,85 @@
 
             // Update displayed comments
             UpdateDisplayedComments();
+            ShowDiv = false;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error creating comment: {ex.Message}");
         }
+    }
+    private async Task DeletePost()
+    {
+        var id = Post.Id;
+        var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete this post?");
+        if (confirm)
+        {
+            await _client.DeleteAsync($"{Endpoints.PostEndpoint}/{id}");
+            await OnInitializedAsync();
+            _navManager.NavigateTo("/");
+        }
+    }
+    private async Task DeleteComment(int commentId)
+    {
+        var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete this comment?");
+
+        if (confirm)
+        {
+            try
+            {
+                // Send a DELETE request to the server to delete the comment
+                await _client.DeleteAsync($"{Endpoints.CommentsEndpoint}/{commentId}");
+
+                // Remove the deleted comment from the local list
+                var deletedComment = Comments.FirstOrDefault(c => c.Id == commentId);
+                if (deletedComment != null)
+                {
+                    Comments.Remove(deletedComment);
+                }
+
+                // Update displayed comments
+                UpdateDisplayedComments();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting comment: {ex.Message}");
+            }
+        }
+    }
+    private async Task EditPost()
+    {
+        Post.Title = editPost.Title;
+        Post.Content = editPost.Content;
+
+        // Send the update to the server
+        await _client.PutAsJsonAsync($"{Endpoints.PostEndpoint}/{Post.Id}", Post);
+        ShowDiv = false;
+    }
+    private async Task EditComment(int commentId)
+    {
+        WhichDiv = 999;
+        ShowDiv = true;
+        comment = await _client.GetFromJsonAsync<Comment>($"{Endpoints.CommentsEndpoint}/{commentId}");
+    }
+
+    private async Task UpdateComment(int commentId)
+    {
+        // Send the update to the server using the correct endpoint
+        await _client.PutAsJsonAsync($"{Endpoints.CommentsEndpoint}/{commentId}", comment);
+        ShowDiv = false;
+
+        AllComments = await _client.GetFromJsonAsync<List<Comment>>(Endpoints.CommentsEndpoint);
+        Comments = new List<Comment>();
+
+        foreach (var item in AllComments)
+        {
+            if (item.PostId == Post.Id)
+            {
+                Comments.Add(item);
+            }
+        }
+
+        UpdateDisplayedComments();
     }
 
 }

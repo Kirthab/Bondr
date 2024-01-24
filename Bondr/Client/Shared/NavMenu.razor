@@ -1,53 +1,62 @@
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
+@inject HttpClient _client
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
-                        <p class="oi" aria-hidden="true"></p> @context.User.Identity?.Name
-                    </NavLink>
+                    @if (visitor != null)
+                    {
+                        <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
+                            <p class="oi" aria-hidden="true"></p> @visitor.Username
+                        </NavLink>
+                    }
                 </div>
-                @* Logout Page *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="#" @onclick="BeginLogOut" Match="NavLinkMatch.All">
                         <p class="oi" aria-hidden="true"></p> Log out
                     </NavLink>
                 </div>
-                @* Settings Page *@
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="settings">
-                        <p class="oi" aria-hidden="true"></p> Settings
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <p class="oi" aria-hidden="true"></p> Home
                     </NavLink>
                 </div>
-                @* Communites Discovery Page *@
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="communities"> 
-                        <p class="oi" aria-hidden="true"></p> Communities
+                    <NavLink class="nav-link" href="discover">
+                        <p class="oi" aria-hidden="true"></p> Discover
                     </NavLink>
                 </div>
-                @* Create Community Page *@
+
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="createcommunity">
                         <p class="oi" aria-hidden="true"></p> Create Community
                     </NavLink>
                 </div>
-                @* Community Forum Page *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="communityforum">
                         <p class="oi" aria-hidden="true"></p> Forums
                     </NavLink>
                 </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="help">
+                        <p class="oi" aria-hidden="true"></p> Help
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="settings">
+                        <p class="oi" aria-hidden="true"></p> Settings
+                    </NavLink>
+                </div>
             </Authorized>
             <NotAuthorized>
-                @* Register *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/register" Match="NavLinkMatch.All">
                         <p class="oi" aria-hidden="true"></p> Register
                     </NavLink>
                 </div>
-                @* Login *@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/login" Match="NavLinkMatch.All">
                         <p class="oi" aria-hidden="true"></p> Log in
@@ -55,36 +64,40 @@
                 </div>
             </NotAuthorized>
         </AuthorizeView>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <p class="oi" aria-hidden="true"></p> Home
-            </NavLink>
-        </div>
-        @* Discover Page *@
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="discover">
-                <p class="oi" aria-hidden="true"></p> Discover
-            </NavLink>
-        </div>
-        @* Help Page *@
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="help">
-                <p class="oi" aria-hidden="true"></p> Help
-            </NavLink>
-        </div>
-      
     </nav>
 </div>
 
+<div hidden>
+[Authorize]
 @code {
     private bool collapseNavMenu = false;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private IList<Visitor>? Visitors;
+    private Visitor visitor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+            visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("User not logged in yet.");
+        }
+    }
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
     private void BeginLogOut(MouseEventArgs args)
     {
         Navigation.NavigateToLogout("authentication/logout", "/");
     }
 }
+</div>
