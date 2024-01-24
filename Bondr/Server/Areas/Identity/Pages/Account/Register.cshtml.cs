@@ -20,6 +20,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
+using Bondr.Shared.Domain;
+using Bondr.Server.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bondr.Server.Areas.Identity.Pages.Account
 {
@@ -32,6 +35,7 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _dbContext;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -39,8 +43,10 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext dbContext)
         {
+            _dbContext = dbContext;
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
@@ -153,6 +159,19 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    // Create and save Visitor entity
+                    var visitor = new Visitor
+                    {
+                        Username = Input.Username,
+                        Gender = Input.Gender,
+                        Age = Input.Age,
+                        Email = Input.Email,
+                        Password = Input.Password
+                    };
+
+                    _dbContext.Visitor.Add(visitor);
+                    await _dbContext.SaveChangesAsync();
+
                     if (!await _roleManager.RoleExistsAsync("User"))
                     {
                         await _roleManager.CreateAsync(new IdentityRole("User"));

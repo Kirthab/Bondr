@@ -1,34 +1,92 @@
-﻿@page "/settings"
+﻿@inject NavigationManager _navManager
+@inject HttpClient _client
+@inject HttpInterceptorService _interceptor
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div id="container">
-    <div class="header">
+@page "/settings"
+
+<EditForm Model="@visitor" OnValidSubmit="UpdateUser">
+    <div id="container">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="header">
             <img src="../Images/Pages/settingsBanner.png">
-    </div>
-
-    <form action="#" method="post">
+        </div>
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username" placeholder="@visitor?.Username" @bind="visitor.Username" required>
 
         <label for="password">Password:</label>
-        <input type="text" id="password" name="password" required>
+        <input type="text" id="password" name="password" placeholder="@GenerateAsterisks(visitor?.Password)" @bind="visitor.Password" required>
 
         <label for="confirmPassword">Confirm Password:</label>
-        <input type="text" id="confirmPassword" name="confirmPassword" required>
+        <input type="text" id="confirmPassword" name="confirmPassword" placeholder="@GenerateAsterisks(visitor?.Password)" required>
 
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email" placeholder="@visitor?.Email" required>
 
         <label for="notification">Gender (Optional):</label>
-        <select id="notification" name="notification">
-            <option value="nil">Prefer not to say</option>
+        <select id="notification" name="notification" @bind="visitor.Gender">
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
         </select>
-        <button class = "bt1" type="submit">Save Changes</button>
-    </form>
+        <button class="bt1" type="submit">Save Changes</button>
+
         <div class="userImg">
             <button>select image</button>
         </div>
-        
-</div>
+    </div>
+</EditForm>
+
+@code {
+    private IList<Visitor>? Visitors;
+    private Visitor visitor;
+    private string password;
+    private string confirmPassword;
+
+    private async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var currentUser = authState.User;
+            Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+            visitor = Visitors.FirstOrDefault(item => item.Email == currentUser.Identity?.Name);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("User not logged in yet.");
+        }
+    }
+
+    private string GenerateAsterisks(string password)
+    {
+        return new string('*', password?.Length ?? 0);
+    }
+
+    private async Task UpdateUser()
+    {
+        try
+        {
+            // Validate passwords match before updating
+            if (password == confirmPassword)
+            {
+                // Make sure your Visitor class has an 'Id' property
+                var id = visitor.Id;
+
+                await _client.PutAsJsonAsync($"{Endpoints.VisitorEndpoint}/{id}", visitor);
+            }
+            else
+            {
+                // Handle password mismatch error
+                Console.WriteLine("Passwords do not match.");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle other errors
+            Console.WriteLine($"Error updating visitor: {ex.Message}");
+        }
+    }
+}

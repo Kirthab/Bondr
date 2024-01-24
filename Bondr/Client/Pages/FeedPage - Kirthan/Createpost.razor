@@ -1,5 +1,6 @@
 ﻿@page "/feed/newpost"
 
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager _navManager
 @inject HttpClient _client
 
@@ -34,21 +35,31 @@
     </div>
 </EditForm>
 
-@code {
-    Post post = new Post();
-    private IList<Genre>? Genres;
-    private IList<Post>? Posts;
+<div hidden>
+[Authorize]
+    @code {
+        Post post = new Post();
+        private IList<Genre>? Genres;
+        private IList<Post>? Posts;
+        private IList<Visitor>? Visitors;
+        private Visitor visitor;
 
-    protected async override Task OnInitializedAsync()
-    {
-        Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
-        Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostEndpoint}");
-    }
+        protected async override Task OnInitializedAsync()
+        {
+            Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
+            Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostEndpoint}");
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+            visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
+        }
 
-    private async Task CreatePost()
-    {
-        post.Vote = 0;
+        private async Task CreatePost()
+        {
+            post.UserId = visitor.Id;
+            post.Vote = 0;
         await _client.PostAsJsonAsync(Endpoints.PostEndpoint, post);
         _navManager.NavigateTo("/");
     }
 }
+</div>
