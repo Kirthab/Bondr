@@ -16,9 +16,7 @@
                 <select class="postGenreDropdown" @bind="post.GenreId" @oninput="UpdateGenreId">
                     @if (Genres != null && Genres.Any())
                     {
-                        var firstGenre = Genres.First(); // Get the first genre
-                        <option value="@firstGenre.Id" selected>@firstGenre.Name</option>
-                        @foreach (var genre in Genres.Skip(1)) // Skip the first genre in the loop
+                        foreach (var genre in Genres)
                         {
                             <option value="@genre.Id">@genre.Name</option>
                         }
@@ -34,7 +32,7 @@
 </EditForm>
 
 <div hidden>
-[Authorize]
+    [Authorize]
     @code {
         Post post = new Post();
         private IList<Genre>? Genres;
@@ -42,7 +40,7 @@
         private IList<Visitor>? Visitors;
         private Visitor visitor;
 
-        private void UpdateGenreId(ChangeEventArgs e)
+        private async void UpdateGenreId(ChangeEventArgs e)
         {
             if (int.TryParse(e.Value.ToString(), out var genreId))
             {
@@ -58,14 +56,24 @@
             var user = authState.User;
             Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
             visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
+
+            // Set default genre ID
+            post.GenreId = GetDefaultGenreId();
         }
+
+        private int GetDefaultGenreId()
+        {
+            var defaultGenre = Genres?.FirstOrDefault();
+            return defaultGenre?.Id ?? 0; // Use a default value if not found
+        }
+
 
         private async Task CreatePost()
         {
             post.UserId = visitor.Id;
             post.Vote = 0;
-        await _client.PostAsJsonAsync(Endpoints.PostEndpoint, post);
-        _navManager.NavigateTo("/");
+            await _client.PostAsJsonAsync(Endpoints.PostEndpoint, post);
+            _navManager.NavigateTo("/");
+        }
     }
-}
 </div>

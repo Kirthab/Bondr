@@ -1,0 +1,169 @@
+﻿@page "/genrecontroller"
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager _navManager
+@inject HttpClient _client
+@inject IJSRuntime js
+@inject IJSRuntime JSRuntime
+
+<div id="container">
+    <div class="post">
+        <div class="post-header">
+            @if (toggleEdit)
+            {
+                <EditForm Model="@genre" OnValidSubmit="CreateGenre">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <h1>Genre Creator</h1>
+                    <input type="text" class="genreName" @bind="genre.Name" placeholder="Enter Genre Name">
+                    <input type="text" class="genreDesc" @bind="genre.Description" placeholder="Enter Description">
+                    <button type="submit" class="publish">Create</button>
+                </EditForm>
+                    <div class="options">
+                        @if (buttonToggle)
+                        {
+                            <button id="togglecreate" @onclick="toggleCreate" disabled>Create Page</button>
+                            <button id="toggleedit" @onclick="toggleEditPage">Edit Page</button>
+                        }
+                        else{
+                            <button id="togglecreate" @onclick="toggleCreate">Create Page</button>
+                            <button id="toggleedit" @onclick="toggleEditPage" disabled>Edit Page</button>
+                            }
+                        </div>
+            }
+            else
+            {
+                <EditForm Model="@genreEdit" OnValidSubmit= "genericFunc">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                    <h1>Genre Editor</h1>
+                    <select class="postGenreDropdown" @oninput="UpdateSelectedGenre">
+                        @if (Genres != null && Genres.Any())
+                        {
+                            foreach (var g in Genres)
+                            {
+                                <option value="@g.Id">@g.Name</option>
+                            }
+                        }
+                    </select>
+                    <input type="text" class="genreName" @bind="genreEdit.Name" placeholder="@genreEdit.Name">
+                    <input type="text" class="genreDesc" @bind="genreEdit.Description" placeholder="@genreEdit.Description">
+                    <div class="fordel">
+                        <button type="submit" @onclick="@(()=>UpdateGenre(genreEdit.Id))"  class="publish">Confirm Edit</button>
+                        <button class="delete" @onclick="deleteGenre">Delete</button>
+                    </div>
+                </EditForm>
+                    <div class="options">
+                        @if (buttonToggle)
+                        {
+                            <button id="togglecreate" @onclick="toggleCreate" disabled>Create Page</button>
+                            <button id="toggleedit" @onclick="toggleEditPage">Edit Page</button>
+                        }
+                        else
+                        {
+                            <button id="togglecreate" @onclick="toggleCreate">Create Page</button>
+                            <button id="toggleedit" @onclick="toggleEditPage" disabled>Edit Page</button>
+                        }
+                    </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+
+
+@code {
+
+    Genre genre = new Genre();
+    Genre genreEdit = new Genre();
+    private IList<Genre>? Genres;
+    private bool check = false;
+    private bool toggleEdit = true;
+    private bool buttonToggle = true;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
+
+        // Check if there are genres and set genreEdit based on the first genre
+        if (Genres != null && Genres.Any())
+        {
+            var firstGenreId = Genres.First().Id;
+            genreEdit = await _client.GetFromJsonAsync<Genre>($"{Endpoints.GenresEndpoint}/{firstGenreId}");
+        }
+    }
+
+    private void UpdateSelectedGenre(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out var genreId))
+        {
+            var selectedGenre = Genres.FirstOrDefault(g => g.Id == genreId);
+            if (selectedGenre != null)
+            {
+                genreEdit.Id = selectedGenre.Id;
+                genreEdit.Name = selectedGenre.Name;
+                genreEdit.Description = selectedGenre.Description;
+            }
+        }
+    }
+
+    private async Task CreateGenre()
+    {
+        check = !Genres.Any(g => g.Name.Equals(genre.Name, StringComparison.OrdinalIgnoreCase));
+
+        if (check)
+        {
+            await js.InvokeAsync<object>("alert", "New Genre: " + genre.Name + " added!");
+            await _client.PostAsJsonAsync(Endpoints.GenresEndpoint, genre);
+            Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
+        }
+        else
+        {
+            await js.InvokeAsync<object>("alert", "Genre exists!");
+        }
+        // Clear the fields
+        genre = new Genre();
+    }
+
+    private void toggleCreate()
+    {
+        toggleEdit = true;
+        buttonToggle = true;
+    }
+    private async void toggleEditPage()
+    {
+        toggleEdit = false;
+        buttonToggle = false;
+    }
+
+    private async Task UpdateGenre(int genId)
+    {
+        // Send the update to the server using the correct endpoint
+        await _client.PutAsJsonAsync($"{Endpoints.GenresEndpoint}/{genId}", genreEdit);
+
+        await js.InvokeAsync<object>("alert", "Genre updated!");
+        Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
+    }
+
+    public async Task deleteGenre()
+    {
+        var id = genreEdit.Id;
+        var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete Genre: " + genreEdit.Name+"?");
+        if (confirm)
+        {
+            await _client.DeleteAsync($"{Endpoints.GenresEndpoint}/{id}");
+            await js.InvokeAsync<object>("alert", "Genre Deleted!");
+            Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
+        }
+    }
+
+    private async Task genericFunc()
+    {
+        await JSRuntime.InvokeVoidAsync("location.reload");
+        toggleEdit = true;
+        buttonToggle = true;
+        // Notify the component to re-render
+        StateHasChanged();
+    }
+}
