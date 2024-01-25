@@ -43,40 +43,91 @@
         </div>
     </div>
 
-    <button type="button" class="createPost" @onclick="CreatePost">Create Post <i class="oi oi-plus"></i></button>
-    
-    <div class="feed">
-        @if (Posts == null || !Posts.Any())
+    <div id="selection">
+    <select class="postGenreDropdown" @oninput="Filter">
+        @if (Genres != null && Genres.Any())
         {
-            <div class="alert alert-info">No posts yet</div>
+            <option value="0" >ALL</option>
+            @foreach (var genre in Genres)
+            {
+                <option value="@genre.Id">@genre.Name</option>
+            }
+        }
+    </select>
+    <button type="button" class="createPost" @onclick="CreatePost">Create Post <i class="oi oi-plus"></i></button>
+    </div>
+
+    <div class="feed">
+        @if (filteredGenre){
+            @if (Posts == null || !Posts.Any())
+            {
+                <div class="alert alert-info">No posts yet</div>
+            }
+            else
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th colspan="8" style="text-align: right;">Vote</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var post in DisplayedPosts)
+                        {
+                            <tr>
+                                <td>
+                                    <a href="/post/viewpost/@post.Id" class="post-link">
+                                    <div>
+                                        @post.Title
+                                     </div>
+                                     </a>
+                                 </td>
+                                <td colspan="8" style="text-align: right;">@post.Vote</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br/>
+            }
         }
         else
         {
-            <table>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Vote</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var post in DisplayedPosts)
-                    {
+            @if (Posts == null || !Posts.Any())
+            {
+                <div class="alert alert-info">No posts yet</div>
+            }
+            else
+            {
+                <table>
+                    <thead>
                         <tr>
-                            <td>
-                                <a href="/post/viewpost/@post.Id" class="post-link">
-                                <div>
-                                    @post.Title
-                                 </div>
-                                 </a>
-                             </td>
-                            <td>@post.Vote</td>
+                            <th>Title</th>
+                            <th colspan="8" style="text-align: right;">Vote</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-            <br/>
-            <!-- Pagination controls -->
+                    </thead>
+                    <tbody>
+                        @foreach (var post in DisplayedPosts)
+                        {
+                            @if (post.GenreId == setGenreIdFilter)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="/post/viewpost/@post.Id" class="post-link">
+                                            <div>
+                                                @post.Title
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td colspan="8" style="text-align: right;">@post.Vote</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <br />
+        }
+        <!-- Pagination controls -->
             <div class="pagination">
                 <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
                 <span>Page @currentPage of @totalPages</span>
@@ -98,6 +149,30 @@
 
     private bool IsFirstPage => currentPage == 1;
     private bool IsLastPage => currentPage == totalPages;
+    private IList<Genre>? Genres;
+    private bool filteredGenre = true;
+    private int setGenreIdFilter;
+    private int defaultGenreId;
+
+    private void Filter(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out var genreId))
+        {
+            if (genreId == 0)
+            {
+                // Handle the "ALL" option
+                filteredGenre = true;
+            }
+            else
+            {
+                filteredGenre = false;
+                setGenreIdFilter = genreId;
+                currentPage = 1;
+                defaultGenreId = genreId;
+                UpdateDisplayedPosts();
+            }
+        }
+    }
 
 
     protected override void OnParametersSet()
@@ -137,6 +212,7 @@
     {
         try
         {
+            Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
             Posts = await _client.GetFromJsonAsync<List<Post>>(Endpoints.PostEndpoint);
         }
         catch (Exception ex)

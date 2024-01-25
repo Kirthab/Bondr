@@ -11,7 +11,7 @@
     <div id="top">
         <div id="post-container">
             @if (visitor != null){
-                <h4 id="username">@@@visitor.Username</h4>
+                <h4 id="username">@@@GetUserName()</h4>
             }
             @if (Post != null)
             {
@@ -147,6 +147,7 @@
     private bool IsLastPage => currentPage == totalPages;
     private IList<Visitor>? Visitors;
     private Visitor visitor;
+    Post tPost = new Post();
 
     protected override async Task OnInitializedAsync()
     {
@@ -160,6 +161,7 @@
             // Use postId to construct the URL for the specific post
             string postUrl = $"{Endpoints.PostEndpoint}/{postId}";
             Post = await _client.GetFromJsonAsync<Post>(postUrl);
+            tPost = await _client.GetFromJsonAsync<Post>($"{Endpoints.PostEndpoint}/{postId}");
             Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
 
         }
@@ -200,7 +202,13 @@
             return "Unknown Genre";
         }
     }
-
+    private string GetUserName()
+    {
+        var id = tPost.UserId;
+        var visitor = Visitors.FirstOrDefault(g => g.Id == id);
+        return visitor.Username;
+    }
+    
     private void PreviousPage()
     {
         if (currentPage > 1)
@@ -340,9 +348,16 @@
         try
         {
             await _client.PostAsJsonAsync(Endpoints.CommentsEndpoint, comment);
+            AllComments = await _client.GetFromJsonAsync<List<Comment>>(Endpoints.CommentsEndpoint);
+            Comments = new List<Comment>();
 
-            // Append the new comment to the existing list
-            Comments.Add(comment);
+            foreach (var item in AllComments)
+            {
+                if (item.PostId == Post.Id)
+                {
+                    Comments.Add(item);
+                }
+            }
             comment = new Comment();
 
             // Update displayed comments
@@ -360,6 +375,10 @@
         var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete this post?");
         if (confirm)
         {
+            foreach (var cmt in Comments)
+            {
+                await _client.DeleteAsync($"{Endpoints.CommentsEndpoint}/{cmt.Id}");
+            }
             await _client.DeleteAsync($"{Endpoints.PostEndpoint}/{id}");
             await OnInitializedAsync();
             _navManager.NavigateTo("/");
@@ -394,12 +413,18 @@
     }
     private async Task EditPost()
     {
-        Post.Title = editPost.Title;
-        Post.Content = editPost.Content;
+        try
+        {
+            Post.Title = editPost.Title;
+            Post.Content = editPost.Content;
 
-        // Send the update to the server
-        await _client.PutAsJsonAsync($"{Endpoints.PostEndpoint}/{Post.Id}", Post);
-        ShowDiv = false;
+            // Send the update to the server
+            await _client.PutAsJsonAsync($"{Endpoints.PostEndpoint}/{Post.Id}", Post);
+            ShowDiv = false;
+        }catch(Exception e)
+        {
+            await js.InvokeAsync<object>("alert", "Error editing posts!");
+        }
     }
     private async Task EditComment(int commentId)
     {

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Bondr.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Bondr.Shared.Domain;
 
 namespace Bondr.Server.Areas.Identity.Pages.Account.Manage
 {
@@ -95,11 +96,34 @@ namespace Bondr.Server.Areas.Identity.Pages.Account.Manage
 
             // Delete Visitor
             var visitor = _context.Visitor.FirstOrDefault(v => v.Email == user.Email);
+
             if (visitor != null)
             {
+                var posts = _context.Post.Where(p => p.UserId == visitor.Id).ToList();
+                foreach (var post in posts)
+                {
+                    var comments = _context.Comment.Where(c => c.PostId == post.Id).ToList();
+
+                    foreach (var comment in comments)
+                    {
+                        _context.Comment.Remove(comment);
+                    }
+
+                    // Save changes for comments within the inner loop
+                    await _context.SaveChangesAsync();
+
+                    _context.Post.Remove(post);
+                }
+
+                // Save changes for posts outside the outer loop
+                await _context.SaveChangesAsync();
+
                 _context.Visitor.Remove(visitor);
+                // Save changes for visitor outside the loop
                 await _context.SaveChangesAsync();
             }
+
+
 
             var result = await _userManager.DeleteAsync(user);
             var userId = await _userManager.GetUserIdAsync(user);

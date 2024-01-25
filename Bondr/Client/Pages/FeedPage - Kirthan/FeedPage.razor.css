@@ -74,11 +74,10 @@ li {
 .createPost {
     margin-top: 20px;
     max-width: 100%;
-    margin-left: 1030px; /* This pushes the element to the right */
     padding: 0px 20px 5px 15px;
     background: #e69812;
     border-radius: 5px;
-    font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+    font-family: "Noto Sans", sans-serif;
     font-size: large;
     font-weight: 700;
     line-height: 0px;
@@ -92,8 +91,35 @@ li {
     color: #fff;
 }
 
-/*Card CSS here*/
+.postGenreDropdown {
+    margin-top: 20px;
+    margin-right: 10px;
+    max-width: 100%;
+    width: 150px;
+    background: transparent;
+    border-radius: 5px;
+    font-family: "Noto Sans", sans-serif;
+    font-size: large;
+    font-weight: 700;
+    line-height: 0px;
+    border: 2px solid #FF005C;
+    white-space: nowrap; /* Prevent text wrapping */
+    height: 48px;
+    text-align: center;
+    font-size: large;
+    color: #fff;
+}
+    .postGenreDropdown option {
+        background-color: black; /* Background color for each option */
+        color: #fff; /* Text color for each option */
+    }
 
+#selection {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/*Card CSS here*/
 p {
     color: #fff;
     font-size: 20px;
