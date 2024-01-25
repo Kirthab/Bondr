@@ -51,25 +51,6 @@
         box-shadow: white 0px 0px 3px 2px;
     }
 
-.userImg {
-    position:absolute;
-    width: 250px;
-    height: 250px;
-    top: 200px;
-    right: 110px;
-    border: solid 3px white;
-}
-
-.userImg button{
-    position:absolute;
-    top: 200px;
-    width: 100%;
-    right: 0px;
-    
-}
-.userImg button:hover {
-    box-shadow: #EAB003 0px 0px 5px 3px;
-}
 
 @media (max-width:768px) {
     #container {
@@ -141,3 +122,23 @@ button {
     inherits: true;
     initial-value: 0turn;
 }
+
+#email {
+    user-select: none;
+}
+
+#password{
+    user-select: none;
+}
+
+.togglepassword {
+    border: solid 1px white;
+    padding: 10px;
+    color: white;
+    user-select: none;
+}
+    .togglepassword:hover {
+        color: yellow;
+        border: solid 1px yellow;
+        box-shadow: yellow 0px 0px 3px 2px;
+    }

@@ -5,6 +5,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Bondr.Server.Data;
 using Bondr.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +19,18 @@ namespace Bondr.Server.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<ChangePasswordModel> _logger;
+        private readonly ApplicationDbContext _context; // Add ApplicationDbContext as a parameter
 
         public ChangePasswordModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<ChangePasswordModel> logger)
+            ILogger<ChangePasswordModel> logger,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _context = context; // Assign the injected context to the private field
         }
 
         /// <summary>
@@ -116,6 +120,15 @@ namespace Bondr.Server.Areas.Identity.Pages.Account.Manage
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
                 return Page();
+            }
+
+            // Update Visitor Password
+            var visitor = _context.Visitor.FirstOrDefault(v => v.Email == user.Email);
+            if (visitor != null)
+            {
+                visitor.Password = Input.NewPassword; // Set the visitor's password to the new password
+                _context.Update(visitor); // Mark the entity as modified
+                await _context.SaveChangesAsync(); // Save the changes to the database
             }
 
             await _signInManager.RefreshSignInAsync(user);

@@ -13,13 +13,11 @@
             <div class="post-header">
                 <h1>NEW POST</h1>
                 <input type="text" class="postTitle" @bind="post.Title" placeholder="Enter Post Title">
-                <select class="postGenreDropdown" @bind="post.GenreId">
+                <select class="postGenreDropdown" @bind="post.GenreId" @oninput="UpdateGenreId">
                     @if (Genres != null && Genres.Any())
                     {
                         var firstGenre = Genres.First(); // Get the first genre
-
                         <option value="@firstGenre.Id" selected>@firstGenre.Name</option>
-
                         @foreach (var genre in Genres.Skip(1)) // Skip the first genre in the loop
                         {
                             <option value="@genre.Id">@genre.Name</option>
@@ -43,6 +41,14 @@
         private IList<Post>? Posts;
         private IList<Visitor>? Visitors;
         private Visitor visitor;
+
+        private void UpdateGenreId(ChangeEventArgs e)
+        {
+            if (int.TryParse(e.Value.ToString(), out var genreId))
+            {
+                post.GenreId = genreId;
+            }
+        }
 
         protected async override Task OnInitializedAsync()
         {

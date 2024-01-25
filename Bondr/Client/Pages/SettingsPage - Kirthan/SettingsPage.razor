@@ -2,91 +2,108 @@
 @inject HttpClient _client
 @inject HttpInterceptorService _interceptor
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime js
+@inject IJSRuntime JSRuntime
 
 @page "/settings"
 
-<EditForm Model="@visitor" OnValidSubmit="UpdateUser">
-    <div id="container">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+<div class="header">
+    <img src="../Images/Pages/settingsBanner.png">
+</div>
 
-        <div class="header">
-            <img src="../Images/Pages/settingsBanner.png">
+<EditForm Model="EditVisitor" OnValidSubmit="UpdateUser">
+    @if (EditVisitor != null)
+    {
+        <div id="container">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="@EditVisitor?.Username" @bind="EditVisitor.Username" required>
+
+            <label for="status">Status:</label>
+            <input type="text" id="status" name="status" placeholder="@EditVisitor?.Status" @bind="EditVisitor.Status">
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="@EditVisitor?.Email" @bind="EditVisitor.Email" readonly>
+
+            <label for="password">Password:</label>
+            <input type="text" id="password" name="password" value="@text" readonly>
+            <span class='togglepassword' @onclick="TogglePass">@text2</span>
+
+            <label for="notification">Gender (Optional):</label>
+            <select id="notification" name="notification" @bind="EditVisitor.Gender">
+                <option value="Male" selected="@(EditVisitor.Gender == "Male")">Male</option>
+                <option value="Female" selected="@(EditVisitor.Gender == "Female")">Female</option>
+                <option value="Other" selected="@(EditVisitor.Gender == "Other")">Other</option>
+            </select>
+
+            <label for="age">BirthDay</label>
+            <input id="age" name="age" class="form-control" type="date" @oninput="UpdateAgeFromDate" />
+
+            <button class="bt1" type="submit">Save Changes</button>
         </div>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" placeholder="@visitor?.Username" @bind="visitor.Username" required>
 
-        <label for="password">Password:</label>
-        <input type="text" id="password" name="password" placeholder="@GenerateAsterisks(visitor?.Password)" @bind="visitor.Password" required>
-
-        <label for="confirmPassword">Confirm Password:</label>
-        <input type="text" id="confirmPassword" name="confirmPassword" placeholder="@GenerateAsterisks(visitor?.Password)" required>
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" placeholder="@visitor?.Email" required>
-
-        <label for="notification">Gender (Optional):</label>
-        <select id="notification" name="notification" @bind="visitor.Gender">
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-        </select>
-        <button class="bt1" type="submit">Save Changes</button>
-
-        <div class="userImg">
-            <button>select image</button>
-        </div>
-    </div>
+    }
 </EditForm>
 
 @code {
     private IList<Visitor>? Visitors;
-    private Visitor visitor;
-    private string password;
-    private string confirmPassword;
+    private Visitor EditVisitor = new Visitor();
+    private string text;
+    private string text2 = "Show Password";
 
-    private async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var currentUser = authState.User;
-            Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
-            visitor = Visitors.FirstOrDefault(item => item.Email == currentUser.Identity?.Name);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("User not logged in yet.");
-        }
-    }
-
-    private string GenerateAsterisks(string password)
-    {
-        return new string('*', password?.Length ?? 0);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+        EditVisitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name) ?? new Visitor();
+        text = EditVisitor.Password;
     }
 
     private async Task UpdateUser()
     {
-        try
-        {
-            // Validate passwords match before updating
-            if (password == confirmPassword)
-            {
-                // Make sure your Visitor class has an 'Id' property
-                var id = visitor.Id;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-                await _client.PutAsJsonAsync($"{Endpoints.VisitorEndpoint}/{id}", visitor);
-            }
-            else
-            {
-                // Handle password mismatch error
-                Console.WriteLine("Passwords do not match.");
-            }
-        }
-        catch (Exception ex)
+        var id = EditVisitor.Id;
+        await _client.PutAsJsonAsync($"{Endpoints.VisitorEndpoint}/{id}", EditVisitor);
+
+        await js.InvokeAsync<object>("alert", "Your profile has been updated");
+        await JSRuntime.InvokeVoidAsync("location.reload");
+        _navManager.NavigateTo("/");
+    }
+
+    private async Task TogglePass()
+    {
+        if (text == EditVisitor.Password)
         {
-            // Handle other errors
-            Console.WriteLine($"Error updating visitor: {ex.Message}");
+            text = new string('*', EditVisitor.Password?.Length ?? 0);
+            text2 = "Show Password";
+        }
+        else
+        {
+            text = EditVisitor.Password;
+            text2 = "Hide Password";
+        }
+    }
+
+    private void UpdateAgeFromDate(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value.ToString(), out DateTime dob))
+        {
+            DateTime today = DateTime.Today;
+            int age = today.Year - dob.Year;
+
+            // Check if the birthday has occurred this year
+            if (dob.Date > today.AddYears(-age))
+            {
+                age--;
+            }
+
+            EditVisitor.Age = age;
         }
     }
 }
+

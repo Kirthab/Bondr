@@ -11,31 +11,6 @@
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <h2>Create a new account.</h2>
             <hr />
-
-            <!-- Username field -->
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Username" class="form-control" autocomplete="username" aria-required="true" placeholder="username" />
-                <label asp-for="Input.Username">Username</label>
-                <span asp-validation-for="Input.Username" class="text-danger"></span>
-            </div>
-            <!-- Gender field -->
-            <div class="form-floating mb-3">
-                <select asp-for="Input.Gender" class="form-control">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Others">Others</option>
-                </select>
-                <label asp-for="Input.Gender">Gender</label>
-                <span asp-validation-for="Input.Gender" class="text-danger"></span>
-            </div>
-
-            <!-- Birthdate field -->
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Age" class="form-control" type="date" />
-                <label asp-for="Input.Age">Date of Birth</label>
-                <span asp-validation-for="Input.Age" class="text-danger"></span>
-            </div>
-
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />

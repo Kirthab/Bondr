@@ -16,6 +16,7 @@
             @if (Post != null)
             {
                 <h1 id="title">@Post.Title</h1>
+                <h4 id="title-genre">#@GetGenreName(Post.GenreId)</h4>
                 <p id="content">@Post.Content</p>
                 <div id="post-buttons">
                     <button id="arrow-button" @onclick="Upvote">&#129093;</button>
@@ -132,6 +133,7 @@
     private List<Comment>? Comments;
     private List<Comment>? AllComments;
     private List<Comment> DisplayedComments;
+    private IList<Genre>? Genres;
     private string newCommentText;
     private bool ShowDiv = false;
     private int WhichDiv = 0;
@@ -158,6 +160,7 @@
             // Use postId to construct the URL for the specific post
             string postUrl = $"{Endpoints.PostEndpoint}/{postId}";
             Post = await _client.GetFromJsonAsync<Post>(postUrl);
+            Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
 
         }
         catch (Exception ex)
@@ -182,6 +185,19 @@
         {
             Console.WriteLine($"Error fetching comments: {ex.Message}");
             Comments = new List<Comment>();
+        }
+    }
+
+    private string GetGenreName(int? genreId)
+    {
+        if (genreId.HasValue)
+        {
+            var genre = Genres?.FirstOrDefault(g => g.Id == genreId.Value);
+            return genre?.Name ?? "Unknown Genre";
+        }
+        else
+        {
+            return "Unknown Genre";
         }
     }
 

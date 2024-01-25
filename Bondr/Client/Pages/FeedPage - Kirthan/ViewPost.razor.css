@@ -26,6 +26,18 @@
     font-family: "Arial Black", sans-serif;
 }
 
+#title-genre {
+    color: #faf9e3;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 12px;
+    border: solid 1px yellow;
+    border-radius: 10px;
+    width: fit-content;
+    height: fit-content;
+    padding: 5px;
+}
+
+
 #content {
     color: #fafafa;
     font-family: "Trebuchet MS", sans-serif;
