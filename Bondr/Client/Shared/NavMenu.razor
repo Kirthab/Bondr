@@ -1,18 +1,17 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
 @inject HttpClient _client
+@inject IJSRuntime js
+@inject IJSRuntime JSRuntime
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
-                    @if (visitor != null)
-                    {
-                        <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
-                            <p class="oi" aria-hidden="true"></p> @visitor.Username
-                        </NavLink>
-                    }
+                    <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
+                        <p class="oi" aria-hidden="true"></p> @Visitors?.FirstOrDefault(v => v.Email == context.User.Identity?.Name)?.Username
+                    </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="#" @onclick="BeginLogOut" Match="NavLinkMatch.All">
@@ -67,13 +66,11 @@
     </nav>
 </div>
 
-<div hidden>
-[Authorize]
 @code {
     private bool collapseNavMenu = false;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     private IList<Visitor>? Visitors;
-    private Visitor visitor;
+    private Visitor visitor = new Visitor();
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,7 +79,7 @@
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
             Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
-            visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
+            visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name) ?? new Visitor();
         }
         catch (Exception ex)
         {
@@ -100,4 +97,3 @@
         Navigation.NavigateToLogout("authentication/logout", "/");
     }
 }
-</div>

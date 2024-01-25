@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 using Bondr.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Bondr.Server.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Bondr.Server.Areas.Identity.Pages.Account.Manage
@@ -18,15 +21,18 @@ namespace Bondr.Server.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
+        private readonly ApplicationDbContext _context; // Add ApplicationDbContext as a parameter
 
         public DeletePersonalDataModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<DeletePersonalDataModel> logger)
+            ILogger<DeletePersonalDataModel> logger,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _context = context; // Assign the injected context to the private field
         }
 
         /// <summary>
@@ -85,6 +91,14 @@ namespace Bondr.Server.Areas.Identity.Pages.Account.Manage
                     ModelState.AddModelError(string.Empty, "Incorrect password.");
                     return Page();
                 }
+            }
+
+            // Delete Visitor
+            var visitor = _context.Visitor.FirstOrDefault(v => v.Email == user.Email);
+            if (visitor != null)
+            {
+                _context.Visitor.Remove(visitor);
+                await _context.SaveChangesAsync();
             }
 
             var result = await _userManager.DeleteAsync(user);

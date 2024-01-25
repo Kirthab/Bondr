@@ -90,32 +90,6 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            [Required]
-            [Display(Name = "Username")]
-            public string Username { get; set; }
-            [Required]
-            [Display(Name = "Gender")]
-            public string Gender { get; set; }
-            [Required]
-            [Display(Name = "Birthdate")]
-            [DataType(DataType.Date)]
-            public DateTime Birthdate { get; set; }
-            // Property for calculated age
-            public int Age
-            {
-                get
-                {
-                    DateTime currentDate = DateTime.Now;
-                    int age = currentDate.Year - Birthdate.Year;
-                    if (currentDate < Birthdate.AddYears(age))
-                    {
-                        age--;
-                    }
-                    return age;
-                }
-            }
-
-
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -135,7 +109,6 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }
-
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -162,9 +135,7 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
                     // Create and save Visitor entity
                     var visitor = new Visitor
                     {
-                        Username = Input.Username,
-                        Gender = Input.Gender,
-                        Age = Input.Age,
+                        Username = "@NewUser",
                         Email = Input.Email,
                         Password = Input.Password
                     };
