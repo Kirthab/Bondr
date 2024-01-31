@@ -1,5 +1,18 @@
-﻿@page "/500"
+﻿<!-- Internal server error page -->
+@page "/500"
 
-<h1 class="text-danger">
-    We have encountered an error completing your request. Please try again.
-</h1>
+<!-- Body section containing information about the internal server error -->
+<body>
+    <section>
+        <div class="container">
+            <div class="text">
+                <!-- Heading indicating an internal server error -->
+                <h1>Internal server error</h1>
+                <!-- Message instructing the user to alert the administrator -->
+                <p>Oops! It looks like we've encountered an issue. Please alert your administrator!</p>
+                <!-- Displaying the error code "500" in a div with id "big-text" -->
+                <div id="big-text">500</div>
+            </div>
+        </div>
+    </section>
+</body>

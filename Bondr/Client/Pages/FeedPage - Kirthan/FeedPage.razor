@@ -1,142 +1,161 @@
 ﻿@inject NavigationManager Navigation
 @inject HttpClient _client
 @inject IJSRuntime js
-@attribute [Authorize]
 @inject HttpInterceptorService _interceptor
 @implements IDisposable
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
 
 @page "/"
 
-<PageTitle>Home</PageTitle>
-
-<div id="container">
-    <article class="carousel">
-        <div class="carousel-div">
-            <ul>
-                <li><a href="Discover"><img draggable="false" src="../Images/Carousel/carousel1.jpg" /></a></li>
-                <li><a href="CommunityRequest"><img draggable="false" src="../Images/Carousel/carousel2.jpg" /></a></li>
-                <li><a href="Settings"><img draggable="false" src="../Images/Carousel/carousel3.jpg" /></a></li>
-                <li><a href="SettingsPage"><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></a></li>
-                <li><a href="CommunityForumn"><img draggable="false" src="../Images/Carousel/carousel5.jpg" /></a></li>
-            </ul>
+<!-- Landing page. Authorized & UnAuthorized -->
+<AuthorizeView>
+    <!-- Users not logged in will see an image -->
+    <NotAuthorized>
+        <div class="bgimg">
+            <img id="bg" src="../Images/Pages/welcomepage.jpg" alt="Welcome Image">
         </div>
-        <div class="carousel-div">
-            <ul>
-                <li><a href="Discover"><img draggable="false" src="../Images/Carousel/carousel1.jpg" /></a></li>
-                <li><a href="CommunityRequest"><img draggable="false" src="../Images/Carousel/carousel2.jpg" /></a></li>
-                <li><a href="Settings"><img draggable="false" src="../Images/Carousel/carousel3.jpg" /></a></li>
-                <li><a href="SettingsPage"><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></a></li>
-                <li><a href="CommunityForumn"><img draggable="false" src="../Images/Carousel/carousel5.jpg" /></a></li>
-            </ul>
-        </div>
-    </article>
+    </NotAuthorized>
+    <!-- For users logged in -->
+    <Authorized>
+        <PageTitle>Home</PageTitle>
 
-    <!-- <SurveyPrompt Title="How is Blazor working for you?" /> -->
-    <div class="col">
-        <div class="card card1">
-            <h5>Discover Communities</h5>
-            <p>Click here to discover new communities</p>
-        </div>
-        <div class="card card2">
-            <h5>Manage communities</h5>
-            <p>Click here to manage your communities</p>
-        </div>
-    </div>
+        <!-- Top page css elements -->
+        <div id="container">
+            <article class="carousel">
+                <div class="carousel-div">
+                    <ul>
+                        <li><a href="communities"><img draggable="false" src="../Images/Carousel/carousel1.jpg" /></a></li>
+                        <li><a href="communities"><img draggable="false" src="../Images/Carousel/carousel2.jpg" /></a></li>
+                        <li><a href="Settings"><img draggable="false" src="../Images/Carousel/carousel3.jpg" /></a></li>
+                        <li><a href="staff"><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></a></li>
+                        <li><a href="communities/createcommunity"><img draggable="false" src="../Images/Carousel/carousel5.jpg" /></a></li>
+                    </ul>
+                </div>
+                <div class="carousel-div">
+                    <ul>
+                        <li><a href="communities"><img draggable="false" src="../Images/Carousel/carousel1.jpg" /></a></li>
+                        <li><a href="communities"><img draggable="false" src="../Images/Carousel/carousel2.jpg" /></a></li>
+                        <li><a href="Settings"><img draggable="false" src="../Images/Carousel/carousel3.jpg" /></a></li>
+                        <li><a href="staff"><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></a></li>
+                        <li><a href="communities/createcommunity"><img draggable="false" src="../Images/Carousel/carousel5.jpg" /></a></li>
+                    </ul>
+                </div>
+            </article>
 
-    <div id="selection">
-    <select class="postGenreDropdown" @oninput="Filter">
-        @if (Genres != null && Genres.Any())
-        {
-            <option value="0" >ALL</option>
-            @foreach (var genre in Genres)
-            {
-                <option value="@genre.Id">@genre.Name</option>
-            }
-        }
-    </select>
-    <button type="button" class="createPost" @onclick="CreatePost">Create Post <i class="oi oi-plus"></i></button>
-    </div>
-
-    <div class="feed">
-        @if (filteredGenre){
-            @if (Posts == null || !Posts.Any())
-            {
-                <div class="alert alert-info">No posts yet</div>
-            }
-            else
-            {
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th colspan="8" style="text-align: right;">Vote</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var post in DisplayedPosts)
-                        {
-                            <tr>
-                                <td>
-                                    <a href="/post/viewpost/@post.Id" class="post-link">
-                                    <div>
-                                        @post.Title
-                                     </div>
-                                     </a>
-                                 </td>
-                                <td colspan="8" style="text-align: right;">@post.Vote</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                <br/>
-            }
-        }
-        else
-        {
-            @if (Posts == null || !Posts.Any())
-            {
-                <div class="alert alert-info">No posts yet</div>
-            }
-            else
-            {
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th colspan="8" style="text-align: right;">Vote</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var post in DisplayedPosts)
-                        {
-                            @if (post.GenreId == setGenreIdFilter)
-                            {
-                                <tr>
-                                    <td>
-                                        <a href="/post/viewpost/@post.Id" class="post-link">
-                                            <div>
-                                                @post.Title
-                                            </div>
-                                        </a>
-                                    </td>
-                                    <td colspan="8" style="text-align: right;">@post.Vote</td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-                <br />
-        }
-        <!-- Pagination controls -->
-            <div class="pagination">
-                <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
-                <span>Page @currentPage of @totalPages</span>
-                <button disabled="@IsLastPage" class="page-button" @onclick="NextPage">Next &#x21E2;</button>
+            <div class="col">
+                <a class="card card1" href="communities">
+                    <h5>Discover Communities</h5>
+                    <p>Click here to discover new communities</p>
+                </a>
+                <a class="card card2" href="admin/com">
+                    <h5>Manage communities</h5>
+                    <p>Click here to manage your communities</p>
+                </a>
             </div>
-            <br />
-        }
-    </div>
-</div>
+
+            <!-- Genre filter -->
+            <div id="selection">
+                <select class="postGenreDropdown" @oninput="Filter">
+                    @if (Genres != null && Genres.Any())
+                    {
+                        <option value="0">ALL</option>
+                        @foreach (var genre in Genres)
+                        {
+                            <option value="@genre.Id">@genre.Name</option>
+                        }
+                    }
+                </select>
+                <button type="button" class="createPost" @onclick="CreatePost">Create Post <i class="oi oi-plus"></i></button>
+            </div>
+
+            <!-- User feed (POSTS) -->
+            <div class="feed">
+                @if (filteredGenre)
+                {
+                    @if (Posts == null || !Posts.Any())
+                    {
+                        <br />
+                        <br />
+                        <div class="alert alert-info">No posts yet</div>
+                    }
+                    else
+                    {
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th colspan="8" style="text-align: right;">Vote</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var post in DisplayedPosts)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="/post/viewpost/@post.Id" class="post-link">
+                                                <div>
+                                                    @post.Title
+                                                </div>
+                                            </a>
+                                        </td>
+                                        <td colspan="8" style="text-align: right;">@post.Vote</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <br />
+                    }
+                }
+                else
+                {
+                    @if (Posts == null || !Posts.Any())
+                    {
+                        <div class="alert alert-info">No posts yet</div>
+                    }
+                    else
+                    {
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th colspan="8" style="text-align: right;">Vote</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var post in DisplayedPosts)
+                                {
+                                    @if (post.GenreId == setGenreIdFilter)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="/post/viewpost/@post.Id" class="post-link">
+                                                    <div>
+                                                        @post.Title
+                                                    </div>
+                                                </a>
+                                            </td>
+                                            <td colspan="8" style="text-align: right;">@post.Vote</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        <br />
+                    }
+                }
+                <!-- Pagination controls -->
+                <div class="pagination">
+                    <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
+                    <span>Page @currentPage of @totalPages</span>
+                    <button disabled="@IsLastPage" class="page-button" @onclick="NextPage">Next &#x21E2;</button>
+                </div>
+                <br />
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
 
 @code {
 
@@ -154,6 +173,7 @@
     private int setGenreIdFilter;
     private int defaultGenreId;
 
+    //Genre filter
     private void Filter(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value.ToString(), out var genreId))
@@ -180,7 +200,7 @@
         UpdateDisplayedPosts();
     }
 
-    public void Dispose()
+    public void Dispose() //Dispose function
     {
         _interceptor.DisposeEvent();
     }
@@ -208,6 +228,7 @@
         int startIndex = (currentPage - 1) * postsPerPage;
         DisplayedPosts = Posts?.Skip(startIndex).Take(postsPerPage).ToList() ?? new List<Post>();
     }
+
     protected async override Task OnInitializedAsync()
     {
         try
@@ -222,7 +243,7 @@
         }
     }
 
-
+    //CRUD Functions
     async Task Delete(int PostId)
     {
         if (Posts != null)

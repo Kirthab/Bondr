@@ -1,0 +1,204 @@
+﻿@inject NavigationManager _navManager
+@inject HttpClient _client
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime js
+
+<!-- Specific View -->
+@page "/searchuser/{visitorId}"
+
+<h2 style="text-align: center;">@visitor.Username's Profile Card</h2> <!-- Header -->
+
+<div class="alignment">
+    <!-- To check if profile should be editable -->
+    @if (editable && isEditing)
+    {
+        <button id="left-outer" @onclick="leftcard">&#8678;</button>
+    }
+    <!-- Elements for user card -->
+    <div class="card" style="background: url('@whichCard') no-repeat center center / cover;">
+        <img id="profile"src=@whichImg>
+        <div class="translucentbg">
+            <h1 class="title">@@@visitor.Username</h1>
+            <p class="status">@status</p>
+            <p class="gender"><span class="label">Gender:</span> @gender</p>
+            <p class="age"><span class="label">Age:</span> @age</p>
+        </div>
+
+        <!-- Edit profile functions -->
+        @if (editable)
+        {
+            <div class="edit-options">
+                @if (!isEditing)
+                {
+                    <button @onclick="showeditoptions" id="show-edit" class="center">Edit Profile</button>
+                }
+                else
+                {
+                    <button id="left" @onclick="leftimage">&#8678;</button>
+                    <button @onclick="saveedititems" id="save-edit" type="submit" class="center">Save Changes</button>
+                    <button id="right" @onclick="rightimage">&#x21e8;</button>
+                }
+            </div>
+        }
+
+    </div>
+    @if (editable && isEditing)
+    {
+        <button id="right-outer" @onclick="rightcard">&#x21e8;</button>
+    }
+</div>
+
+
+
+@code {
+    [Parameter] public string visitorId { get; set; }  //Get current Id
+    Visitor? visitor = new Visitor();
+    private string whichImg;
+    private string whichCard;
+    private string gender;
+    private string status;
+    private string age;
+    private bool editable = false;
+    private bool isEditing = false;
+    private int index;
+    private int cardIndex;
+    //Profile picture arrays
+    private string[] filepaths = { "../Images/ProfileImages/profilepicdefult.jpg", "../Images/ProfileImages/profilepic1.jpg", "../Images/ProfileImages/profilepic2.jpg", "../Images/ProfileImages/profilepic3.jpg", "../Images/ProfileImages/profilepic4.jpg", "../Images/ProfileImages/profilepic5.jpg", };
+    <!-- Profile card arrays -->
+    private string[] cards = { "../Images/ProfileCards/4.jpg", "../Images/ProfileCards/1.jpg", "../Images/ProfileCards/2.jpg", "../Images/ProfileCards/3.jpg", "../Images/ProfileCards/5.jpg", "../Images/ProfileCards/6.jpg" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Confirm who is current user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        string getUrl = $"{Endpoints.VisitorEndpoint}/{visitorId}";
+        visitor = await _client.GetFromJsonAsync<Visitor>(getUrl);
+
+
+        <!-- Handling of null datas -->
+        if (visitor.Avatar == null)
+        {
+            whichImg = "../Images/ProfileImages/profilepicdefult.jpg";
+            index = 0;
+        }
+        else
+        {
+            whichImg = visitor.Avatar;
+            index = Array.IndexOf(filepaths, whichImg);
+
+        }
+
+        if (visitor.CardImg == null)
+        {
+            whichCard = "../Images/ProfileCards/4.jpg";
+            cardIndex = 0;
+        }
+        else
+        {
+            whichCard = visitor.CardImg;
+            cardIndex = Array.IndexOf(cards, whichCard);
+
+        }
+
+        if (visitor.Gender == null)
+        {
+            gender = "Not Shared";
+        }else { gender = visitor.Gender; }
+
+        if (visitor.Status == null)
+        {
+            status = "No status";
+        }
+        else { status = visitor.Status;}
+
+        if (visitor.Age == null)
+        {
+            age = "Not Shared";
+        }
+        else { age = visitor.Age.ToString();}
+        if (visitor.Email == user.Identity?.Name)
+        {
+            editable = true;
+        }
+    }
+
+    //Dispose function
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+
+    //Logic for edit func toggle
+    private async Task showeditoptions()
+    {
+        isEditing = !isEditing;
+    }
+
+    //For changing profile and card images
+    private async Task rightimage()
+    {
+        if (index < filepaths.Length - 1)
+        {
+            index += 1;
+            whichImg = filepaths[index];
+        }
+        else
+        {
+            index = 0;
+            whichImg = filepaths[index];
+        }
+    }
+
+    private async Task leftimage()
+    {
+        if (index > 0)
+        {
+            index -= 1;
+            whichImg = filepaths[index];
+        }
+        else
+        {
+            index = filepaths.Length - 1;
+            whichImg = filepaths[index];
+        }
+    }
+    private async Task leftcard()
+    {
+        if (cardIndex > 0)
+        {
+            cardIndex -= 1;
+            whichCard = cards[cardIndex];
+        }
+        else
+        {
+            cardIndex = cards.Length - 1;
+            whichCard = cards[cardIndex];
+        }
+    }
+    private async Task rightcard()
+    {
+        if (cardIndex < cards.Length - 1)
+        {
+            cardIndex += 1;
+            whichCard = cards[cardIndex];
+        }
+        else
+        {
+            cardIndex = 0;
+            whichCard = cards[cardIndex];
+        }
+    }
+
+    //Send data to controller
+    private async Task saveedititems()
+    {
+        isEditing = !isEditing;
+        visitor.Avatar = whichImg;
+        visitor.CardImg = whichCard;
+        await _client.PutAsJsonAsync($"{Endpoints.VisitorEndpoint}/{visitor.Id}", visitor); <!-- Put for update -->
+    }
+    
+}

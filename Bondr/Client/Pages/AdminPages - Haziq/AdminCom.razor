@@ -1,0 +1,180 @@
+﻿@page "/admin/com"
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@inject HttpInterceptorService _interceptor
+@inject NavigationManager _navigationManager
+
+
+<div id="container">
+    <h3>Admin Community Page</h3>
+    <br />
+
+    @if (Communities == null)
+    {
+        <div class="alert alert-info">Loading Communities...</div>
+    }
+    else
+    {
+        <div class="community-container">
+            @if (PagedCommunities == null || !PagedCommunities.Any())
+            {
+                <div class="alert alert-info text-center" role="alert" style="background-color: #3498db; color: #fff; border: none;">
+                    <strong>Oops!</strong> It seems there are no communities right now. Be the first to create one!
+                </div>
+            }
+            else
+            {
+                @foreach (var community in PagedCommunities)
+                {
+                    <div class="community-box">
+                        <div class="community-name">@community.Name</div>
+                        <div class="community-description">@community.Description</div>
+                        <div class="community-actions">
+                            @*<button class="edit-com" @onclick="@(() => EditCommunity(community.Id))">Edit Community</button>*@
+                            <button class="del-com" @onclick="@(()=>Delete(community.Id))">Delete Community</button>
+                            <!-- Add a button to navigate to the community feed page with the specific community id -->
+                            <button class="view-com" @onclick="()=>NavigateToCommunityFeed(community.Id)">View Community Feed</button>
+                            <!-- Add a button to delete posts in the community -->
+                            <button class="delete-com" @onclick="()=>DeletePostsInCommunity(community.Id)">Delete Posts</button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+
+
+    <!-- Pagination controls -->
+    <div class="pagination">
+        <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
+        <span>Page @currentPage of @totalPages</span>
+        <button disabled="@IsLastPage" class="page-button" @onclick="NextPage">Next &#x21E2;</button>
+    </div>
+    }
+</div>
+
+@code {
+    private List<Community>? Communities;
+    private List<Community>? PagedCommunities;
+    private int itemsPerPage = 9; // Adjust the number of communities per page as needed
+    private int currentPage = 1;
+
+    private int totalPages => (int)Math.Ceiling((double)(Communities?.Count ?? 0) / itemsPerPage);
+
+    private bool IsFirstPage => currentPage == 1;
+    private bool IsLastPage => currentPage == totalPages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchCommunitiesAsync();
+        UpdatePagedCommunities();
+    }
+
+    private async Task FetchCommunitiesAsync()
+    {
+        Communities = await _client.GetFromJsonAsync<List<Community>>(Endpoints.CommunityEndpoint);
+    }
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            UpdatePagedCommunities();
+        }
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            UpdatePagedCommunities();
+        }
+    }
+
+    private void UpdatePagedCommunities()
+    {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        PagedCommunities = Communities?.Skip(startIndex).Take(itemsPerPage).ToList() ?? new List<Community>();
+    }
+
+
+    async Task Delete(int communityId)
+    {
+        if (Communities != null)
+        {
+            var community = Communities.FirstOrDefault(q => q.Id == communityId);
+
+            if (community != null)
+            {
+                var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {community.Name}?");
+
+                if (confirm)
+                {
+                    // Delete posts related to the community
+                    await DeletePostsForCommunityAsync(communityId);
+
+                    // Delete the community
+                    await _client.DeleteAsync($"{Endpoints.CommunityEndpoint}/{communityId}");
+
+                    // Fetch communities again after a successful delete
+                    await FetchCommunitiesAsync();
+
+                    // Update the paged communities
+                    UpdatePagedCommunities();
+                }
+            }
+        }
+    }
+
+    async Task DeletePostsForCommunityAsync(int communityId)
+    {
+        // Fetch all posts
+        var allPosts = await _client.GetFromJsonAsync<List<Post>>(Endpoints.PostEndpoint);
+
+        // Filter posts for the specific community
+        var communityPosts = allPosts.Where(post => post.CommunityId == communityId).ToList();
+
+        var community = Communities.First(q => q.Id == communityId);
+        var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {community.Name} feed?");
+
+        if (confirm)
+        {
+            foreach (var post in communityPosts)
+            {
+                // Delete each post
+                await _client.DeleteAsync($"{Endpoints.PostEndpoint}/{post.Id}");
+            }
+        }
+            
+       
+    }
+
+    private async Task DeletePostsInCommunity(int communityId)
+    {
+        // Call the method to delete posts for the specific community
+        await DeletePostsForCommunityAsync(communityId);
+
+        // Refresh the communities after deleting posts
+        await FetchCommunitiesAsync();
+    }
+
+    private void EditCommunity(int communityId)
+    {
+        _navigationManager.NavigateTo($"/communities/edit/{communityId}");
+
+    }
+
+
+    private void NavigateToCommunityFeed(int communityId)
+    {
+        // Navigate to the community feed page with the specific community ID
+        _navigationManager.NavigateTo($"/community/{communityId}");
+    }
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+}
+

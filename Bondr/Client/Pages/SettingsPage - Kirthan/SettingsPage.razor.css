@@ -52,38 +52,47 @@
     }
 
 
-@media (max-width:768px) {
+@media (max-width: 768px) {
     #container {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center content horizontally */
     }
 
     .userImg {
-        position: relative;
-        top: -70px;
-        left: 0px;
-        width: 250px;
-        height: 250px;
-        border: solid 3px white;
+        /* ... other styles ... */
     }
+
     input, select {
-        width:250px;
-    }
-    .bt1 {
-        position: relative;
-        margin-top: 0x;
-        margin-left: 0px;
-        padding: 10px 15px;
-        background: #e69812;
-        font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
-        font-size: large;
-        font-weight: 700;
         width: 250px;
-        border: 2px solid #FF005C;
-        border-radius: 5px;
-        top:250px;
-        cursor: pointer;
+    }
+
+    .bt1, .ViewSelf {
+        width: 250px; /* Set a fixed width for both buttons */
+        margin-top: 10px; /* Add margin between the buttons */
+    }
+
+    .ViewSelf {
+        margin-top: 5px; /* Adjust margin for spacing */
     }
 }
+
+.ViewSelf {
+    margin-top: 25px;
+    margin-left: 0px;
+    padding: 10px 15px;
+    font-family: "Noto Sans", sans-serif;
+    font-size: large;
+    font-weight: 700;
+    display: block;
+    border: 2px solid #025e04;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .ViewSelf:hover {
+        box-shadow: #04de08 0px 0px 3px 4px;
+    }
 
 .bt1 {
     margin-top: 25px;
@@ -99,7 +108,7 @@
     cursor: pointer;
 }
     .bt1:hover {
-        box-shadow: #0000FF 0px 0px 3px 4px;
+        box-shadow: #fcff40 0px 0px 3px 4px;
     }
 
 button {

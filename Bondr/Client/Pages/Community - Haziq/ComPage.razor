@@ -1,0 +1,193 @@
+﻿@page "/communities/"
+
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@inject HttpInterceptorService _interceptor
+@inject NavigationManager _navigationManager
+
+<!-- Container for communities -->
+<div id="container">
+    <!-- Heading for the communities page -->
+    <h3>Communities</h3>
+
+    <!-- Button to create a new community -->
+    <a href="/communities/createcommunity" class="btn btn-success" style="float: right; margin-top: -40px;">
+        <span class="oi oi-plus"></span>
+        Create New Community
+    </a>
+
+    <br />
+
+    <!-- Check if communities are still loading -->
+    @if (Communities == null)
+    {
+        <div class="alert alert-info">Loading Communities...</div>
+    }
+    else
+    {
+        <!-- Container for community cards -->
+        <div class="community-container">
+            <!-- Check if there are no communities -->
+            @if (PagedCommunities == null || !PagedCommunities.Any())
+            {
+                <!-- Display a message for no communities -->
+                <div class="alert alert-info text-center" role="alert" style="background-color: #3498db; color: #fff; border: none;">
+                    <strong>Oops!</strong> It seems there are no communities right now. Be the first to create one!
+                </div>
+            }
+            else
+            {
+                <!-- Iterate through each community and display its information -->
+                @foreach (var community in PagedCommunities)
+                {
+                    <div class="community-box">
+                        <div class="community-name">@community.Name</div>
+                        <div class="community-description">@community.Description</div>
+                        <div class="community-actions">
+                            <!-- Button to edit the community -->
+                            <button class="edit-com" @onclick="@(() => EditCommunity(community.Id))">Edit Community</button>
+                            <!-- Button to view the community feed -->
+                            <button class="view-com" @onclick="()=>NavigateToCommunityFeed(community.Id)">View Community Feed</button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+
+    <!-- Pagination controls -->
+    <div class="pagination">
+        <!-- Button to navigate to the previous page -->
+        <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
+        <!-- Display current page and total pages -->
+        <span>Page @currentPage of @totalPages</span>
+        <!-- Button to navigate to the next page -->
+        <button disabled="@IsLastPage" class="page-button" @onclick="NextPage">Next &#x21E2;</button>
+    </div>
+</div>
+
+@code {
+    <!-- Declare private variables for community handling -->
+    private List<Community>? Communities;
+    private List<Community>? PagedCommunities;
+    private int itemsPerPage = 9; // Adjust the number of communities per page as needed
+    private int currentPage = 1;
+
+    <!-- Calculate total pages based on all communities -->
+    private int totalPages => (int)Math.Ceiling((double)(Communities?.Count ?? 0) / itemsPerPage);
+
+    <!-- Boolean properties to check if the current page is the first or last -->
+    private bool IsFirstPage => currentPage == 1;
+    private bool IsLastPage => currentPage == totalPages;
+
+    <!-- Method called when the page is initialized -->
+    protected override async Task OnInitializedAsync()
+    {
+        <!-- Fetch all communities and update the paged communities -->
+        await FetchCommunitiesAsync();
+        UpdatePagedCommunities();
+    }
+
+    <!-- Method to fetch all communities from the server -->
+    private async Task FetchCommunitiesAsync()
+    {
+        Communities = await _client.GetFromJsonAsync<List<Community>>(Endpoints.CommunityEndpoint);
+    }
+
+    <!-- Method to navigate to the previous page of paged communities -->
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            UpdatePagedCommunities();
+        }
+    }
+
+    <!-- Method to navigate to the next page of paged communities -->
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            UpdatePagedCommunities();
+        }
+    }
+
+    <!-- Method to update the list of paged communities based on the current page -->
+    private void UpdatePagedCommunities()
+    {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        PagedCommunities = Communities?.Skip(startIndex).Take(itemsPerPage).ToList() ?? new List<Community>();
+    }
+
+    <!-- Method to delete a community and its associated posts -->
+    async Task Delete(int communityId)
+    {
+        if (Communities != null)
+        {
+            var community = Communities.First(q => q.Id == communityId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {community.Name}?");
+            if (confirm)
+            {
+                <!-- Delete posts related to the community -->
+                await DeletePostsForCommunityAsync(communityId);
+
+                <!-- Delete the community -->
+                await _client.DeleteAsync($"{Endpoints.CommunityEndpoint}/{communityId}");
+
+                <!-- Fetch communities again after a successful delete -->
+                await FetchCommunitiesAsync();
+
+                <!-- Update the paged communities -->
+                UpdatePagedCommunities();
+            }
+        }
+    }
+
+    <!-- Method to delete posts associated with a community -->
+    async Task DeletePostsForCommunityAsync(int communityId)
+    {
+        <!-- Fetch all posts -->
+        var allPosts = await _client.GetFromJsonAsync<List<Post>>(Endpoints.PostEndpoint);
+
+        <!-- Filter posts for the specific community -->
+        var communityPosts = allPosts.Where(post => post.CommunityId == communityId).ToList();
+
+        <!-- Delete each post -->
+        foreach (var post in communityPosts)
+        {
+            await _client.DeleteAsync($"{Endpoints.PostEndpoint}/{post.Id}");
+        }
+    }
+
+    <!-- Method to delete posts in a community -->
+    private async Task DeletePostsInCommunity(int communityId)
+    {
+        <!-- Call the method to delete posts for the specific community -->
+        await DeletePostsForCommunityAsync(communityId);
+
+        <!-- Refresh the communities after deleting posts -->
+        await FetchCommunitiesAsync();
+    }
+
+    <!-- Method to edit a community -->
+    private void EditCommunity(int communityId)
+    {
+        _navigationManager.NavigateTo($"/communities/edit/{communityId}");
+    }
+
+    <!-- Method to navigate to the community feed -->
+    private void NavigateToCommunityFeed(int communityId)
+    {
+        <!-- Navigate to the community feed page with the specific community ID -->
+        _navigationManager.NavigateTo($"/community/{communityId}");
+    }
+
+    <!-- Method called when the component is disposed -->
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+}

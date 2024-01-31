@@ -1,0 +1,119 @@
+﻿@page "/staff/"
+
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+
+
+<div id="container">
+    <!-- Heading for the staff page -->
+    <h3 id="heada">Staffs</h3>
+
+    <!-- Link to navigate to the staff creation page -->
+    <a href="/staff/create/" class="btn btn-secondary">
+        <span class="oi oi-plus"></span>
+        Add staff
+    </a>
+    <br />
+
+    <!-- Check if staffs are being loaded -->
+    @if (Staffs == null)
+    {
+        <div class="alert alert-info">Loading Staffs...</div>
+    }
+    else
+    {
+        <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Salary</th>
+                        <th>Age</th>
+                        <th>Email</th>
+                        <th>Assigned Communities</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Iterate through each staff and display their details -->
+                    @foreach (var staff in Staffs)
+                    {
+                        <tr>
+                            <td>@staff.Id</td>
+                            <td>@staff.Name</td>
+                            <td>@staff.Position</td>
+                            <td>@staff.Salary</td>
+                            <td>@staff.Age</td>
+                            <td>@staff.Email</td>
+                            <td>@string.Join(", ", GetAssignedCommunities(staff.Id).Select(c => c.Name))</td>
+                            <td>
+                                <a href="/staff/view/@staff.Id" class="btn btn-primary">
+                                    <span class="oi oi-book"></span>
+                                </a>
+                                <a href="/staff/edit/@staff.Id" class="btn btn-warning">
+                                    <span class="oi oi-pencil"></span>
+                                </a>
+                                <button class="btn btn-danger" @onclick="@(()=>Delete(staff.Id))">
+                                    <span class="oi oi-delete"></span>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+    }
+</div>
+
+@code {
+    // Declare private variables for staffs and communities
+    private List<Staff> Staffs;
+    private List<Community> Communities;
+
+    // Method called when the component is initialized
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            // Fetch staffs and communities from the server
+            Staffs = await _client.GetFromJsonAsync<List<Staff>>($"{Endpoints.StaffEndpoint}");
+            Communities = await _client.GetFromJsonAsync<List<Community>>($"{Endpoints.CommunityEndpoint}");
+        }
+        catch (Exception ex)
+        {
+            // Handle exception (e.g., log it, show an error message)
+            Console.WriteLine($"Error fetching data: {ex.Message}");
+        }
+    }
+
+    // Method to get assigned communities for a staff member
+    private List<Community> GetAssignedCommunities(int staffId)
+    {
+        // Filter communities based on StaffId
+        var assignedCommunities = Communities?.Where(c => c.StaffId == staffId).ToList() ?? new List<Community>();
+        return assignedCommunities;
+    }
+
+    // Method to delete a staff member
+    async Task Delete(int staffId)
+    {
+        if (Staffs != null)
+        {
+            // Find the staff member to be deleted
+            var staff = Staffs.FirstOrDefault(q => q.Id == staffId);
+
+            // Confirm deletion with a user prompt
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {staff?.Id}?");
+
+            // If confirmed, send a DELETE request to the server
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.StaffEndpoint}/{staffId}");
+
+                // Refresh the staff list after a successful delete
+                await OnInitializedAsync();
+            }
+        }
+    }
+}

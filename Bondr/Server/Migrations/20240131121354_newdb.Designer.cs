@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bondr.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240123074722_newdb")]
+    [Migration("20240131121354_newdb")]
     partial class newdb
     {
         /// <inheritdoc />
@@ -100,7 +100,7 @@ namespace Bondr.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "582dc68c-247c-4362-b5f6-b5fb62115341",
+                            ConcurrencyStamp = "9c54b467-42f1-41b0-893f-56897203fb26",
                             Email = "admin@localhost.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -108,9 +108,9 @@ namespace Bondr.Server.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHsHCZxlCgt3FZ/u+dVk0LXYelLYdykwCUyv3Xz7Zks6dPF9pyGmlqHlFxj8QFmr9Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECH69WbzPnMdXSkN+Tkrdn0L+3X4DjgCe5fPZgmDi3WDbjh04N/Yy5FSDDYXc1L82g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ab4ee3e1-31d0-411e-8ae3-960ffe1cc555",
+                            SecurityStamp = "6d8f9184-1f50-49aa-be3a-4c173256bc7a",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -180,9 +180,6 @@ namespace Bondr.Server.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("PostId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("StaffId")
                         .HasColumnType("int");
@@ -369,6 +366,7 @@ namespace Bondr.Server.Migrations
                         new
                         {
                             Id = 1,
+                            Age = 58,
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "anitamaxwynn@hotmail.com",
@@ -376,11 +374,12 @@ namespace Bondr.Server.Migrations
                             Name = "Anita Max Wynn",
                             Password = "champagnepapi21",
                             Position = "CEO",
-                            Salary = 5500.0
+                            Salary = 20500.0
                         },
                         new
                         {
                             Id = 2,
+                            Age = 25,
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "aethelh@hotmail.com",
@@ -389,6 +388,19 @@ namespace Bondr.Server.Migrations
                             Password = "meadowviking16",
                             Position = "Back-End Engineer",
                             Salary = 4500.0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Age = 20,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dyrmater@hotmail.com",
+                            Gender = "Female",
+                            Name = "Illia Dyr",
+                            Password = "dyrmaterillia",
+                            Position = "Media Manager",
+                            Salary = 2500.0
                         });
                 });
 
@@ -418,9 +430,14 @@ namespace Bondr.Server.Migrations
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UsersId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CommunityId");
+
+                    b.HasIndex("UsersId");
 
                     b.ToTable("Subscription");
                 });
@@ -437,6 +454,9 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardImg")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CommentId")
@@ -480,8 +500,6 @@ namespace Bondr.Server.Migrations
                     b.HasIndex("CommentId");
 
                     b.HasIndex("PostId");
-
-                    b.HasIndex("SubscriptionId");
 
                     b.ToTable("Visitor");
                 });
@@ -801,9 +819,11 @@ namespace Bondr.Server.Migrations
 
             modelBuilder.Entity("Bondr.Shared.Domain.Post", b =>
                 {
-                    b.HasOne("Bondr.Shared.Domain.Community", null)
-                        .WithMany("Posts")
+                    b.HasOne("Bondr.Shared.Domain.Community", "Community")
+                        .WithMany()
                         .HasForeignKey("CommunityId");
+
+                    b.Navigation("Community");
                 });
 
             modelBuilder.Entity("Bondr.Shared.Domain.Staff", b =>
@@ -823,9 +843,17 @@ namespace Bondr.Server.Migrations
 
             modelBuilder.Entity("Bondr.Shared.Domain.Subscription", b =>
                 {
-                    b.HasOne("Bondr.Shared.Domain.Community", null)
+                    b.HasOne("Bondr.Shared.Domain.Community", "Community")
                         .WithMany("Subscriptions")
                         .HasForeignKey("CommunityId");
+
+                    b.HasOne("Bondr.Shared.Domain.Visitor", "Users")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("UsersId");
+
+                    b.Navigation("Community");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Bondr.Shared.Domain.Visitor", b =>
@@ -837,10 +865,6 @@ namespace Bondr.Server.Migrations
                     b.HasOne("Bondr.Shared.Domain.Post", null)
                         .WithMany("User")
                         .HasForeignKey("PostId");
-
-                    b.HasOne("Bondr.Shared.Domain.Subscription", null)
-                        .WithMany("Users")
-                        .HasForeignKey("SubscriptionId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -903,8 +927,6 @@ namespace Bondr.Server.Migrations
 
             modelBuilder.Entity("Bondr.Shared.Domain.Community", b =>
                 {
-                    b.Navigation("Posts");
-
                     b.Navigation("Staff");
 
                     b.Navigation("Subscriptions");
@@ -921,9 +943,9 @@ namespace Bondr.Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Bondr.Shared.Domain.Subscription", b =>
+            modelBuilder.Entity("Bondr.Shared.Domain.Visitor", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("Subscriptions");
                 });
 #pragma warning restore 612, 618
         }

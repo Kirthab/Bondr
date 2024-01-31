@@ -16,7 +16,8 @@ namespace Bondr.Server.Configurations.Entities
                     Gender = "Female",
                     Email = "anitamaxwynn@hotmail.com",
                     Password = "champagnepapi21",
-                    Salary = 5500.00,
+                    Salary = 20500.00,
+                    Age = 58,
                     Position = "CEO" 
 
                 },
@@ -28,7 +29,19 @@ namespace Bondr.Server.Configurations.Entities
                     Email = "aethelh@hotmail.com",
                     Password = "meadowviking16",
                     Salary = 4500.00,
+                    Age = 25,
                     Position = "Back-End Engineer"
+                },
+                new Staff
+                {
+                    Id = 3,
+                    Name = "Illia Dyr",
+                    Gender = "Female",
+                    Email = "dyrmater@hotmail.com",
+                    Password = "dyrmaterillia",
+                    Salary = 2500.00,
+                    Age = 20,
+                    Position = "Media Manager"
                 }
             );
         }

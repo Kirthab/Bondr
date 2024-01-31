@@ -1,0 +1,94 @@
+﻿@page "/admin/visitors"
+
+@using System.Security.Claims
+@inject HttpClient _client
+@inject HttpInterceptorService _interceptor
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime js
+
+<!-- Display a message if no visitors are found, else show a table with visitor information -->
+@if (Visitors == null || !Visitors.Any())
+{
+    <p>No visitors found.</p>
+}
+else
+{
+    <!-- Container for visitor list -->
+    <div class="container">
+        <!-- Heading for the visitor list -->
+        <h3>Visitor List</h3>
+
+        <!-- Table to display visitor details -->
+        <table class="table">
+            <thead>
+                <!-- Table header with column names -->
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Age</th>
+                    <th>Current Communities</th> <!-- Updated column name -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iterate through each visitor and display their details -->
+                @foreach (var visitor in Visitors)
+                {
+                    <tr>
+                        <td>@visitor.Id</td>
+                        <td>@visitor.Username</td>
+                        <td>@visitor.Email</td>
+                        <td>@visitor.Age</td>
+                        <td>@string.Join(", ", GetCurrentCommunities(visitor.Id).Select(c => c.Name))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+@code {
+    <!-- Declare private variables -->
+    private IList<Visitor>? Visitors;
+    private List<Subscription> UserSubscriptions = new List<Subscription>();
+    private List<Subscription> Subscriptions;
+    private List<Community> Communities; // Add a property to store the communities
+    private Visitor visitor; // Declare a variable for the current visitor
+    
+    <!-- Method called when the page is initialized -->
+    protected override async Task OnInitializedAsync()
+    {
+        <!-- Fetch authentication state and user information -->
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        <!-- Fetch Visitors, Subscriptions, and Communities from the server -->
+        Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+        visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
+        Subscriptions = await _client.GetFromJsonAsync<List<Subscription>>($"{Endpoints.SubscriptionEndpoint}");
+        Communities = await _client.GetFromJsonAsync<List<Community>>($"{Endpoints.CommunityEndpoint}");
+
+        <!-- Filter user subscriptions based on the current visitor -->
+        foreach (var sub in Subscriptions)
+        {
+            if (sub.UserId == visitor.Id)
+            {
+                UserSubscriptions.Add(sub);
+            }
+        }
+    }
+
+    <!-- Method called when the component is disposed -->
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+
+    <!-- Method to get the current communities for a visitor -->
+    private List<Community> GetCurrentCommunities(int visitorId)
+    {
+        <!-- Filter communities based on UserSubscriptions -->
+        return Communities.Where(c => UserSubscriptions.Any(sub => sub.UserId == visitorId && sub.CommunityId == c.Id)).ToList();
+    }
+}

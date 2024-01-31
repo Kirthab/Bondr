@@ -1,6 +1,6 @@
 ﻿#container {
     width: 500px;
-    height: 500px;
+    height: 600px;
     box-sizing: border-box;
     justify-content: center;
     border-width: 1px 1px 0 1px;
@@ -25,7 +25,7 @@ body {
     height: 100vh;
 }
 
-h1{
+h1 {
     color: white;
 }
 

@@ -1,0 +1,110 @@
+﻿<h3>FormComponent</h3>
+
+<EditForm Model="@staff" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <fieldset disabled="@Disabled">
+        <div class="form-group">
+            <label>Name: </label>
+            <div>
+                <InputText @bind-Value="@staff.Name" class="form-control" />
+                <ValidationMessage For="@(() => staff.Name)" />
+            </div>
+            <br>
+
+            <label for="notification">Gender (Optional):</label>
+            <select id="notification" name="notification" @bind="@staff.Gender">
+                <option value="Male" selected="@(staff.Gender == "Male")">Male</option>
+                <option value="Female" selected="@(staff.Gender == "Female")">Female</option>
+                <option value="Other" selected="@(staff.Gender == "Other")">Other</option>
+            </select>
+
+            <label>Password: </label>
+            <div>
+                <InputText @bind-Value="@staff.Password" class="form-control" />
+                <ValidationMessage For="@(() => staff.Password)" />
+            </div>
+            <br>
+
+            <div class="form-group">
+                <label>Salary: </label>
+                <div>
+                    <InputNumber @bind-Value="@staff.Salary" class="form-control" step="0.01" />
+                    <ValidationMessage For="@(() => staff.Salary)" />
+                </div>
+            </div>
+            <br>
+
+            <label>Position: </label>
+            <div>
+                <InputText @bind-Value="@staff.Position" class="form-control" />
+                <ValidationMessage For="@(() => staff.Position)" />
+            </div>
+            <br>
+
+            <label>Email: </label>
+            <div>
+                <InputText @bind-Value="@staff.Email" class="form-control" />
+                <ValidationMessage For="@(() => staff.Email)" />
+            </div>
+            <br>
+
+            <label for="age">BirthDay</label>
+            <input id="age" name="age" class="form-control" type="date" @oninput="@UpdateAgeFromDate" />
+
+            <button class="bt1" type="submit">Save Changes</button>
+        </div>
+    </fieldset>
+
+    <br />
+    <br />
+
+    @if (!Disabled)
+    {
+        <button type="submit" class="btn btn-success btn-block">
+            @ButtonText
+        </button>
+    }
+    <BackToList Target="staffs" />
+</EditForm>
+
+@code {
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Staff staff { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+    private string salaryInput;
+
+    private void UpdateAgeFromDate(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value.ToString(), out DateTime dob))
+        {
+            DateTime today = DateTime.Today;
+            int age = today.Year - dob.Year;
+
+            // Check if the birthday has occurred this year
+            if (dob.Date > today.AddYears(-age))
+            {
+                age--;
+            }
+
+            staff.Age = age;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Convert the string value back to float before submitting
+        if (float.TryParse(salaryInput, out var salaryValue))
+        {
+            staff.Salary = salaryValue;
+            
+        }
+        else
+        {
+            
+        }
+    }
+}

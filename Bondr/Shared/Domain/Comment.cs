@@ -1,7 +1,10 @@
-﻿namespace Bondr.Shared.Domain
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Bondr.Shared.Domain
 {
     public class Comment : BaseDomainModel
     {
+        [Required]
         public string? Text { get; set; }
         public int? Vote { get; set; }
         public int? UserId{ get; set; }

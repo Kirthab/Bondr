@@ -10,55 +10,49 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
-                        <p class="oi" aria-hidden="true"></p> @Visitors?.FirstOrDefault(v => v.Email == context.User.Identity?.Name)?.Username
+                        <p class="oi" aria-hidden="true">@Visitors?.FirstOrDefault(v => v.Email == context.User.Identity?.Name)?.Username</p>
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="#" @onclick="BeginLogOut" Match="NavLinkMatch.All">
-                        <p class="oi" aria-hidden="true"></p> Log out
+                        <p class="oi" aria-hidden="true">Log out</p>
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <p class="oi" aria-hidden="true"></p> Home
+                        <p class="oi" aria-hidden="true">Home</p>
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="discover">
-                        <p class="oi" aria-hidden="true"></p> Discover
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="createcommunity">
-                        <p class="oi" aria-hidden="true"></p> Create Community
+                    <NavLink class="nav-link" href="/communities/">
+                        <p class="oi" aria-hidden="true">Communities</p>
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="communityforum">
-                        <p class="oi" aria-hidden="true"></p> Forums
+                    <NavLink class="nav-link" href="/admin">
+                        <p class="oi" aria-hidden="true">Admin</p>
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="help">
-                        <p class="oi" aria-hidden="true"></p> Help
+                    <NavLink class="nav-link" href="/staff/">
+                        <p class="oi" aria-hidden="true">Staff</p>
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="settings">
-                        <p class="oi" aria-hidden="true"></p> Settings
+                        <p class="oi" aria-hidden="true">Settings</p>
                     </NavLink>
                 </div>
             </Authorized>
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/register" Match="NavLinkMatch.All">
-                        <p class="oi" aria-hidden="true"></p> Register
+                        <p class="oi" aria-hidden="true">Register</p>
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/login" Match="NavLinkMatch.All">
-                        <p class="oi" aria-hidden="true"></p> Log in
+                        <p class="oi" aria-hidden="true">Log in</p>
                     </NavLink>
                 </div>
             </NotAuthorized>

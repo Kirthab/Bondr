@@ -1,0 +1,125 @@
+﻿@page "/community/{CommunityId:int}"
+
+@inject HttpInterceptorService _interceptor
+@inject HttpClient _client
+
+<!-- Container for community feed -->
+<div id="container">
+
+    <!-- Display the title with the community name -->
+    <h3 class="title">@($"{CommunityName} Community Feed")</h3>
+
+    <!-- Check if there are posts to display, show loading message if not -->
+    @if (FilteredPosts == null || !FilteredPosts.Any())
+    {
+        <p>Loading posts...</p>
+    }
+    else
+    {
+        <!-- Container for posts -->
+        <div class="post-container">
+            <!-- Iterate through displayed posts and render them -->
+            @foreach (var post in DisplayedPosts)
+            {
+                <div class="post">
+                    <!-- Link to view the full post -->
+                    <a href="/post/viewpost/@post.Id" class="post-link">
+                        <div>
+                            <!-- Display post title and content -->
+                            <h4>@post.Title</h4>
+                            <p>@post.Content</p>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination controls -->
+        <div class="pagination">
+            <!-- Button to navigate to the previous page -->
+            <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
+            <!-- Display current page and total pages -->
+            <span>Page @currentPage of @totalPages</span>
+            <!-- Button to navigate to the next page -->
+            <button disabled="@IsLastPage" class="page-button" @onclick="NextPage">Next &#x21E2;</button>
+        </div>
+    }
+</div>
+
+@code {
+    <!-- Declare private variables for post handling -->
+    private List<Post> AllPosts;
+    private List<Post> DisplayedPosts;
+    private List<Post> FilteredPosts;
+    private int postsPerPage = 6; // Adjust the number of posts per page as needed
+    private int currentPage = 1;
+
+    <!-- Calculate total pages based on filtered posts -->
+    private int totalPages => (int)Math.Ceiling((double)(FilteredPosts?.Count ?? 0) / postsPerPage);
+
+    <!-- Boolean properties to check if the current page is the first or last -->
+    private bool IsFirstPage => currentPage == 1;
+    private bool IsLastPage => currentPage == totalPages;
+
+    <!-- Define parameters for the CommunityId and CommunityName -->
+    [Parameter]
+    public int CommunityId { get; set; }
+    public string CommunityName { get; set; }
+
+    <!-- Method called when the page is initialized -->
+    protected override async Task OnInitializedAsync()
+    {
+        <!-- Fetch community name, posts, and set initial displayed posts -->
+        await LoadCommunityName(CommunityId);
+        await LoadPosts(CommunityId);
+        UpdateDisplayedPosts();
+    }
+
+    <!-- Method to fetch the community name based on the CommunityId -->
+    private async Task LoadCommunityName(int communityId)
+    {
+        var community = await _client.GetFromJsonAsync<Community>($"{Endpoints.CommunityEndpoint}/{communityId}");
+        CommunityName = community?.Name ?? "Community Not Found";
+    }
+
+    <!-- Method to fetch posts for the specific community -->
+    private async Task LoadPosts(int communityId)
+    {
+        <!-- Fetch all posts and filter for the specific community -->
+        AllPosts = await _client.GetFromJsonAsync<List<Post>>(Endpoints.PostEndpoint);
+        FilteredPosts = AllPosts.Where(post => post.CommunityId == CommunityId).ToList();
+    }
+
+    <!-- Method to navigate to the previous page -->
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            UpdateDisplayedPosts();
+        }
+    }
+
+    <!-- Method to navigate to the next page -->
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            UpdateDisplayedPosts();
+        }
+    }
+
+    <!-- Method to update the list of displayed posts based on the current page -->
+    private void UpdateDisplayedPosts()
+    {
+        int startIndex = (currentPage - 1) * postsPerPage;
+        DisplayedPosts = FilteredPosts?.Skip(startIndex).Take(postsPerPage).ToList() ?? new List<Post>();
+    }
+
+    <!-- Method called when the component is disposed -->
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+}

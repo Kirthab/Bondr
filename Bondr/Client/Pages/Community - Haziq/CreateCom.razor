@@ -1,0 +1,102 @@
+﻿@page "/communities/createcommunity"
+
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@inject HttpInterceptorService _interceptor
+
+<!-- Link to external stylesheet for CreateCommunityStyles.css -->
+<link rel="stylesheet" href="path/to/CreateCommunityStyles.css" />
+
+<!-- Container for creating a new community -->
+<div id="container">
+    <!-- Heading for creating a new community -->
+    <h3 class="card-title">Create New Community</h3>
+    <hr />
+    <br />
+
+    <!-- EditForm for community creation with validation -->
+    <EditForm Model="@community" OnValidSubmit="CreateCommunity">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <!-- Form group for community name -->
+        <div class="form-group">
+            <label>Name: </label>
+            <div>
+                <InputText @bind-Value="@community.Name" class="form-control" />
+                <ValidationMessage For="@(() => community.Name)" />
+            </div>
+        </div>
+
+        <!-- Form group for community description -->
+        <div class="form-group">
+            <label>Description: </label>
+            <div>
+                <InputText @bind-Value="@community.Description" class="form-control" />
+                <ValidationMessage For="@(() => community.Description)" />
+            </div>
+        </div>
+
+        <!-- Dropdown list for staff selection -->
+        <div class="form-group">
+            <label>Assign Staff: </label>
+            <div>
+                <select @bind="community.StaffId" class="form-control">
+                    <option value="">Select Staff</option>
+                    <!-- Iterate through existing staff and create options -->
+                    @foreach (var staff in existingStaff)
+                    {
+                        <option value="@staff.Id">@staff.Name</option>
+                    }
+                </select>
+                <ValidationMessage For="@(() => community.StaffId)" />
+            </div>
+        </div>
+
+        <br />
+        <br />
+
+        <!-- Button to submit the form and create the community -->
+        <button type="submit" class="btn btn-success btn-block" disabled="@IsCommunityNameDuplicate()">
+            Create Community
+        </button>
+    </EditForm>
+</div>
+
+@code {
+    <!-- Initialize a new Community object -->
+    Community community = new Community();
+    <!-- Lists to store existing communities and staff -->
+    List<Community> existingCommunities = new List<Community>();
+    List<Staff> existingStaff = new List<Staff>();
+
+    <!-- Method called when the component is initialized -->
+    protected override async Task OnInitializedAsync()
+    {
+        <!-- Fetch existing communities and staff from the server -->
+        existingCommunities = await _client.GetFromJsonAsync<List<Community>>(Endpoints.CommunityEndpoint);
+        existingStaff = await _client.GetFromJsonAsync<List<Staff>>(Endpoints.StaffEndpoint);
+    }
+
+    <!-- Method to create a new community -->
+    private async Task CreateCommunity()
+    {
+        <!-- Send a POST request to the server to create the community -->
+        await _client.PostAsJsonAsync(Endpoints.CommunityEndpoint, community);
+        <!-- Navigate to the communities page after successful creation -->
+        _navManager.NavigateTo("/communities/");
+    }
+
+    <!-- Method to check if the community name is a duplicate -->
+    private bool IsCommunityNameDuplicate()
+    {
+        <!-- Check if there is any existing community with the same name -->
+        return existingCommunities.Any(c => c.Name?.Equals(community.Name, StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
+    <!-- Method called when the component is disposed -->
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+}

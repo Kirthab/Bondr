@@ -16,6 +16,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Components\BackToList.razor" />
+    <None Include="Pages\AdminPages - Haziq\AdminCom.razor" />
+    <None Include="Pages\AdminPages - Haziq\AdminHome.razor" />
+    <None Include="Pages\AdminPages - Haziq\AdminStaff.razor" />
+    <None Include="Pages\AdminPages - Haziq\AdminVisitors.razor" />
+    <None Include="Pages\AdminPages - Haziq\GenreControl.razor" />
+    <None Include="Pages\Community - Haziq\ComFeed.razor" />
+    <None Include="Pages\Community - Haziq\ComPage.razor" />
+    <None Include="Pages\Community - Haziq\CreateCom.razor" />
+    <None Include="Pages\Community - Haziq\EditCom.razor" />
+    <None Include="Pages\Community - Haziq\FormComponent.razor" />
+    <None Include="Pages\Staff - Haziq\Create.razor" />
+    <None Include="Pages\Staff - Haziq\Edit.razor" />
+    <None Include="Pages\Staff - Haziq\FormComponent.razor" />
+    <None Include="Pages\Staff - Haziq\ListStaff.razor" />
+    <None Include="Pages\Staff - Haziq\ViewStaff.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.14" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="7.0.14" />

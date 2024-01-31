@@ -1,0 +1,129 @@
+﻿@page "/staff/create/"
+
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<div id="container">
+    <!-- Heading for creating a new staff -->
+    <h3 class="card-title">Create New Staff</h3>
+    <hr />
+    <br />
+
+    <!-- EditForm for staff creation with validation -->
+    <EditForm Model="@staff" OnValidSubmit="CreateStaff">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <!-- Form group for staff name -->
+        <div class="form-group">
+            <label>Name: </label>
+            <div>
+                <InputText @bind-Value="@staff.Name" class="form-control" />
+                <ValidationMessage For="@(() => staff.Name)" />
+            </div>
+        </div>
+
+        <!-- Form group for staff gender -->
+        <div class="form-group">
+            <label for="gender">Gender (Optional):</label>
+            <select id="gender" name="gender" @bind="staff.Gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <!-- Form group for staff email -->
+        <div class="form-group">
+            <label>Email: </label>
+            <div>
+                <InputText @bind-Value="@staff.Email" class="form-control" />
+                <ValidationMessage For="@(() => staff.Email)" />
+            </div>
+        </div>
+
+        <!-- Form group for staff password -->
+        <div class="form-group">
+            <label>Password: </label>
+            <div>
+                <InputText @bind-Value="@staff.Password" class="form-control" />
+                <ValidationMessage For="@(() => staff.Password)" />
+            </div>
+        </div>
+
+        <!-- Form group for staff salary -->
+        <div class="form-group">
+            <label>Salary: </label>
+            <div>
+                <InputNumber @bind-Value="@staff.Salary" class="form-control" step="0.01" />
+                <ValidationMessage For="@(() => staff.Salary)" />
+            </div>
+        </div>
+
+        <!-- Form group for staff position -->
+        <div class="form-group">
+            <label>Position: </label>
+            <div>
+                <InputText @bind-Value="@staff.Position" class="form-control" />
+                <ValidationMessage For="@(() => staff.Position)" />
+            </div>
+        </div>
+
+        <!-- Form group for staff date of birth -->
+        <div class="form-group">
+            <label for="dob">Date of Birth: </label>
+            <div>
+                <input id="dob" name="dob" class="form-control" type="date" @oninput="@UpdateAgeFromDate" />
+                <ValidationMessage For="@(() => staff.Age)" />
+            </div>
+        </div>
+
+        <!-- Form group for staff age -->
+        <div class="form-group">
+            <label>Age: </label>
+            <div>
+                <span>@staff.Age</span>
+            </div>
+        </div>
+
+        <br />
+        <br />
+
+        <!-- Button to submit the form and create the staff -->
+        <button type="submit" class="btn btn-success btn-block">
+            Create Staff
+        </button>
+    </EditForm>
+</div>
+
+@code {
+    <!-- Initialize a new Staff object -->
+    Staff staff = new Staff();
+
+    <!-- Method to update the age based on the date of birth -->
+    private void UpdateAgeFromDate(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value.ToString(), out DateTime dob))
+        {
+            DateTime today = DateTime.Today;
+            int age = today.Year - dob.Year;
+
+            // Check if the birthday has occurred this year
+            if (dob.Date > today.AddYears(-age))
+            {
+                age--;
+            }
+
+            staff.Age = age;
+        }
+    }
+
+    <!-- Method to create a new staff -->
+    private async Task CreateStaff()
+    {
+        <!-- Send a POST request to the server to create the staff -->
+        await _client.PostAsJsonAsync(Endpoints.StaffEndpoint, staff);
+        <!-- Navigate to the staff page after successful creation -->
+        _navManager.NavigateTo("/staff/");
+    }
+}

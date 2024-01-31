@@ -1,0 +1,48 @@
+﻿.container {
+    box-sizing: border-box;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+    padding: 20px;
+    display: block;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+    .table th, .table td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .table th {
+        background-color: #333;
+        color: white;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .table tbody tr:hover {
+        background-color: #ddd;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .table td {
+        color: white;
+    }
+
+h3 {
+    text-align: center;
+    color: white;
+}

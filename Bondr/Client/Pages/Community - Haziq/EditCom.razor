@@ -1,0 +1,46 @@
+﻿@page "/communities/edit/{id:int}"
+
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@inject HttpInterceptorService _interceptor
+
+<!-- Link to external stylesheet for CreateCommunityStyles.css -->
+<link rel="stylesheet" href="path/to/CreateCommunityStyles.css" />
+
+<!-- Container for editing a community -->
+<div id="container">
+    <!-- Heading for editing a community -->
+    <h3 class="card-title">Edit Community</h3>
+    <hr />
+    <br />
+    <!-- Use a reusable FormComponent with specific parameters -->
+    <FormComponent ButtonText="Update" OnValidSubmit="EditCommunity" community="community" />
+</div>
+
+@code {
+    
+    [Parameter] public int id { get; set; } // Define a parameter for the community ID
+    Community? community = new Community(); // Initialize a nullable Community object
+
+    <!-- Method called when parameters are set -->
+    protected async override Task OnParametersSetAsync()
+    {
+        <!-- Fetch the specific community details based on the ID -->
+        community = await _client.GetFromJsonAsync<Community>($"{Endpoints.CommunityEndpoint}/{id}");
+    }
+
+    <!-- Method to edit a community -->
+    async Task EditCommunity()
+    {
+        <!-- Send a PUT request to update the community details -->
+        await _client.PutAsJsonAsync($"{Endpoints.CommunityEndpoint}/{id}", community);
+        <!-- Navigate to the communities page after successful update -->
+        _navManager.NavigateTo("/communities/");
+    }
+
+    <!-- Method called when the component is disposed -->
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+}

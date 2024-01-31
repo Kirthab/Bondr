@@ -22,6 +22,15 @@
                         }
                     }
                 </select>
+                <select class="postGenreDropdown" @bind="post.CommunityId" @oninput="UpdateCommunityId">
+                    @if (Communities != null && Communities.Any())
+                    {
+                        foreach (var community in Communities)
+                        {
+                            <option value="@community.Id">@community.Name</option>
+                        }
+                    }
+                </select>
                 <div class="post-content">
                     <textarea class="postParagraph" @bind="post.Content" placeholder="Enter Post Paragraph (2000 characters max)" maxlength="2000"></textarea>
                 </div>
@@ -38,6 +47,7 @@
         private IList<Genre>? Genres;
         private IList<Post>? Posts;
         private IList<Visitor>? Visitors;
+        private IList<Community>? Communities;
         private Visitor visitor;
 
         private async void UpdateGenreId(ChangeEventArgs e)
@@ -47,10 +57,18 @@
                 post.GenreId = genreId;
             }
         }
+        private async void UpdateCommunityId(ChangeEventArgs e)
+        {
+            if (int.TryParse(e.Value.ToString(), out var communityId))
+            {
+                post.CommunityId = communityId;
+            }
+        }
 
         protected async override Task OnInitializedAsync()
         {
             Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
+            Communities = await _client.GetFromJsonAsync<List<Community>>($"{Endpoints.CommunityEndpoint}");
             Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostEndpoint}");
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
@@ -59,12 +77,19 @@
 
             // Set default genre ID
             post.GenreId = GetDefaultGenreId();
+            // Set default community ID
+            post.CommunityId = GetDefaultCommunityId();
         }
 
         private int GetDefaultGenreId()
         {
             var defaultGenre = Genres?.FirstOrDefault();
             return defaultGenre?.Id ?? 0; // Use a default value if not found
+        }
+        private int GetDefaultCommunityId()
+        {
+            var defaultCommunity = Communities?.FirstOrDefault();
+            return defaultCommunity?.Id ?? 0; // Use a default value if not found
         }
 
 

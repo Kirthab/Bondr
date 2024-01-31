@@ -15,12 +15,6 @@
     padding: 10px;
 }
 
-#username {
-    color: #faf9e3;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    font-size:15px;
-}
-
 #title {
     font-size: 30px;
     font-family: "Arial Black", sans-serif;
@@ -132,6 +126,7 @@
 
 .collapsible-create-comment{
     padding:10px;
+    width: 100%;
 }
 
 .comment-para {
@@ -171,7 +166,7 @@
 
 #upload-comment {
     max-width: 100%;
-    margin-left: 1300px; /* This pushes the element to the right */
+    margin-left: auto; /* This pushes the element to the right */
     padding: 10px;
     background: transparent;
     border-radius: 5px;
@@ -251,6 +246,19 @@ td {
     z-index: -1;
 }
 }
+
+
+
+#username {
+    color: #faf9e3;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 15px;
+    text-decoration: none; /* Remove underline by default */
+}
+
+    #username:hover {
+        text-decoration: underline;
+    }
 
 span {
     margin: 0 10px;

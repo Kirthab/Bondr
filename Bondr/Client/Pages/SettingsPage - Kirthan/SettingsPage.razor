@@ -1,51 +1,59 @@
 ﻿@inject NavigationManager _navManager
 @inject HttpClient _client
-@inject HttpInterceptorService _interceptor
+<!-- For IDisposable Error Handling-->
+@inject HttpInterceptorService _interceptor 
+@implements IDisposable
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime js
 @inject IJSRuntime JSRuntime
 
+<!-- Settings Page -->
 @page "/settings"
 
+<!-- For Settings Icon -->
 <div class="header">
     <img src="../Images/Pages/settingsBanner.png">
 </div>
 
+<!-- Standard Container -->
+<div id="container">
 <EditForm Model="EditVisitor" OnValidSubmit="UpdateUser">
     @if (EditVisitor != null)
     {
-        <div id="container">
+            <!-- Data Annotation Validator -->
             <DataAnnotationsValidator />
             <ValidationSummary />
 
+            <!-- Username -->
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" placeholder="@EditVisitor?.Username" @bind="EditVisitor.Username" required>
-
+            <!-- Status -->
             <label for="status">Status:</label>
             <input type="text" id="status" name="status" placeholder="@EditVisitor?.Status" @bind="EditVisitor.Status">
-
+            <!-- Email -->
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" placeholder="@EditVisitor?.Email" @bind="EditVisitor.Email" readonly>
-
+            <!-- Password -->
             <label for="password">Password:</label>
             <input type="text" id="password" name="password" value="@text" readonly>
             <span class='togglepassword' @onclick="TogglePass">@text2</span>
-
+            <!-- Gender (Will be male if no selection is made) -->
             <label for="notification">Gender (Optional):</label>
             <select id="notification" name="notification" @bind="EditVisitor.Gender">
                 <option value="Male" selected="@(EditVisitor.Gender == "Male")">Male</option>
                 <option value="Female" selected="@(EditVisitor.Gender == "Female")">Female</option>
                 <option value="Other" selected="@(EditVisitor.Gender == "Other")">Other</option>
             </select>
-
+            <!-- To calculate age -->
             <label for="age">BirthDay</label>
             <input id="age" name="age" class="form-control" type="date" @oninput="UpdateAgeFromDate" />
 
             <button class="bt1" type="submit">Save Changes</button>
-        </div>
+        }
+    </EditForm>
+    <button class="ViewSelf" @onclick="viewSelfProfile">View Profile</button>
+</div>
 
-    }
-</EditForm>
 
 @code {
     private IList<Visitor>? Visitors;
@@ -62,12 +70,15 @@
         text = EditVisitor.Password;
     }
 
+    //Update function
     private async Task UpdateUser()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         var id = EditVisitor.Id;
+
+        if (EditVisitor.Gender == null) { EditVisitor.Gender = "Male"; }
         await _client.PutAsJsonAsync($"{Endpoints.VisitorEndpoint}/{id}", EditVisitor);
 
         await js.InvokeAsync<object>("alert", "Your profile has been updated");
@@ -75,6 +86,7 @@
         _navManager.NavigateTo("/");
     }
 
+    //For password showing
     private async Task TogglePass()
     {
         if (text == EditVisitor.Password)
@@ -89,6 +101,13 @@
         }
     }
 
+    //To profile card page
+    public async Task viewSelfProfile()
+    {
+        _navManager.NavigateTo("/searchuser/" + EditVisitor.Id);
+    }
+
+    //Age calculation
     private void UpdateAgeFromDate(ChangeEventArgs e)
     {
         if (DateTime.TryParse(e.Value.ToString(), out DateTime dob))
@@ -104,6 +123,12 @@
 
             EditVisitor.Age = age;
         }
+    }
+
+    //Disposable function
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
     }
 }
 

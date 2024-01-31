@@ -6,7 +6,7 @@ namespace Bondr.Shared.Domain
     {
 
         [Required]
-        public string? Title{ get; set; }
+        public string? Title { get; set; }
         [Required]
         public string? Content { get; set; }
         public int? Vote { get; set; }
@@ -15,9 +15,11 @@ namespace Bondr.Shared.Domain
         public int? UserId { get; set; }
         public virtual List<Visitor>? User { get; set; }
         public int? StaffId { get; set; }
-        public virtual List<Staff>? Staffs { get; set;}
+        public virtual List<Staff>? Staffs { get; set; }
         public int? CommentId { get; set; }
         public virtual List<Comment>? Comments { get; set; }
+        public int? CommunityId { get; set; }
+        public virtual Community? Community { get; set; }
 
 
     }

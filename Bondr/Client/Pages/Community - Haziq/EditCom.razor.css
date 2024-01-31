@@ -1,0 +1,37 @@
+﻿/* CreateCommunityStyles.css */
+
+#container {
+    box-sizing: border-box;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+    padding: 20px;
+    display: block;
+}
+
+.card-title {
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+    .form-group label {
+        color: white;
+    }
+
+.btn-success {
+    background-color: #06a11b;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+    .btn-success:hover {
+        background-color: #067d14;
+    }

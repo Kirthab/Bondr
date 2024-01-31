@@ -10,11 +10,13 @@
 <div id="container">
     <div id="top">
         <div id="post-container">
+            <!-- Error handling -->
             @if (visitor != null){
-                <h4 id="username">@@@GetUserName()</h4>
+                <h4><a id="username" href="/searchuser/@Post.UserId">@@@GetUserName()</a></h4>
             }
             @if (Post != null)
             {
+                <!-- Elements for post viewing -->
                 <h1 id="title">@Post.Title</h1>
                 <h4 id="title-genre">#@GetGenreName(Post.GenreId)</h4>
                 <p id="content">@Post.Content</p>
@@ -23,7 +25,7 @@
                     <p id="vote-count">@Post.Vote</p>
                     <button id="arrow-button" @onclick="Downvote">&#x1F847;</button>
                     <button id="add-comment" @onclick="ToggleDropdown" >Add Comment &#43;</button>
-                    @if(@visitor.Id == @Post.UserId){
+                    @if(@visitor.Id == @Post.UserId){ <!-- To ensure only creator can edit and delete post -->
                         <button id="edit-post" @onclick="ToggleDropdownEdit">Edit Post</button>
                         <button id="del-post" @onclick="DeletePost">Delete Post</button>
                     }
@@ -35,13 +37,14 @@
             }
         </div>
     </div>
-    @if (ShowDiv)
+    <!-- Toggle -->
+    @if (ShowDiv) 
     {
         if(WhichDiv == 1){
             <EditForm Model="@comment" OnValidSubmit="CreateComment">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-
+            <!-- Create comment -->
                 <div class="collapsible-create-comment">
                     <textarea class="comment-para" @bind="comment.Text" placeholder="Enter Comment (2000 characters max)" maxlength="2000"></textarea>
                     <button type="submit" id="upload-comment">Submit</button>
@@ -50,6 +53,7 @@
         }
         else if(WhichDiv == 2)
         {
+            <!-- Edit post -->
             <EditForm Model="@Post" OnValidSubmit="EditPost">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
@@ -63,6 +67,7 @@
         }
         else if(WhichDiv == 999)
         {
+            <!-- Edit comment -->
             <EditForm Model="@comment" OnValidSubmit="@(async () => await UpdateComment(comment.Id))">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
@@ -76,6 +81,7 @@
         }
     }
     <div id="comments-container">
+        <!-- Error handling -->
         @if (Comments == null || !Comments.Any())
         {
             <br />
@@ -84,6 +90,7 @@
         }
         else
         {
+            <!-- Table for comments -->
             <table>
                 <thead>
                     <tr>
@@ -98,6 +105,7 @@
                         <tr>
                             <td>@comment.Text</td>
                             <td colspan="10" style="text-align: right;">
+                                <!-- Only creator can edit and delte -->
                                 @if (@visitor.Id == @comment.UserId)
                                 {
                                     <button id="edit" @onclick="@(()=>EditComment(comment.Id))">Edit</button>
@@ -113,7 +121,8 @@
                     }
                 </tbody>
             </table>
-            
+
+            <!-- Pagination controls -->
             <div class="pagination">
                 <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
                 <span>Page @currentPage of @totalPages</span>
@@ -140,7 +149,7 @@
     private Post editPost = new Post();
     private Comment updateComment = new Comment();
 
-    private int commentsPerPage = 20;
+    private int commentsPerPage = 20; //How many comments per page
     private int currentPage = 1;
     private int totalPages => (int)Math.Ceiling((double)(Comments?.Count ?? 0) / commentsPerPage);
     private bool IsFirstPage => currentPage == 1;
@@ -169,7 +178,7 @@
         {
             Console.WriteLine($"Error fetching post: {ex.Message}");
         }
-
+        //Loads of error handling
         try
         {
             AllComments = await _client.GetFromJsonAsync<List<Comment>>(Endpoints.CommentsEndpoint);
@@ -202,6 +211,7 @@
             return "Unknown Genre";
         }
     }
+    //Get users username
     private string GetUserName()
     {
         var id = tPost.UserId;
@@ -209,6 +219,7 @@
         return visitor.Username;
     }
     
+    //Pagination
     private void PreviousPage()
     {
         if (currentPage > 1)
@@ -227,6 +238,7 @@
         }
     }
 
+    //Update comments section
     private void UpdateDisplayedComments()
     {
         int startIndex = (currentPage - 1) * commentsPerPage;
@@ -238,6 +250,7 @@
         UpdateDisplayedComments();
     }
 
+    //Toggle functions
     private void ToggleDropdown()
     {
         if (ShowDiv == true)
@@ -277,11 +290,13 @@
         }
     }
 
+    //Dispose function
     public void Dispose()
     {
         _interceptor.DisposeEvent();
     }
 
+    //Vote functions
     private async Task Upvote()
     {
         Post.Vote = Post.Vote + 1;
@@ -339,6 +354,7 @@
         UpdateDisplayedComments();
     }
 
+    //Comment creation
     private async Task CreateComment()
     {
         comment.Vote = 0;
@@ -348,7 +364,7 @@
         try
         {
             await _client.PostAsJsonAsync(Endpoints.CommentsEndpoint, comment);
-            AllComments = await _client.GetFromJsonAsync<List<Comment>>(Endpoints.CommentsEndpoint);
+            AllComments = await _client.GetFromJsonAsync<List<Comment>>(Endpoints.CommentsEndpoint); 
             Comments = new List<Comment>();
 
             foreach (var item in AllComments)
@@ -369,6 +385,8 @@
             Console.WriteLine($"Error creating comment: {ex.Message}");
         }
     }
+
+    //CRUD Functions
     private async Task DeletePost()
     {
         var id = Post.Id;

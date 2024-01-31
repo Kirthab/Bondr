@@ -1,0 +1,138 @@
+﻿@page "/staff/edit/{id}"
+
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<!-- Heading for editing a staff member -->
+<h3 class="card-title">Edit Staff</h3>
+<hr />
+<br />
+
+<!-- EditForm for staff editing with validation -->
+<EditForm Model="@staff" OnValidSubmit="UpdateStaff">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <!-- Form group for staff name -->
+    <div class="form-group">
+        <label>Name: </label>
+        <div>
+            <InputText @bind-Value="@staff.Name" class="form-control" />
+            <ValidationMessage For="@(() => staff.Name)" />
+        </div>
+    </div>
+
+    <!-- Form group for staff gender -->
+    <div class="form-group">
+        <label for="gender">Gender (Optional):</label>
+        <select id="gender" name="gender" @bind="staff.Gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+
+    <!-- Form group for staff email -->
+    <div class="form-group">
+        <label>Email: </label>
+        <div>
+            <InputText @bind-Value="@staff.Email" class="form-control" />
+            <ValidationMessage For="@(() => staff.Email)" />
+        </div>
+    </div>
+
+    <!-- Form group for staff password -->
+    <div class="form-group">
+        <label>Password: </label>
+        <div>
+            <InputText @bind-Value="@staff.Password" class="form-control" />
+            <ValidationMessage For="@(() => staff.Password)" />
+        </div>
+    </div>
+
+    <!-- Form group for staff salary -->
+    <div class="form-group">
+        <label>Salary: </label>
+        <div>
+            <InputNumber @bind-Value="@staff.Salary" class="form-control" step="0.01" />
+            <ValidationMessage For="@(() => staff.Salary)" />
+        </div>
+    </div>
+
+    <!-- Form group for staff position -->
+    <div class="form-group">
+        <label>Position: </label>
+        <div>
+            <InputText @bind-Value="@staff.Position" class="form-control" />
+            <ValidationMessage For="@(() => staff.Position)" />
+        </div>
+    </div>
+
+    <!-- Form group for staff date of birth -->
+    <div class="form-group">
+        <label for="dob">Date of Birth: </label>
+        <div>
+            <input id="dob" name="dob" class="form-control" type="date" @oninput="@UpdateAgeFromDate" />
+            <ValidationMessage For="@(() => staff.Age)" />
+        </div>
+    </div>
+
+    
+
+    <!-- Form group for staff age -->
+    <div class="form-group">
+        <label>Age: </label>
+        <div>
+            <span>@staff.Age</span>
+        </div>
+    </div>
+
+    <br />
+    <br />
+
+    <!-- Button to submit the form and update the staff member -->
+    <button type="submit" class="btn btn-success btn-block">
+        Update Staff
+    </button>
+</EditForm>
+
+@code {
+    <!-- Define a parameter for the staff member ID -->
+    [Parameter] public string id { get; set; }
+    <!-- Initialize a new Staff object -->
+    Staff staff = new Staff();
+
+    <!-- Method called when the component is initialized -->
+    protected override async Task OnInitializedAsync()
+    {
+        <!-- Fetch the specific staff member details based on the ID -->
+        staff = await _client.GetFromJsonAsync<Staff>($"{Endpoints.StaffEndpoint}/{id}");
+    }
+
+    <!-- Method to update the age based on the date of birth -->
+    private void UpdateAgeFromDate(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value.ToString(), out DateTime dob))
+        {
+            DateTime today = DateTime.Today;
+            int age = today.Year - dob.Year;
+
+            // Check if the birthday has occurred this year
+            if (dob.Date > today.AddYears(-age))
+            {
+                age--;
+            }
+
+            staff.Age = age;
+        }
+    }
+
+    <!-- Method to update the staff member details -->
+    private async Task UpdateStaff()
+    {
+        <!-- Send a PUT request to the server to update the staff member -->
+        await _client.PutAsJsonAsync($"{Endpoints.StaffEndpoint}/{id}", staff);
+        <!-- Navigate to the staff page after successful update -->
+        _navManager.NavigateTo("/staff/");
+    }
+}

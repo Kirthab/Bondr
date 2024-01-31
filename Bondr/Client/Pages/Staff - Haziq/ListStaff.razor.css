@@ -1,0 +1,46 @@
+﻿#container {
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden; /* Hide content overflowing from the border */
+    position: relative;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+    padding: 20px;
+}
+
+#heada {
+    color: white;
+    font-family: Consolas, monospace;
+    font-size: 50px;
+    text-align: center;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: Consolas, monospace;
+}
+
+    .table th, .table td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .table th {
+        background-color: #333;
+        color: white;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(183, 183, 183, 0.8);
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .table td {
+        color: white;
+    }

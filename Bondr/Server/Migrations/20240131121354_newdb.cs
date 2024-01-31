@@ -64,7 +64,6 @@ namespace Bondr.Server.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StaffId = table.Column<int>(type: "int", nullable: true),
                     SubcriptionId = table.Column<int>(type: "int", nullable: true),
-                    PostId = table.Column<int>(type: "int", nullable: true),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -268,29 +267,6 @@ namespace Bondr.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subscription",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: true),
-                    CommunityId = table.Column<int>(type: "int", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Subscription", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Subscription_Community_CommunityId",
-                        column: x => x.CommunityId,
-                        principalTable: "Community",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Comment",
                 columns: table => new
                 {
@@ -391,12 +367,13 @@ namespace Bondr.Server.Migrations
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Age = table.Column<int>(type: "int", nullable: true),
                     Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CardImg = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubscriptionId = table.Column<int>(type: "int", nullable: true),
                     CommentId = table.Column<int>(type: "int", nullable: true),
                     PostId = table.Column<int>(type: "int", nullable: true),
-                    SubscriptionId = table.Column<int>(type: "int", nullable: true),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -415,10 +392,34 @@ namespace Bondr.Server.Migrations
                         column: x => x.PostId,
                         principalTable: "Post",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscription",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    UsersId = table.Column<int>(type: "int", nullable: true),
+                    CommunityId = table.Column<int>(type: "int", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscription", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Visitor_Subscription_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "Subscription",
+                        name: "FK_Subscription_Community_CommunityId",
+                        column: x => x.CommunityId,
+                        principalTable: "Community",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Subscription_Visitor_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "Visitor",
                         principalColumn: "Id");
                 });
 
@@ -434,7 +435,7 @@ namespace Bondr.Server.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "582dc68c-247c-4362-b5f6-b5fb62115341", "admin@localhost.com", false, "Admin", "User", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEHsHCZxlCgt3FZ/u+dVk0LXYelLYdykwCUyv3Xz7Zks6dPF9pyGmlqHlFxj8QFmr9Q==", null, false, "ab4ee3e1-31d0-411e-8ae3-960ffe1cc555", false, "admin@localhost.com" });
+                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "9c54b467-42f1-41b0-893f-56897203fb26", "admin@localhost.com", false, "Admin", "User", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAECH69WbzPnMdXSkN+Tkrdn0L+3X4DjgCe5fPZgmDi3WDbjh04N/Yy5FSDDYXc1L82g==", null, false, "6d8f9184-1f50-49aa-be3a-4c173256bc7a", false, "admin@localhost.com" });
 
             migrationBuilder.InsertData(
                 table: "Genre",
@@ -450,8 +451,9 @@ namespace Bondr.Server.Migrations
                 columns: new[] { "Id", "Age", "CommentId", "CommunityId", "CreatedBy", "DateCreated", "DateUpdated", "Email", "Gender", "Name", "Password", "Position", "PostId", "Salary", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, null, null, null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "anitamaxwynn@hotmail.com", "Female", "Anita Max Wynn", "champagnepapi21", "CEO", null, 5500.0, null },
-                    { 2, null, null, null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "aethelh@hotmail.com", "Male", "Aethelheimarl Hilmard", "meadowviking16", "Back-End Engineer", null, 4500.0, null }
+                    { 1, 58, null, null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "anitamaxwynn@hotmail.com", "Female", "Anita Max Wynn", "champagnepapi21", "CEO", null, 20500.0, null },
+                    { 2, 25, null, null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "aethelh@hotmail.com", "Male", "Aethelheimarl Hilmard", "meadowviking16", "Back-End Engineer", null, 4500.0, null },
+                    { 3, 20, null, null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "dyrmater@hotmail.com", "Female", "Illia Dyr", "dyrmaterillia", "Media Manager", null, 2500.0, null }
                 });
 
             migrationBuilder.InsertData(
@@ -570,6 +572,11 @@ namespace Bondr.Server.Migrations
                 column: "CommunityId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Subscription_UsersId",
+                table: "Subscription",
+                column: "UsersId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Visitor_CommentId",
                 table: "Visitor",
                 column: "CommentId");
@@ -578,11 +585,6 @@ namespace Bondr.Server.Migrations
                 name: "IX_Visitor_PostId",
                 table: "Visitor",
                 column: "PostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Visitor_SubscriptionId",
-                table: "Visitor",
-                column: "SubscriptionId");
         }
 
         /// <inheritdoc />
@@ -619,7 +621,7 @@ namespace Bondr.Server.Migrations
                 name: "Staff");
 
             migrationBuilder.DropTable(
-                name: "Visitor");
+                name: "Subscription");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -628,10 +630,10 @@ namespace Bondr.Server.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Comment");
+                name: "Visitor");
 
             migrationBuilder.DropTable(
-                name: "Subscription");
+                name: "Comment");
 
             migrationBuilder.DropTable(
                 name: "Post");

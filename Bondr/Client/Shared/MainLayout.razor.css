@@ -7,7 +7,7 @@
 
 main {
     flex: 1;
-    background-image: url('../Images/index-background.png');
+    background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(49,7,61,1) 32%, rgba(43,15,62,1) 50%, rgba(62,6,78,1) 68%, rgba(0,0,0,1) 100%);
 }
 
 .search {
@@ -20,7 +20,9 @@ main {
 }
 
 .navbar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    margin: 0;
+    background: #39025e;
+
 }
 
 .navbar, article {

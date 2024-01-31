@@ -1,0 +1,120 @@
+﻿#container {
+    box-sizing: border-box;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+    padding: 20px;
+    display: block;
+}
+
+.community-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.community-box {
+    width: 30%;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #111;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+    .community-box:hover {
+        box-shadow: 0 0 20px rgba(0, 255, 255, 1);
+    }
+
+.community-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.community-description {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.community-actions {
+    margin-top: 10px;
+}
+
+    .community-actions a,
+    .community-actions button {
+        margin-right: 10px;
+        color: #fff;
+    }
+
+#container h3 {
+    text-align: center;
+    color: white;
+}
+
+#container button {
+    padding: 10px 15px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+/* Edit button */
+.edit-com {
+    @extend #container button;
+    background-color: #f0ad4e; 
+}
+
+/* Delete button */
+.del-com {
+    @extend #container button;
+    background-color: #d9534f; 
+}
+
+/* View button */
+.view-com {
+    @extend #container button;
+    background-color: #5bc0de; 
+}
+
+/* Delete Posts button */
+.delete-com {
+    @extend #container button;
+    background-color: #0069d9; 
+}
+
+.page-button {
+    background: transparent;
+    border-radius: 5px;
+    font-family: Inter, Helvetica, sans-serif;
+    font-size: large;
+    font-weight: 700;
+    line-height: 0;
+    border: 2px solid white;
+    text-align: center;
+    color: #fff;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.pagination {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+span {
+    margin: 0 10px;
+    color: #fff;
+}
