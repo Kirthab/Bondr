@@ -23,7 +23,7 @@
 .admin-button {
     padding: 10px 20px;
     text-decoration: none;
-    background-color: #4CAF50; /* Green color - you can customize */
+    background-color: #4CAF50; 
     color: white;
     border: 1px solid #4CAF50;
     border-radius: 5px;
@@ -32,7 +32,7 @@
 }
 
     .admin-button:hover {
-        background-color: #45a049; /* Darker green color - you can customize */
+        background-color: #45a049; 
     }
 
 
@@ -40,14 +40,14 @@
 .user,
 .genre,
 .staff {
-    width: 45%; /* Adjust the width for 2 columns */
+    width: 45%; 
     height: 150px;
-    flex-basis: calc(48% - 20px); /* Adjust the flex-basis for spacing, considering margins */
+    flex-basis: calc(48% - 20px); 
     margin: 10px;
     display: inline-block;
     box-sizing: border-box;
     cursor: pointer;
-    background-color: #4CAF50; /* Green color - you can customize */
+    background-color: #4CAF50; 
     color: white;
     border: 1px solid #4CAF50;
     border-radius: 10px;

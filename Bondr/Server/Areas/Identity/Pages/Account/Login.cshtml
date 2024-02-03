@@ -9,8 +9,8 @@
     <div>
         <section>
             <form id="account" method="post">
-                <h1 style="margin-top:1rem; font-weight: bold; text-align:center; font-size:8rem;">@ViewData["Title"]</h1>
-                <h2 style="color:#330138; margin-top:2rem; text-align:center;">Log In</h2>
+                <h1 style="color: #efbbff; margin-top: 1rem; font-weight: bold; text-align: center; font-size: 8rem; font-family: 'Arial', Helvetica, sans-serif;">@ViewData["Title"]</h1>
+                <h2 style="color:#efbbff; margin-top:2rem; font-family: 'Arial', Helvetica, sans-serif; text-align:center;">Log In</h2>
                 <div style="height:3rem;"></div>
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
@@ -24,7 +24,7 @@
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
+                    <label asp-for="Input.RememberMe" class="form-label" style="color: #efbbff;">
                         <input class="form-check-input" asp-for="Input.RememberMe" />
                         @Html.DisplayNameFor(m => m.Input.RememberMe)
                     </label>

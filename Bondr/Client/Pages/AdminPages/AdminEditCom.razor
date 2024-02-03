@@ -78,10 +78,20 @@
     <!-- Method to check if the community name is a duplicate -->
     private bool IsCommunityNameDuplicate()
     {
-    return existingCommunities.Any(c => c.Id != community.Id && 
-                                         c.Name != null && 
-                                         community.Name != null &&
-                                         c.Name.Equals(community.Name, StringComparison.OrdinalIgnoreCase));
+        // Using LINQ which returns true if at least one satisfies condition
+        return existingCommunities.Any(c =>
+            // Ensure the ID of the existing community is different from the new or updated community.
+            c.Id != community.Id &&
+
+            // Ensure the name of the existing community is not null.
+            c.Name != null &&
+
+            // Ensure the name of the new or updated community is not null.
+            community.Name != null &&
+
+            // Compare the names in a case-insensitive manner.
+            c.Name.Equals(community.Name, StringComparison.OrdinalIgnoreCase)
+        );
     }
 
     async Task UpdateCommunity()

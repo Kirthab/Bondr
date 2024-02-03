@@ -64,11 +64,10 @@
 </div>
 
 @code {
-    <!-- Initialize a new Community object -->
-    Community community = new Community();
-    <!-- Lists to store existing communities and staff -->
-    List<Community> existingCommunities = new List<Community>();
-    List<Staff> existingStaff = new List<Staff>();
+    
+    Community community = new Community(); // Initialize a new Community object
+    List<Community> existingCommunities = new List<Community>(); // Lists to store existing communities
+    List<Staff> existingStaff = new List<Staff>(); // List to store staff
 
     <!-- Method called when the component is initialized -->
     protected override async Task OnInitializedAsync()

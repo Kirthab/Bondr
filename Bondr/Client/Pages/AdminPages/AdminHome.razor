@@ -66,7 +66,7 @@
         Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
         visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
 
-        // Update the totalVisitors variable
+        // Update the total variable
         totalVisitors = Visitors?.Count ?? 0;
         totalStaff = Staffs?.Count ?? 0;
         totalCommunities = Communities?.Count ?? 0;
