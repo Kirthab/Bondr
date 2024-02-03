@@ -88,7 +88,7 @@
 }
 
 /* Delete Posts button */
-.delete-com {
+.del-post {
     @extend #container button;
     background-color: #0069d9;
 }

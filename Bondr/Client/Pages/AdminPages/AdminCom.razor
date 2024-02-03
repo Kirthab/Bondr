@@ -39,12 +39,12 @@
                         <div class="community-name">@community.Name</div>
                         <div class="community-description">@community.Description</div>
                         <div class="community-actions">
-                            @*<button class="edit-com" @onclick="@(() => EditCommunity(community.Id))">Edit Community</button>*@
-                            <button class="del-com" @onclick="@(()=>Delete(community.Id))">Delete Community</button>
+                            <button class="edit-com" @onclick="()=>EditCommunity(community.Id)">Edit Community</button>
                             <!-- Add a button to navigate to the community feed page with the specific community id -->
                             <button class="view-com" @onclick="()=>NavigateToCommunityFeed(community.Id)">View Community Feed</button>
                             <!-- Add a button to delete posts in the community -->
-                            <button class="delete-com" @onclick="()=>DeletePostsInCommunity(community.Id)">Delete Posts</button>
+                            <button class="del-post" @onclick="()=>DeletePostsInCommunity(community.Id)">Delete Posts</button>
+                            <button class="del-com" @onclick="@(()=>Delete(community.Id))">Delete Community</button>
                         </div>
                     </div>
                 }
@@ -189,8 +189,7 @@
 
     private void EditCommunity(int communityId)
     {
-        _navigationManager.NavigateTo($"/communities/edit/{communityId}");
-
+        _navigationManager.NavigateTo($"/admin/editcommunity/{communityId}");
     }
 
 

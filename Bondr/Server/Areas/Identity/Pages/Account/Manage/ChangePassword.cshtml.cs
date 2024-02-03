@@ -122,19 +122,34 @@ namespace Bondr.Server.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            // Update Visitor Password
-            var visitor = _context.Visitor.FirstOrDefault(v => v.Email == user.Email);
-            if (visitor != null)
+            if (User.IsInRole("User"))
             {
-                visitor.Password = Input.NewPassword; // Set the visitor's password to the new password
-                _context.Update(visitor); // Mark the entity as modified
-                await _context.SaveChangesAsync(); // Save the changes to the database
+                // Update Visitor Password
+                var visitor = _context.Visitor.FirstOrDefault(v => v.Email == user.Email);
+                if (visitor != null)
+                {
+                    visitor.Password = Input.NewPassword; // Set the visitor's password to the new password
+                    _context.Update(visitor); // Mark the entity as modified
+                    await _context.SaveChangesAsync(); // Save the changes to the database
+                }
+            }
+
+            if (User.IsInRole("Admin"))
+            {
+                // Update Staff Password
+                var staff = _context.Staff.FirstOrDefault(s => s.Email == user.Email);
+                if (staff != null)
+                {
+                    staff.Password = Input.NewPassword; // Set the visitor's password to the new password
+                    _context.Update(staff); // Mark the entity as modified
+                    await _context.SaveChangesAsync(); // Save the changes to the database
+                }
             }
 
             await _signInManager.RefreshSignInAsync(user);
             _logger.LogInformation("User changed their password successfully.");
             StatusMessage = "Your password has been changed.";
-
+            
             return RedirectToPage();
         }
     }
