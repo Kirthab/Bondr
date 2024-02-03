@@ -62,6 +62,7 @@
         }
 
         // Fetch from the server
+        Communities = await _client.GetFromJsonAsync<List<Community>>($"{Endpoints.CommunityEndpoint}");
         Staffs = await _client.GetFromJsonAsync<List<Staff>>($"{Endpoints.StaffEndpoint}");
         Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
         visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
