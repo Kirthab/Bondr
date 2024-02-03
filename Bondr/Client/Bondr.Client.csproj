@@ -21,11 +21,11 @@
     <None Include="Pages\AdminPages\AdminHome.razor" />
     <None Include="Pages\AdminPages\AdminVisitors.razor" />
     <None Include="Pages\AdminPages\GenreControl.razor" />
-    <None Include="Pages\Community - Haziq\ComFeed.razor" />
-    <None Include="Pages\Community - Haziq\ComPage.razor" />
-    <None Include="Pages\Community - Haziq\CreateCom.razor" />
-    <None Include="Pages\Community - Haziq\EditCom.razor" />
-    <None Include="Pages\Community - Haziq\FormComponent.razor" />
+    <None Include="Pages\Community\ComFeed.razor" />
+    <None Include="Pages\Community\ComPage.razor" />
+    <None Include="Pages\Community\CreateCom.razor" />
+    <None Include="Pages\Community\EditCom.razor" />
+    <None Include="Pages\Community\FormComponent.razor" />
     <None Include="Pages\Staff\FormComponent.razor" />
     <None Include="Pages\Staff\ListStaff.razor" />
     <None Include="Pages\Staff\ViewStaff.razor" />
