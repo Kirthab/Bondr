@@ -2,10 +2,13 @@
 
 @inject HttpClient _client
 @inject IJSRuntime js
-@attribute [Authorize]
-@inject HttpInterceptorService _interceptor
 @inject NavigationManager _navigationManager
+<!-- For IDisposable Error Handling-->
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager _navManager
+
 
 <!-- Container for communities -->
 <div id="container">
@@ -86,14 +89,29 @@
     private bool IsFirstPage => currentPage == 1;
     private bool IsLastPage => currentPage == totalPages;
 
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
+
     <!-- Method called when the page is initialized -->
     protected override async Task OnInitializedAsync()
     {
         <!-- Fetch all communities and update the paged communities -->
         await FetchCommunitiesAsync();
         
+        _interceptor.MonitorEvent(); // Monitor Events
+
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");  //Get user role
+
+        if (!IsAdmin)
+        {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
 
         <!-- Fetch visitors, communities, subscriptions, and initialize the visitor variable -->
         Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");

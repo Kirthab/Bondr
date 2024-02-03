@@ -14,20 +14,9 @@
 .header {
     height: 100px;
     color: white;
+    font-size:40px;
+    text-align: center;
 }
-
-    .header img {
-        --border-size: 3px;
-        --border-angle: 0turn;
-        background-image: conic-gradient(from var(--border-angle), #213, #112 50%, #213), conic-gradient(from var(--border-angle), transparent 20%, #08f, #f03);
-        background-size: calc(100% - (var(--border-size) * 2)) calc(100% - (var(--border-size) * 2)), cover;
-        background-position: center center;
-        background-repeat: no-repeat;
-        animation: bg-spin 3s linear infinite;
-        padding: 10px;
-        display: block;
-        margin: auto;
-    }
 
 body {
     margin: 20px;
@@ -116,18 +105,6 @@ button {
     margin-left: 100px;
 }
 
-@keyframes bg-spin {
-    to {
-        --border-angle: 1turn;
-    }
-}
-
-@property --border-angle {
-    syntax: "<angle>";
-    inherits: true;
-    initial-value: 0turn;
-}
-
 #email {
     user-select: none;
 }
@@ -138,13 +115,25 @@ button {
 
 .togglepassword {
     border: solid 1px white;
-    padding: 10px;
     color: white;
+    overflow: hidden; /* Change to 'hidden' if you want to hide overflowing content */
     user-select: none;
+    height: 40px;
+    padding: 10px;
+    font-size: 15px;
+    width: 150px;
 }
-
     .togglepassword:hover {
         color: yellow;
         border: solid 1px yellow;
         box-shadow: yellow 0px 0px 3px 2px;
     }
+
+.form-group{
+    width:70%;
+}
+
+.password-input-group {
+    display: flex;
+    max-height: 40px;
+}

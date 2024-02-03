@@ -3,7 +3,10 @@
 @inject HttpClient _client
 @inject IJSRuntime js
 @inject NavigationManager _navManager
-
+<!-- For IDisposable Error Handling-->
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <!-- Container for creating a new community -->
 <div id="container">
@@ -65,11 +68,28 @@
     List<Community> existingCommunities = new List<Community>();
     List<Staff> existingStaff = new List<Staff>();
 
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
+
     [Parameter]
     public string id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent(); // Monitor Events
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");  //Get user role
+
+        if (!IsAdmin)
+        {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
         existingCommunities = await _client.GetFromJsonAsync<List<Community>>(Endpoints.CommunityEndpoint);
         community = await _client.GetFromJsonAsync<Community>($"{Endpoints.CommunityEndpoint}/{id}");
         existingStaff = await _client.GetFromJsonAsync<List<Staff>>(Endpoints.StaffEndpoint);
@@ -101,4 +121,12 @@
         <!-- Navigate to the communities page after successful update -->
         _navManager.NavigateTo("/admin/com");
     }
+
+    <!-- Method called when the component is disposed -->
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+}
+}
 }

@@ -2,7 +2,10 @@
 
 @inject HttpClient _client
 @inject NavigationManager _navManager
-
+<!-- For IDisposable Error Handling-->
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 
 
@@ -105,8 +108,27 @@ else
     private List<Community> Communities;
     private List<Community> assignedCommunities; // Declare here
 
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
+
     protected override async Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent(); // Monitor Events
+
+        // Get curr user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");  //Get user role
+
+        if (!IsAdmin)
+        {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
+
         // Fetch the specific staff member details based on the ID
         staff = await _client.GetFromJsonAsync<Staff>($"{Endpoints.StaffEndpoint}/{id}");
         Communities = await _client.GetFromJsonAsync<List<Community>>($"{Endpoints.CommunityEndpoint}");
@@ -128,6 +150,10 @@ else
     private void TogglePasswordVisibility()
     {
         showPassword = !showPassword;
+    }
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
     }
 }
 }

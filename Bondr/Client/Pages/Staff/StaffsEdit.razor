@@ -2,12 +2,16 @@
 
 @inject HttpClient _client
 @inject NavigationManager _navManager
+<!-- For IDisposable Error Handling-->
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 <div id="container">
     <div class="header">
-        <span>Edit Staff</span>
+        <span>EDIT STAFF</span>
     </div>
-    <hr />
 
     <EditForm Model="@staff" OnValidSubmit="UpdateStaff">
         <DataAnnotationsValidator />
@@ -99,11 +103,27 @@
 
     private string togglePasswordText => showPassword ? "Hide Password" : "Show Password";
 
-    
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
 
 
     protected override async Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent(); // Monitor Events
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");  //Get user role
+
+        if (!IsAdmin)
+        {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
+
         staff = await _client.GetFromJsonAsync<Staff>($"{Endpoints.StaffEndpoint}/{id}");
     }
 
@@ -131,9 +151,12 @@
     private async Task UpdateStaff()
     {
         await _client.PutAsJsonAsync($"{Endpoints.StaffEndpoint}/{id}", staff);
-        _navManager.NavigateTo("/admin/staff");
+        _navManager.NavigateTo("/admin/staffs");
     }
 
-    
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
 }
 

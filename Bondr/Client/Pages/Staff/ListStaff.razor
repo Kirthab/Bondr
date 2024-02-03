@@ -2,8 +2,11 @@
 
 @inject HttpClient _client
 @inject IJSRuntime js
-@attribute [Authorize]
-
+<!-- For IDisposable Error Handling-->
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager _navManager
 
 <div id="container">
     <!-- Heading for the staff page -->
@@ -87,10 +90,28 @@
 
     private bool IsFirstPage => currentPage == 1;
     private bool IsLastPage => currentPage == totalPages;
+    
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
 
     // Method called when the component is initialized
     protected async override Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent(); // Monitor Events
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");  //Get user role
+
+        if (!IsAdmin)
+        {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
+
         try
         {
             // Fetch staffs and communities from the server
@@ -154,5 +175,10 @@
         {
             currentPage++;
         }
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
     }
 }

@@ -97,7 +97,7 @@ namespace Bondr.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a8023073-735b-4102-bb5c-b42afefbe108",
+                            ConcurrencyStamp = "4792e750-d0a1-42ec-ad58-ef4bcd16cea3",
                             Email = "admin@localhost.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -105,9 +105,9 @@ namespace Bondr.Server.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAzcaB9nA02VxA11QAx1jCIaSdgZO0afdbJY57Pyet4LOqJ41DxallYJndNn2ETNYg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBZ+u1Qy1v07RGgRzzc9wk4BwqboW2+Myh81OMYUWNHbcwAp/d6ilvDmNCz0soOWPw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "08d15306-589b-47fc-b306-ec3d3940f096",
+                            SecurityStamp = "73770aca-2404-4d2f-b7dd-7a57cfc06834",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });

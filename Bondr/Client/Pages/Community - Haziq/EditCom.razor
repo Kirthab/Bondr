@@ -2,7 +2,10 @@
 
 @inject HttpClient _client
 @inject NavigationManager _navManager
+<!-- For IDisposable Error Handling-->
 @inject HttpInterceptorService _interceptor
+@implements IDisposable
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <!-- Link to external stylesheet for CreateCommunityStyles.css -->
 <link rel="stylesheet" href="path/to/CreateCommunityStyles.css" />
@@ -19,8 +22,31 @@
 
 @code {
     
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
+
     [Parameter] public int id { get; set; } // Define a parameter for the community ID
     Community? community = new Community(); // Initialize a nullable Community object
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _interceptor.MonitorEvent(); // Monitor Events
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");  //Get user role
+
+        if (!IsAdmin)
+        {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
+    }
+
 
     <!-- Method called when parameters are set -->
     protected async override Task OnParametersSetAsync()
