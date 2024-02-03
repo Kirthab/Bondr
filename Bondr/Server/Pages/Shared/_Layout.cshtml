@@ -23,11 +23,12 @@
         <link rel="stylesheet" href="~/Identity/css/site.css" asp-append-version="true" />
     </environment>
 </head>
-<body>
+<body style="background:#230029; box-shadow: #f8cfff 0px 0px 3px 2px;">
+    ">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" href="~/">Bondr</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light" style="background-color: #5f0070;">
+            <div class="container" style="color:white;">
+                <a class="navbar-brand" href="~/" stlye="font-weight:Bolder;">Bondr</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -51,13 +52,15 @@
         </nav>
     </header>
 
-    <div class="container">
+    <div class="container" style="background:#4a1644;border:solid 2px black; border-radius:5; box-shadow: #f8cfff 0px 0px 3px 2px;">
         <partial name="_CookieConsentPartial" optional />
         <main role="main" class="pb-1">
             @RenderBody()
         </main>
     </div>
-    <footer class="footer border-top pl-3 text-muted" style="background: #330138">
+    <br />
+    <br />
+    <footer class="footer border-top pl-3 text-muted" style="background: #5f0070; box-shadow:#f8cfff 0px 0px 3px 2px;">
         <div class="container">
         &copy; 2023 - Bondr Social Service
             @{
