@@ -72,7 +72,7 @@
 
     // This section is to handle authorization of pages
     private List<System.Security.Claims.Claim> UserClaims;
-    private bool IsAdmin;
+    private bool IsAdmin, IsUser;
 
     <!-- Method called when the page is initialized -->
     protected override async Task OnInitializedAsync()
@@ -85,8 +85,9 @@
         // Check first if user is authorized
         UserClaims = user.Claims.ToList();
         IsAdmin = user.IsInRole("Admin");  //Get user role
+        IsUser = user.IsInRole("User");  //Get user role
 
-        if (!IsAdmin)
+        if (!(IsAdmin || IsUser))
         {
             _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
         }
