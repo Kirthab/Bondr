@@ -49,8 +49,6 @@
             <label for="age">BirthDay</label>
             <input id="age" name="age" class="form-control" type="date" @oninput="UpdateAgeFromDate" />
 
-            <p style="font-size: 18px; color: white; font-weight: bold;">Role - @EditVisitor.Role</p>
-
             <button class="bt1" type="submit">Save Changes</button>
         }
     </EditForm>
@@ -104,7 +102,7 @@
         await _client.PutAsJsonAsync($"{Endpoints.VisitorEndpoint}/{id}", EditVisitor);
 
         await js.InvokeAsync<object>("alert", "Your profile has been updated");
-        //await JSRuntime.InvokeVoidAsync("location.reload");
+        await JSRuntime.InvokeVoidAsync("location.reload");
         _navManager.NavigateTo("/");
     }
 

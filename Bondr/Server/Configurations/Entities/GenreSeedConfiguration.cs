@@ -56,7 +56,7 @@ namespace Bondr.Server.Configurations.Entities
                 new Genre
                 {
                     Id = 8,
-                    Name = "Historical Fiction",
+                    Name = "Historical",
                     Description = "Travel through time with historically inspired stories."
                 },
                 new Genre

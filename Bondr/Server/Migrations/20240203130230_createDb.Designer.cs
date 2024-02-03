@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bondr.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240203053436_newdb")]
-    partial class newdb
+    [Migration("20240203130230_createDb")]
+    partial class createDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -100,7 +100,7 @@ namespace Bondr.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c9d20c2a-dfd7-4d6f-9918-9f917ee1e195",
+                            ConcurrencyStamp = "a8023073-735b-4102-bb5c-b42afefbe108",
                             Email = "admin@localhost.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -108,9 +108,9 @@ namespace Bondr.Server.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF6PFxGuQbfGuQD+i0G3fGtW5pefU1vT0vGw4Hl+Z3y5cWdql0bkeIaGf/b+uKsaIQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAzcaB9nA02VxA11QAx1jCIaSdgZO0afdbJY57Pyet4LOqJ41DxallYJndNn2ETNYg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6036a786-f54a-429a-a5ba-ea07d64cd715",
+                            SecurityStamp = "08d15306-589b-47fc-b306-ec3d3940f096",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -299,7 +299,7 @@ namespace Bondr.Server.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Travel through time with historically inspired stories.",
-                            Name = "Historical Fiction"
+                            Name = "Historical"
                         },
                         new
                         {

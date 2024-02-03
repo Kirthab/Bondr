@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Bondr.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class newdb : Migration
+    public partial class createDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -436,7 +436,7 @@ namespace Bondr.Server.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "c9d20c2a-dfd7-4d6f-9918-9f917ee1e195", "admin@localhost.com", false, "Admin", "User", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEF6PFxGuQbfGuQD+i0G3fGtW5pefU1vT0vGw4Hl+Z3y5cWdql0bkeIaGf/b+uKsaIQ==", null, false, "6036a786-f54a-429a-a5ba-ea07d64cd715", false, "admin@localhost.com" });
+                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "a8023073-735b-4102-bb5c-b42afefbe108", "admin@localhost.com", false, "Admin", "User", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEAzcaB9nA02VxA11QAx1jCIaSdgZO0afdbJY57Pyet4LOqJ41DxallYJndNn2ETNYg==", null, false, "08d15306-589b-47fc-b306-ec3d3940f096", false, "admin@localhost.com" });
 
             migrationBuilder.InsertData(
                 table: "Genre",
@@ -450,7 +450,7 @@ namespace Bondr.Server.Migrations
                     { 5, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Embark on thrilling journeys and quests.", "Adventure", null, null },
                     { 6, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Laugh out loud with humorous stories.", "Comedy", null, null },
                     { 7, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Experience tales of love and passion.", "Romance", null, null },
-                    { 8, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Travel through time with historically inspired stories.", "Historical Fiction", null, null },
+                    { 8, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Travel through time with historically inspired stories.", "Historical", null, null },
                     { 9, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Face your fears with spine-chilling narratives.", "Horror", null, null },
                     { 10, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Explore complex human emotions and relationships.", "Drama", null, null }
                 });

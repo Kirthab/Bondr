@@ -33,7 +33,7 @@
         <div class="form-group">
             <label>Email: </label>
             <div>
-                <InputText @bind-Value="@staff.Email" class="form-control" />
+                <InputText @bind-Value="@staff.Email" class="form-control" disabled />
                 <ValidationMessage For="@(() => staff.Email)" />
             </div>
         </div>
@@ -41,7 +41,7 @@
         <div class="form-group">
             <label for="password">Password:</label>
             <div class="password-input-group">
-                <InputText @bind-Value="@staff.Password" type="@passwordInputType" class="form-control" />
+                <InputText @bind-Value="@staff.Password" type="@passwordInputType" class="form-control" disabled />
                 <span class="togglepassword" @onclick="TogglePasswordVisibility">@togglePasswordText</span>
             </div>
             <ValidationMessage For="@(() => staff.Password)" />
@@ -131,7 +131,7 @@
     private async Task UpdateStaff()
     {
         await _client.PutAsJsonAsync($"{Endpoints.StaffEndpoint}/{id}", staff);
-        _navManager.NavigateTo("/staff/");
+        _navManager.NavigateTo("/admin/staff");
     }
 
     
