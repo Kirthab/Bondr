@@ -43,7 +43,7 @@
                             <!-- Add a button to navigate to the community feed page with the specific community id -->
                             <button class="view-com" @onclick="()=>NavigateToCommunityFeed(community.Id)">View Community Feed</button>
                             <!-- Add a button to delete posts in the community -->
-                            <button class="del-post" @onclick="()=>DeletePostsInCommunity(community.Id)">Delete Posts</button>
+                            <button class="del-post" @onclick="()=>DeletePostsForCommunity(community.Id)">Delete Posts</button>
                             <button class="del-com" @onclick="@(()=>Delete(community.Id))">Delete Community</button>
                         </div>
                     </div>
@@ -65,6 +65,9 @@
 @code {
     private List<Community>? Communities;
     private List<Community>? PagedCommunities;
+    private IList<Visitor> Visitors;
+    private List<Subscription> UserSubscriptions = new List<Subscription>();
+    private Visitor visitor;
     private int itemsPerPage = 9; // Adjust the number of communities per page as needed
     private int currentPage = 1;
 
@@ -84,6 +87,9 @@
         // Get curr user
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+
+        Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+        visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
 
         // Check first if user is authorized
         UserClaims = user.Claims.ToList();
@@ -126,6 +132,37 @@
         PagedCommunities = Communities?.Skip(startIndex).Take(itemsPerPage).ToList() ?? new List<Community>();
     }
 
+    private async Task<List<Subscription>> GetCommunitySubscriptions(int communityId)
+    {
+        try
+        {
+            var subscriptions = await _client.GetFromJsonAsync<List<Subscription>>($"{Endpoints.SubscriptionEndpoint}?communityId={communityId}");
+            return subscriptions ?? new List<Subscription>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception during fetching community subscriptions: {ex.Message}");
+            return new List<Subscription>();
+        }
+    }
+
+    private async Task UnsubscribeVisitors(List<Subscription> communitySubscriptions)
+    {
+        foreach (var subscriptionToRemove in communitySubscriptions)
+        {
+            var response = await _client.DeleteAsync($"{Endpoints.SubscriptionEndpoint}/{subscriptionToRemove.Id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                UserSubscriptions.Remove(subscriptionToRemove);
+            }
+            else
+            {
+                await js.InvokeAsync<object>("alert", $"Failed to unsubscribe user {subscriptionToRemove.UserId}. Please try again.");
+            }
+        }
+    }
+
 
     async Task Delete(int communityId)
     {
@@ -139,8 +176,14 @@
 
                 if (confirm)
                 {
+                    // Fetch subscriptions related to the community
+                    var communitySubscriptions = await GetCommunitySubscriptions(communityId);
+
+                    // Unsubscribe visitors for the community
+                    await UnsubscribeVisitors(communitySubscriptions);
+
                     // Delete posts related to the community
-                    await DeletePostsForCommunityAsync(communityId);
+                    await DeletePostsForCommunity(communityId);
 
                     // Delete the community
                     await _client.DeleteAsync($"{Endpoints.CommunityEndpoint}/{communityId}");
@@ -155,7 +198,7 @@
         }
     }
 
-    async Task DeletePostsForCommunityAsync(int communityId)
+    async Task DeletePostsForCommunity(int communityId)
     {
         // Fetch all posts
         var allPosts = await _client.GetFromJsonAsync<List<Post>>(Endpoints.PostEndpoint);
@@ -178,14 +221,7 @@
        
     }
 
-    private async Task DeletePostsInCommunity(int communityId)
-    {
-        // Call the method to delete posts for the specific community
-        await DeletePostsForCommunityAsync(communityId);
-
-        // Refresh the communities after deleting posts
-        await FetchCommunitiesAsync();
-    }
+    
 
     private void EditCommunity(int communityId)
     {
