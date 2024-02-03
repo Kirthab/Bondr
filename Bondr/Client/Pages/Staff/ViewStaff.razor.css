@@ -1,0 +1,82 @@
+﻿#container {
+    box-sizing: border-box;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+    padding: 20px;
+    font-family: Consolas, monospace;
+}
+
+#assigned-communities {
+    box-sizing: border-box;
+    border-color: #26001B;
+    border-style: solid;
+    position: relative;
+    padding: 20px;
+    background-color: #19014d;
+    font-family: Consolas, monospace;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    font-size: 15px
+}
+
+label {
+    color: white;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+    font-size: 23px
+}
+
+span {
+    color: white;
+}
+
+.bt1 {
+    padding: 10px 15px;
+    background: #e69812;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: large;
+    font-weight: 700;
+    display: block;
+    border: 2px solid #FF005C;
+    border-radius: 5px;
+    cursor: pointer;
+
+    margin: auto;
+    margin-top: 20px;
+}
+
+    .bt1:hover {
+        box-shadow: #0000FF 0px 0px 3px 4px;
+    }
+
+.togglepassword {
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.fa-eye, .fa-eye-slash {
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+h3 {
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+li {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    color: white;
+    font-size: 18px
+}

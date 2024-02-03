@@ -1,0 +1,139 @@
+﻿@page "/staff/edit/{id}"
+
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<div id="container">
+    <div class="header">
+        <span>Edit Staff</span>
+    </div>
+    <hr />
+
+    <EditForm Model="@staff" OnValidSubmit="UpdateStaff">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label>Name: </label>
+            <div>
+                <InputText @bind-Value="@staff.Name" class="form-control" />
+                <ValidationMessage For="@(() => staff.Name)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender (Optional):</label>
+            <select id="gender" name="gender" @bind="staff.Gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Email: </label>
+            <div>
+                <InputText @bind-Value="@staff.Email" class="form-control" />
+                <ValidationMessage For="@(() => staff.Email)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <div class="password-input-group">
+                <InputText @bind-Value="@staff.Password" type="@passwordInputType" class="form-control" />
+                <span class="togglepassword" @onclick="TogglePasswordVisibility">@togglePasswordText</span>
+            </div>
+            <ValidationMessage For="@(() => staff.Password)" />
+        </div>
+
+        <div class="form-group">
+            <label>Salary: </label>
+            <div>
+                <InputNumber @bind-Value="@staff.Salary" class="form-control" step="0.01" />
+                <ValidationMessage For="@(() => staff.Salary)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Position: </label>
+            <div>
+                <InputText @bind-Value="@staff.Position" class="form-control" />
+                <ValidationMessage For="@(() => staff.Position)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date of Birth: </label>
+            <div>
+                <input id="dob" name="dob" class="form-control" type="date" @oninput="@UpdateAgeFromDate" />
+                <ValidationMessage For="@(() => staff.Age)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Age: </label>
+            <div>
+                <span style="color: white;">@staff.Age</span>
+            </div>
+        </div>
+
+        <br />
+        <br />
+
+        <button type="submit" class="bt1">
+            Update Staff
+        </button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public string id { get; set; }
+    Staff staff = new Staff();
+    private Staff EditStaff = new Staff();
+    private string text;
+    private string text2 = "Show Password";
+    private bool showPassword = false;
+
+    private string passwordInputType => showPassword ? "text" : "password";
+
+    private string togglePasswordText => showPassword ? "Hide Password" : "Show Password";
+
+    
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        staff = await _client.GetFromJsonAsync<Staff>($"{Endpoints.StaffEndpoint}/{id}");
+    }
+
+    private void UpdateAgeFromDate(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value.ToString(), out DateTime dob))
+        {
+            DateTime today = DateTime.Today;
+            int age = today.Year - dob.Year;
+
+            if (dob.Date > today.AddYears(-age))
+            {
+                age--;
+            }
+
+            staff.Age = age;
+        }
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
+
+    private async Task UpdateStaff()
+    {
+        await _client.PutAsJsonAsync($"{Endpoints.StaffEndpoint}/{id}", staff);
+        _navManager.NavigateTo("/staff/");
+    }
+
+    
+}
+

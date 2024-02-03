@@ -3,9 +3,11 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager _navManager
 @inject HttpClient _client
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
 
 <EditForm Model="@post" OnValidSubmit="CreatePost">
-    <DataAnnotationsValidator />
+    <DataAnnotationsValidator /> <!-- To ensure proper format when posting -->
     <ValidationSummary />
 
     <div id="container">
@@ -14,7 +16,8 @@
                 <h1>NEW POST</h1>
                 <input type="text" class="postTitle" @bind="post.Title" placeholder="Enter Post Title">
                 <select class="postGenreDropdown" @bind="post.GenreId" @oninput="UpdateGenreId">
-                    @if (Genres != null && Genres.Any())
+                    <!-- Show genres -->
+                    @if (Genres != null && Genres.Any()) 
                     {
                         foreach (var genre in Genres)
                         {
@@ -22,6 +25,7 @@
                         }
                     }
                 </select>
+                <!-- Show Communities -->
                 <select class="postGenreDropdown" @bind="post.CommunityId" @oninput="UpdateCommunityId">
                     @if (Communities != null && Communities.Any())
                     {
@@ -34,14 +38,13 @@
                 <div class="post-content">
                     <textarea class="postParagraph" @bind="post.Content" placeholder="Enter Post Paragraph (2000 characters max)" maxlength="2000"></textarea>
                 </div>
-                <button type="submit" class="publish">Create</button>
+                <button type="submit" class="publish">Create</button> <!-- Submit form -->
             </div>
         </div>
     </div>
 </EditForm>
 
-<div hidden>
-    [Authorize]
+<div hidden> <!-- This div is here because of a strange issue with browser cache. It remains here just in case-->
     @code {
         Post post = new Post();
         private IList<Genre>? Genres;
@@ -49,6 +52,10 @@
         private IList<Visitor>? Visitors;
         private IList<Community>? Communities;
         private Visitor visitor;
+
+        // This section is to handle authorization of pages
+        private List<System.Security.Claims.Claim> UserClaims;
+        private bool IsAdmin;
 
         private async void UpdateGenreId(ChangeEventArgs e)
         {
@@ -67,11 +74,25 @@
 
         protected async override Task OnInitializedAsync()
         {
+            _interceptor.MonitorEvent(); // Monitor Events
+
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // Check first if user is authorized
+            UserClaims = user.Claims.ToList();
+            IsAdmin = user.IsInRole("User");  //Get user role
+
+            if (!IsAdmin)
+            {
+                _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+            }
+
+
+            //User is visitor, continue
             Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
             Communities = await _client.GetFromJsonAsync<List<Community>>($"{Endpoints.CommunityEndpoint}");
             Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostEndpoint}");
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
             Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
             visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
 
@@ -92,13 +113,19 @@
             return defaultCommunity?.Id ?? 0; // Use a default value if not found
         }
 
-
+        // Create post function (POST)
         private async Task CreatePost()
         {
             post.UserId = visitor.Id;
             post.Vote = 0;
             await _client.PostAsJsonAsync(Endpoints.PostEndpoint, post);
             _navManager.NavigateTo("/");
+        }
+
+        //Dispose function
+        public void Dispose()
+        {
+            _interceptor.DisposeEvent();
         }
     }
 </div>

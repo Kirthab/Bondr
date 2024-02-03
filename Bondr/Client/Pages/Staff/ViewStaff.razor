@@ -1,0 +1,133 @@
+﻿@page "/staff/view/{id}"
+
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+
+
+
+@if (staff != null)
+{
+    <div id="container">
+        <h3 class="card-title">Staff Info</h3>
+        <hr />
+        <div class="form-group">
+            <label>ID: </label>
+            <div>
+                <span>@staff.Id</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Name: </label>
+            <div>
+                <span>@staff.Name</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Gender: </label>
+            <div>
+                <span>@staff.Gender</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Email: </label>
+            <div>
+                <span>@staff.Email</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Password: </label>
+            <div>
+                <span>@(showPassword ? staff.Password : new string('*', staff.Password.Length))</span>
+                <span class="togglepassword" @onclick="TogglePasswordVisibility">
+                    @togglePasswordText
+                </span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Salary: </label>
+            <div>
+                <span>@staff.Salary</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Position: </label>
+            <div>
+                <span>@staff.Position</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Age: </label>
+            <div>
+                <span>@staff.Age</span>
+            </div>
+        </div>
+
+        <div id="assigned-communities">
+            <h3 class="card-title">Assigned Communities</h3>
+            <hr />
+            @if (Communities != null && Communities.Any())
+            {
+                <ul>
+                    @foreach (var community in assignedCommunities)
+                    {
+                        <li>@community.Name</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No assigned communities.</p>
+            }
+        </div>
+
+        <br />
+        <br />
+    </div>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    [Parameter] public string id { get; set; }
+    private Staff staff;
+    private bool showPassword = false;
+    private string togglePasswordText => showPassword ? "Hide Password" : "Show Password";
+    private List<Community> Communities;
+    private List<Community> assignedCommunities; // Declare here
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch the specific staff member details based on the ID
+        staff = await _client.GetFromJsonAsync<Staff>($"{Endpoints.StaffEndpoint}/{id}");
+        Communities = await _client.GetFromJsonAsync<List<Community>>($"{Endpoints.CommunityEndpoint}");
+        assignedCommunities = await GetAssignedCommunities(staff.Id); // Assign here
+    }
+
+    // Method to get assigned communities for a staff member
+    private async Task<List<Community>> GetAssignedCommunities(int staffId)
+    {
+        // Filter communities based on StaffId
+        return Communities?.Where(c => c.StaffId == staffId).ToList() ?? new List<Community>();
+    }
+    private void NavigateBack()
+    {
+        // Navigate back to the staff list page
+        _navManager.NavigateTo("/admin/staffs");
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
+}
+}

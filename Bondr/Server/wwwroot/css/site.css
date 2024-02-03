@@ -50,10 +50,10 @@ html {
 }
 
 .border-top {
-  border-top: 1px solid #e5e5e5;
+    border-top: 2px solid #330138;
 }
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+    border-bottom: 2px solid #330138;
 }
 
 .box-shadow {
@@ -72,6 +72,7 @@ html {
 
 body {
   margin-bottom: 60px;
+  color:white;
 }
 .footer {
   position: absolute;

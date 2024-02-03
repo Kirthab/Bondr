@@ -1,4 +1,4 @@
-﻿@page "/communities/createcommunity"
+﻿@page "/admin/createcommunity"
 
 @inject HttpClient _client
 @inject NavigationManager _navManager
@@ -69,11 +69,6 @@
     <!-- Lists to store existing communities and staff -->
     List<Community> existingCommunities = new List<Community>();
     List<Staff> existingStaff = new List<Staff>();
-    private List<Subscription> Subscriptions;
-    private List<Subscription> UserSubscriptions = new List<Subscription>();
-    private Subscription subscription = new Subscription();
-    private IList<Visitor> Visitors;
-    private Visitor visitor;
 
     <!-- Method called when the component is initialized -->
     protected override async Task OnInitializedAsync()
@@ -81,63 +76,19 @@
         <!-- Fetch existing communities and staff from the server -->
         existingCommunities = await _client.GetFromJsonAsync<List<Community>>(Endpoints.CommunityEndpoint);
         existingStaff = await _client.GetFromJsonAsync<List<Staff>>(Endpoints.StaffEndpoint);
-        Subscriptions = await _client.GetFromJsonAsync<List<Subscription>>($"{Endpoints.SubscriptionEndpoint}");
-        <!-- Fetch authentication state and user information -->
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
 
-        <!-- Fetch visitors, communities, subscriptions, and initialize the visitor variable -->
-        Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
-        visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
-    
-    
+
     }
 
     <!-- Method to create a new community -->
     private async Task CreateCommunity()
     {
         <!-- Send a POST request to the server to create the community -->
-        await _client.PostAsJsonAsync(Endpoints.CommunityEndpoint, community);
-        <!-- Subscribe the user to the newly created community -->
-        await SubscribeToNewlyCreatedCommunity();
+        await _client.PostAsJsonAsync(Endpoints.CommunityEndpoint, community);;
         <!-- Navigate to the communities page after successful creation -->
-        _navManager.NavigateTo("/communities/");
-    }
-    <!-- Method to subscribe the user to the newly created community -->
-    private async Task SubscribeToNewlyCreatedCommunity()
-    {
-        <!-- Fetch the newly created community -->
-        var newlyCreatedCommunity = (await _client.GetFromJsonAsync<List<Community>>(Endpoints.CommunityEndpoint))
-            .FirstOrDefault(c => c.Name == community.Name && c.Description == community.Description && c.StaffId == community.StaffId);
-
-        if (newlyCreatedCommunity != null)
-        {
-            <!-- Subscribe the user to the newly created community -->
-            await Subscribe(newlyCreatedCommunity.Id);
-        }
+        _navManager.NavigateTo("/admin/com");
     }
 
-    <!-- Method to handle community subscription -->
-    private async Task Subscribe(int communityId)
-    {
-        <!-- Set user and community information in the subscription instance -->
-        subscription.UserId = visitor.Id;
-        subscription.CommunityId = communityId;
-
-        <!-- Send a POST request to subscribe to the community -->
-        var response = await _client.PostAsJsonAsync($"{Endpoints.SubscriptionEndpoint}", subscription);
-
-        <!-- Check the response status and display appropriate alerts -->
-        if (response.IsSuccessStatusCode)
-        {
-            await js.InvokeAsync<object>("alert", "Successfully created community.");
-            await OnInitializedAsync();
-        }
-        else
-        {
-            await js.InvokeAsync<object>("alert", "Failed to create community. Please try again.");
-        }
-    }
     <!-- Method to check if the community name is a duplicate -->
     private bool IsCommunityNameDuplicate()
     {

@@ -17,6 +17,17 @@
     justify-content: space-between;
 }
 
+#container button {
+    padding: 10px 15px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
 .community-box {
     width: 30%;
     margin-bottom: 20px;
@@ -41,56 +52,35 @@
 .community-description {
     font-size: 14px;
     color: #ccc;
+    margin-bottom: 10px;
 }
 
 .community-actions {
     margin-top: 10px;
 }
 
-    .community-actions a,
     .community-actions button {
-        margin-right: 10px;
-        color: #fff;
+        padding: 10px 15px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        display: block;
     }
+
+/* Subscribed button */
+.subscribed {
+    background-color: #4CAF50;
+}
+
+/* Not subscribed button */
+.not-subscribed {
+    background-color: #d9534f;
+}
 
 #container h3 {
     text-align: center;
     color: white;
-}
-
-#container button {
-    padding: 10px 15px;
-    color: white;
-    border: none;
-    cursor: pointer;
-    width: 250px;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-}
-
-/* Edit button */
-.edit-com {
-    @extend #container button;
-    background-color: #f0ad4e; 
-}
-
-/* Delete button */
-.del-com {
-    @extend #container button;
-    background-color: #d9534f; 
-}
-
-/* View button */
-.view-com {
-    @extend #container button;
-    background-color: #5bc0de; 
-}
-
-/* Delete Posts button */
-.delete-com {
-    @extend #container button;
-    background-color: #0069d9; 
 }
 
 .page-button {

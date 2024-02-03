@@ -4,13 +4,15 @@
 @inject IJSRuntime js
 @inject IJSRuntime JSRuntime
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+<!-- Customised Nav Menu with different views for each Authorisation -->
+
+<div class="@NavMenuCssClass nav-scrollable">
     <nav class="flex-column">
-        <AuthorizeView>
+        <AuthorizeView Roles="User">
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
-                        <p class="oi" aria-hidden="true">@Visitors?.FirstOrDefault(v => v.Email == context.User.Identity?.Name)?.Username</p>
+                        <p class="oi" aria-hidden="true">@visitor.Username</p>
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
@@ -29,13 +31,8 @@
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/admin">
-                        <p class="oi" aria-hidden="true">Admin</p>
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/staff/">
-                        <p class="oi" aria-hidden="true">Staff</p>
+                    <NavLink class="nav-link" href="subscribe">
+                        <p class="oi" aria-hidden="true">Subscriptions</p>
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
@@ -44,6 +41,32 @@
                     </NavLink>
                 </div>
             </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
+                        <p class="oi" aria-hidden="true">Account</p>
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="#" @onclick="BeginLogOut" Match="NavLinkMatch.All">
+                        <p class="oi" aria-hidden="true">Log out</p>
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/admin">
+                        <p class="oi" aria-hidden="true">Admin</p>
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/admin/staffs">
+                        <p class="oi" aria-hidden="true">Staff</p>
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView roles ="Admin, User">
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authentication/register" Match="NavLinkMatch.All">

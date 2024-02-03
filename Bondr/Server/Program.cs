@@ -16,12 +16,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
-options.SignIn.RequireConfirmedAccount = false)
- .AddRoles<IdentityRole>()
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.User.RequireUniqueEmail = true; // Ensure unique email addresses
+})
+ .AddRoles<IdentityRole>() // <--- Adds roles
  .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer()
-    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
+    {
+        options.IdentityResources["openid"].UserClaims.Add("role"); // Set the RoleClaimType
+    });
 
 builder.Services.AddAuthentication()
     .AddIdentityServerJwt();

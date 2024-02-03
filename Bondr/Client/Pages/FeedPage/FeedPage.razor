@@ -3,6 +3,7 @@
 @inject IJSRuntime js
 @inject HttpInterceptorService _interceptor
 @implements IDisposable
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
@@ -29,7 +30,7 @@
                         <li><a href="communities"><img draggable="false" src="../Images/Carousel/carousel1.jpg" /></a></li>
                         <li><a href="communities"><img draggable="false" src="../Images/Carousel/carousel2.jpg" /></a></li>
                         <li><a href="Settings"><img draggable="false" src="../Images/Carousel/carousel3.jpg" /></a></li>
-                        <li><a href="staff"><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></a></li>
+                        <li><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></li>
                         <li><a href="communities/createcommunity"><img draggable="false" src="../Images/Carousel/carousel5.jpg" /></a></li>
                     </ul>
                 </div>
@@ -38,18 +39,19 @@
                         <li><a href="communities"><img draggable="false" src="../Images/Carousel/carousel1.jpg" /></a></li>
                         <li><a href="communities"><img draggable="false" src="../Images/Carousel/carousel2.jpg" /></a></li>
                         <li><a href="Settings"><img draggable="false" src="../Images/Carousel/carousel3.jpg" /></a></li>
-                        <li><a href="staff"><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></a></li>
+                        <li>><img draggable="false" src="../Images/Carousel/carousel4.jpg" /></li>
                         <li><a href="communities/createcommunity"><img draggable="false" src="../Images/Carousel/carousel5.jpg" /></a></li>
                     </ul>
                 </div>
             </article>
 
+            <!-- The two centrally placed cards -->
             <div class="col">
-                <a class="card card1" href="communities">
+                <a class="card card1" href="subscribe">
                     <h5>Discover Communities</h5>
                     <p>Click here to discover new communities</p>
                 </a>
-                <a class="card card2" href="admin/com">
+                <a class="card card2" href="communities">
                     <h5>Manage communities</h5>
                     <p>Click here to manage your communities</p>
                 </a>
@@ -108,6 +110,7 @@
                         <br />
                     }
                 }
+                <!-- Genre logic -->
                 else
                 {
                     @if (Posts == null || !Posts.Any())
@@ -161,7 +164,7 @@
 
     private List<Post>? Posts;
     private List<Post> DisplayedPosts;
-    private int postsPerPage = 20;
+    private int postsPerPage = 10;
     private int currentPage = 1;
 
     private int totalPages => (int)Math.Ceiling((double)(Posts?.Count ?? 0) / postsPerPage);
@@ -172,6 +175,10 @@
     private bool filteredGenre = true;
     private int setGenreIdFilter;
     private int defaultGenreId;
+
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
 
     //Genre filter
     private void Filter(ChangeEventArgs e)
@@ -205,6 +212,8 @@
         _interceptor.DisposeEvent();
     }
 
+    // Pagination controls and such
+
     private void PreviousPage()
     {
         if (currentPage > 1)
@@ -231,6 +240,19 @@
 
     protected async override Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent(); // Monitor Events
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin"); //Get user roles
+
+        if (IsAdmin)
+        {
+            Navigation.NavigateTo("/unauthorized");
+        }
+
         try
         {
             Genres = await _client.GetFromJsonAsync<List<Genre>>($"{Endpoints.GenresEndpoint}");
@@ -262,4 +284,7 @@
     {
         Navigation.NavigateTo("/feed/newpost");
     }
+
+
+    
 }

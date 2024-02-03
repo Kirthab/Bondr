@@ -29,7 +29,6 @@ namespace Bondr.Server.Data
             base.OnModelCreating(builder);
             builder.ApplyConfiguration(new GenreSeedConfiguration());
             builder.ApplyConfiguration(new UserSeedConfiguration());
-            builder.ApplyConfiguration(new StaffSeedConfiguration());
             builder.ApplyConfiguration(new UserRoleSeedConfiguration());
             builder.ApplyConfiguration(new RoleSeedConfiguration());
         }

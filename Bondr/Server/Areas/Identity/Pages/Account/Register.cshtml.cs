@@ -108,6 +108,7 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -118,8 +119,8 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
@@ -127,29 +128,58 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
-
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
+                // User creation is successful
                 if (result.Succeeded)
                 {
-                    // Create and save Visitor entity
-                    var visitor = new Visitor
+                    // Check if the email ends with "@localhost.com"
+                    if (Input.Email.EndsWith("@localhost.com"))
                     {
-                        Username = "@NewUser",
-                        Email = Input.Email,
-                        Password = Input.Password
-                    };
+                        returnUrl = "~/admin";
 
-                    _dbContext.Visitor.Add(visitor);
-                    await _dbContext.SaveChangesAsync();
+                        // Check if the role exists before creating it
+                        if (!await _roleManager.RoleExistsAsync("Admin"))
+                        {
+                            await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                        }
 
-                    if (!await _roleManager.RoleExistsAsync("User"))
-                    {
-                        await _roleManager.CreateAsync(new IdentityRole("User"));
+                        // Check if the user is not already in the "Admin" role
+                        if (!await _userManager.IsInRoleAsync(user, "Admin"))
+                        {
+                            await _userManager.AddToRoleAsync(user, "Admin");
+                        }
+
+                        // Create and save Staff entity
+                        var staff = new Staff
+                        {
+                            Name = "NewStaff",
+                            Email = Input.Email,
+                            Password = Input.Password,
+                            Position = "TBC"
+                        };
+                        _dbContext.Staff.Add(staff);
+                        await _dbContext.SaveChangesAsync();
                     }
-                    await _userManager.AddToRoleAsync(user, "User");
+                    else
+                    {
+                        returnUrl = "~/";
+                        // Otherwise, add the user to the "User" role
+                        await _roleManager.CreateAsync(new IdentityRole("User"));
+                        await _userManager.AddToRoleAsync(user, "User");
 
+                        // Create and save Visitor entity
+                        var visitor = new Visitor
+                        {
+                            Username = "NewUser",
+                            Email = Input.Email,
+                            Password = Input.Password,
+                            Role = "User"
+                        };
 
+                        _dbContext.Visitor.Add(visitor);
+                        await _dbContext.SaveChangesAsync();
+                    }
 
                     _logger.LogInformation("User created a new account with password.");
 
@@ -159,8 +189,7 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
+                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl });
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
@@ -175,15 +204,17 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
                         return LocalRedirect(returnUrl);
                     }
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay the form
             return Page();
         }
+
 
         private ApplicationUser CreateUser()
         {

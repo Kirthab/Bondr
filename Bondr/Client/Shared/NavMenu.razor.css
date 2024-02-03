@@ -17,7 +17,8 @@ p {
 
 .nav-item {
     font-size: 0.9rem;
-    padding: 5px
+    padding: 5px;
+    align-self: flex-start;
 }
     .nav-item ::deep a {
         color: #d7d7d7;

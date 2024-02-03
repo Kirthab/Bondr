@@ -1,0 +1,150 @@
+﻿#container {
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden; /* Hide content overflowing from the border */
+    position: relative;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+    padding: 20px;
+    display: block;
+}
+
+.header {
+    height: 100px;
+    color: white;
+}
+
+    .header img {
+        --border-size: 3px;
+        --border-angle: 0turn;
+        background-image: conic-gradient(from var(--border-angle), #213, #112 50%, #213), conic-gradient(from var(--border-angle), transparent 20%, #08f, #f03);
+        background-size: calc(100% - (var(--border-size) * 2)) calc(100% - (var(--border-size) * 2)), cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        animation: bg-spin 3s linear infinite;
+        padding: 10px;
+        display: block;
+        margin: auto;
+    }
+
+body {
+    margin: 20px;
+}
+
+label {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    color: white;
+    display: block;
+    margin-bottom: 4px;
+}
+
+input, select {
+    margin-bottom: 15px;
+    width: 60%;
+    padding: 8px;
+    box-sizing: border-box;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+    input:hover, select:hover {
+        box-shadow: white 0px 0px 3px 2px;
+    }
+
+
+@media (max-width:768px) {
+    #container {
+        display: block;
+    }
+
+    .userImg {
+        position: relative;
+        top: -70px;
+        left: 0px;
+        width: 250px;
+        height: 250px;
+        border: solid 3px white;
+    }
+
+    input, select {
+        width: 250px;
+    }
+
+    .bt1 {
+        position: relative;
+        margin-top: 0x;
+        margin-left: 0px;
+        padding: 10px 15px;
+        background: #e69812;
+        font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+        font-size: large;
+        font-weight: 700;
+        width: 250px;
+        border: 2px solid #FF005C;
+        border-radius: 5px;
+        top: 250px;
+        cursor: pointer;
+    }
+}
+
+.bt1 {
+    margin-top: 25px;
+    margin-left: 0px;
+    padding: 10px 15px;
+    background: #e69812;
+    font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+    font-size: large;
+    font-weight: 700;
+    display: block;
+    border: 2px solid #FF005C;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .bt1:hover {
+        box-shadow: #0000FF 0px 0px 3px 4px;
+    }
+
+button {
+    padding: 10px 15px;
+    background: #06a11b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 250px;
+    margin-left: 100px;
+}
+
+@keyframes bg-spin {
+    to {
+        --border-angle: 1turn;
+    }
+}
+
+@property --border-angle {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 0turn;
+}
+
+#email {
+    user-select: none;
+}
+
+#password {
+    user-select: none;
+}
+
+.togglepassword {
+    border: solid 1px white;
+    padding: 10px;
+    color: white;
+    user-select: none;
+}
+
+    .togglepassword:hover {
+        color: yellow;
+        border: solid 1px yellow;
+        box-shadow: yellow 0px 0px 3px 2px;
+    }

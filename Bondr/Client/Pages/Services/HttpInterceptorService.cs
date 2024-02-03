@@ -20,6 +20,8 @@ namespace Bondr.Client.Services
 
         private void InterceptResponse(object? sender, HttpClientInterceptorEventArgs e)
         {
+            Console.WriteLine("InterceptResponse triggered"); //For debugging
+
             string message = string.Empty;
             if (!e.Response.IsSuccessStatusCode)
             {

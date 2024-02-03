@@ -1,0 +1,43 @@
+﻿@page "/test"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<!-- This page is purely for testing and showing the details of user log in. It is to be used for project demo and is NOT a part of the main website - Kirthan -->
+
+@code {
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");
+    }
+}
+
+<style>
+    body{
+        color:white;
+    }
+</style>
+
+<!-- Display information -->
+
+<h3>User Claims:</h3>
+<ul>
+    @foreach (var claim in UserClaims)
+    {
+        <li>@claim.Type: @claim.Value</li>
+    }
+</ul>
+
+@if (IsAdmin)
+{
+    <p>User is in the Admin role.</p>
+}
+else
+{
+    <p>User is NOT in the Admin role.</p>
+}

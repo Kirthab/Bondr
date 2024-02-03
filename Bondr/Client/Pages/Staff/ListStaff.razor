@@ -1,4 +1,4 @@
-﻿@page "/staff/"
+﻿@page "/admin/staffs"
 
 @inject HttpClient _client
 @inject IJSRuntime js
@@ -38,7 +38,7 @@
                 </thead>
                 <tbody>
                     <!-- Iterate through each staff and display their details -->
-                    @foreach (var staff in Staffs)
+                    @foreach (var staff in PagedStaffs)
                     {
                         <tr>
                             <td>@staff.Id</td>
@@ -47,7 +47,7 @@
                             <td>@staff.Salary</td>
                             <td>@staff.Age</td>
                             <td>@staff.Email</td>
-                            <td>@string.Join(", ", GetAssignedCommunities(staff.Id).Select(c => c.Name))</td>
+                            <td>@GetAssignedCommunities(staff.Id).Count()</td>
                             <td>
                                 <a href="/staff/view/@staff.Id" class="btn btn-primary">
                                     <span class="oi oi-book"></span>
@@ -64,12 +64,29 @@
                 </tbody>
             </table>
     }
+    <!-- Pagination controls -->
+    <div class="pagination">
+        <!-- Button to navigate to the previous page -->
+        <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
+        <!-- Display current page and total pages -->
+        <span>Page @currentPage of @totalPages</span>
+        <!-- Button to navigate to the next page -->
+        <button disabled="@IsLastPage" class="page-button" @onclick="NextPage">Next &#x21E2;</button>
+    </div>
 </div>
 
 @code {
     // Declare private variables for staffs and communities
     private List<Staff> Staffs;
     private List<Community> Communities;
+
+    private int itemsPerPage = 5; // Adjust the number of staff per page as needed
+    private int currentPage = 1;
+    private List<Staff> PagedStaffs => GetPagedStaffs();
+    private int totalPages => (int)Math.Ceiling((double)(Staffs?.Count ?? 0) / itemsPerPage);
+
+    private bool IsFirstPage => currentPage == 1;
+    private bool IsLastPage => currentPage == totalPages;
 
     // Method called when the component is initialized
     protected async override Task OnInitializedAsync()
@@ -114,6 +131,28 @@
                 // Refresh the staff list after a successful delete
                 await OnInitializedAsync();
             }
+        }
+    }
+
+    private List<Staff> GetPagedStaffs()
+    {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        return Staffs?.Skip(startIndex).Take(itemsPerPage).ToList() ?? new List<Staff>();
+    }
+
+    private void PreviousPage()
+    {
+        if (!IsFirstPage)
+        {
+            currentPage--;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (!IsLastPage)
+        {
+            currentPage++;
         }
     }
 }

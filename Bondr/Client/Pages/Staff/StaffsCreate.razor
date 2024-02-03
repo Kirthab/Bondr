@@ -4,6 +4,7 @@
 @inject NavigationManager _navManager
 
 <div id="container">
+    <br/>
     <!-- Heading for creating a new staff -->
     <h3 class="card-title">Create New Staff</h3>
     <hr />
@@ -82,7 +83,7 @@
         <div class="form-group">
             <label>Age: </label>
             <div>
-                <span>@staff.Age</span>
+                <span style="color: white;">@staff.Age</span>
             </div>
         </div>
 
@@ -124,6 +125,6 @@
         <!-- Send a POST request to the server to create the staff -->
         await _client.PostAsJsonAsync(Endpoints.StaffEndpoint, staff);
         <!-- Navigate to the staff page after successful creation -->
-        _navManager.NavigateTo("/staff/");
+        _navManager.NavigateTo("/admin/staffs");
     }
 }

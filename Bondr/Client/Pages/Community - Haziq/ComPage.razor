@@ -5,6 +5,7 @@
 @attribute [Authorize]
 @inject HttpInterceptorService _interceptor
 @inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <!-- Container for communities -->
 <div id="container">
@@ -71,6 +72,10 @@
     <!-- Declare private variables for community handling -->
     private List<Community>? Communities;
     private List<Community>? PagedCommunities;
+    private List<Subscription> Subscriptions;
+    private IList<Visitor> Visitors;
+    private Visitor visitor;
+    private List<Subscription> UserSubscriptions = new List<Subscription>();
     private int itemsPerPage = 9; // Adjust the number of communities per page as needed
     private int currentPage = 1;
 
@@ -86,7 +91,25 @@
     {
         <!-- Fetch all communities and update the paged communities -->
         await FetchCommunitiesAsync();
+        
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        <!-- Fetch visitors, communities, subscriptions, and initialize the visitor variable -->
+        Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+        visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
+        Subscriptions = await _client.GetFromJsonAsync<List<Subscription>>($"{Endpoints.SubscriptionEndpoint}");
+
+        <!-- Filter user subscriptions based on the current visitor -->
+        foreach (var sub in Subscriptions)
+        {
+            if (sub.UserId == visitor.Id)
+            {
+                UserSubscriptions.Add(sub);
+            }
+        }
         UpdatePagedCommunities();
+
     }
 
     <!-- Method to fetch all communities from the server -->
@@ -118,8 +141,27 @@
     <!-- Method to update the list of paged communities based on the current page -->
     private void UpdatePagedCommunities()
     {
+        // Get the communities that the visitor is subscribed to
+        var subscribedCommunities = GetSubscribedCommunities();
+
+        // Update the paged communities based on the current page
         int startIndex = (currentPage - 1) * itemsPerPage;
-        PagedCommunities = Communities?.Skip(startIndex).Take(itemsPerPage).ToList() ?? new List<Community>();
+        PagedCommunities = subscribedCommunities.Skip(startIndex).Take(itemsPerPage).ToList();
+    }
+
+    // Method to get subscribed communities
+    private IEnumerable<Community> GetSubscribedCommunities()
+    {
+        // Check if the Subscriptions and Communities lists are not null
+        if (UserSubscriptions != null && Communities != null)
+        {
+            // Filter communities where the user has subscribed
+            var subscribedCommunityIds = UserSubscriptions.Select(s => s.CommunityId);
+            return Communities.Where(c => subscribedCommunityIds.Contains(c.Id));
+        }
+
+        // Return an empty list if either UserSubscriptions or Communities is null
+        return Enumerable.Empty<Community>();
     }
 
     <!-- Method to delete a community and its associated posts -->

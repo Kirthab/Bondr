@@ -1,11 +1,12 @@
-﻿@inject NavigationManager _navManager
-@inject HttpClient _client
+﻿@inject HttpClient _client
 <!-- For IDisposable Error Handling-->
 @inject HttpInterceptorService _interceptor 
 @implements IDisposable
+@inject NavigationManager _navManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime js
 @inject IJSRuntime JSRuntime
+
 
 <!-- Settings Page -->
 @page "/settings"
@@ -48,6 +49,8 @@
             <label for="age">BirthDay</label>
             <input id="age" name="age" class="form-control" type="date" @oninput="UpdateAgeFromDate" />
 
+            <p style="font-size: 18px; color: white; font-weight: bold;">Role - @EditVisitor.Role</p>
+
             <button class="bt1" type="submit">Save Changes</button>
         }
     </EditForm>
@@ -61,10 +64,28 @@
     private string text;
     private string text2 = "Hide Password";
 
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
+
     protected override async Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent(); // Monitor Events
+
+        // Get curr user
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("User");  //Get user role
+
+        if (!IsAdmin)
+        {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
+
+        // Pull data
         Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
         EditVisitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name) ?? new Visitor();
         text = EditVisitor.Password;
@@ -73,6 +94,7 @@
     //Update function
     private async Task UpdateUser()
     {
+        //Get curr user
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
@@ -82,7 +104,7 @@
         await _client.PutAsJsonAsync($"{Endpoints.VisitorEndpoint}/{id}", EditVisitor);
 
         await js.InvokeAsync<object>("alert", "Your profile has been updated");
-        await JSRuntime.InvokeVoidAsync("location.reload");
+        //await JSRuntime.InvokeVoidAsync("location.reload");
         _navManager.NavigateTo("/");
     }
 

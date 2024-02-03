@@ -6,13 +6,10 @@ namespace Bondr.Shared.Domain
     {
         [Required]
         public string? Name { get; set; }
-        [Required]
         public string? Gender { get; set; }
         [Required]
         public string? Position { get; set; }
-        [Required]
         public double? Salary { get; set; }
-        [Required]
         public int? Age { get; set; }
         [Required]
         public string? Email { get; set; }

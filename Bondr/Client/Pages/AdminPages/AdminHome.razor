@@ -1,0 +1,81 @@
+﻿@page "/admin"
+
+@inject HttpInterceptorService _interceptor
+@inject HttpClient _client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime js
+<!-- For IDisposable Error Handling-->
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
+@inject NavigationManager _navManager
+
+<div id="admin-container">
+    <h3>Admin Home Page</h3>
+
+    <div id="website-info">
+        <div style="color:white">Total Visitors: @totalVisitors</div>
+        <div style="color:white">Total Communities: @totalCommunities</div>
+        <div style="color:white">Total Staff: @totalStaff</div>
+    </div>
+
+    <!--Container for buttons in the Admin Page-->
+    <div class="button-container">
+        <a href="/admin/com" class="com"></a>
+        <a href="/admin/visitors" class="user"></a>
+        <a href="/admin/genrecontroller" class="genre"></a>
+        <a href="/admin/staffs" class="staff"></a>
+    </div>
+</div>
+
+@code {
+    // Declare variables for website information
+    private int totalVisitors;
+    private int totalCommunities;
+    private int totalStaff;
+    private IList<Visitor>? Visitors;
+    private IList<Staff>? Staffs;
+    private IList<Community>? Communities;
+    private Visitor visitor;
+    private Staff staff;
+
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin;
+
+
+    // Method called when the component is initialized
+    protected override async Task OnInitializedAsync()
+    {
+        _interceptor.MonitorEvent(); // Monitor Events
+
+        // Get curr user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");  //Get user role
+
+        if (!IsAdmin)
+        {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
+
+        // Fetch from the server
+        Staffs = await _client.GetFromJsonAsync<List<Staff>>($"{Endpoints.StaffEndpoint}");
+        Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+        visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
+
+        // Update the totalVisitors variable
+        totalVisitors = Visitors?.Count ?? 0;
+        totalStaff = Staffs?.Count ?? 0;
+        totalCommunities = Communities?.Count ?? 0;
+
+    }
+
+    //Disposable function
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+}

@@ -1,0 +1,265 @@
+﻿@page "/subscribe"
+
+@inject HttpClient _client
+@inject IJSRuntime js
+@inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject HttpInterceptorService _interceptor
+
+
+<!-- Container for communities -->
+<div id="container">
+    <!-- Heading for the subscription page -->
+    <h3>Subscribe to Communities</h3>
+   
+    <br />
+
+    <!-- Check if communities are being loaded or if there are no communities -->
+    @if (Communities == null || !Communities.Any())
+    {
+        <p>No communities found.</p>
+    }
+    else
+    {
+        <div class="community-container">
+            @foreach (var community in DisplayCommunities)
+            {
+                <div class="community-box">
+                    <p class="community-name">@community.Name</p>
+                    <p class="community-description">@community.Description</p>
+                    <div class="community-actions">
+                        @if (HasUserSubscribed(community.Id))
+                        {
+                            <button class="subscribed" @onclick="() => Unsubscribe(community.Id)">Subscribed</button>
+                        }
+                        else
+                        {
+                            <button class="not-subscribed" @onclick="() => Subscribe(community.Id)">Subscribe</button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <!-- Pagination controls -->
+    <div class="pagination">
+        <!-- Button to navigate to the previous page -->
+        <button disabled="@IsFirstPage" class="page-button" @onclick="PreviousPage">&#x21E0; Back</button>
+        <!-- Display current page and total pages -->
+        <span>Page @currentPage of @totalPages</span>
+        <!-- Button to navigate to the next page -->
+        <button disabled="@IsLastPage" class="page-button" @onclick="NextPage">Next &#x21E2;</button>
+    </div>
+</div>
+
+@code {
+    <!-- Declare private variables for visitors, communities, subscriptions, user subscriptions, current visitor, and a subscription instance -->
+    private IList<Visitor> Visitors;
+    private List<Community> Communities;
+    private List<Subscription> Subscriptions;
+    private List<Subscription> UserSubscriptions = new List<Subscription>();
+    private Visitor visitor;
+    private Subscription subscription = new Subscription(); // Initialize a new instance
+    private List<Community> DisplayCommunities => GetPagedCommunities();
+    private List<Community> PagedCommunities { get; set; } = new List<Community>();
+
+    private int itemsPerPage = 9;
+    private int currentPage = 1;
+
+    private int totalPages => (int)Math.Ceiling((double)(Communities?.Count ?? 0) / itemsPerPage);
+
+    <!-- Boolean properties to check if the current page is the first or last -->
+    private bool IsFirstPage => currentPage == 1;
+    private bool IsLastPage => currentPage == totalPages;
+
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsUser;
+
+    <!-- Method called when the component is initialized -->
+    protected override async Task OnInitializedAsync()
+    {
+        _interceptor.MonitorEvent();
+
+        <!-- Fetch authentication state and user information -->
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Ensure first that it is user role
+        UserClaims = user.Claims.ToList();
+        IsUser = user.IsInRole("User"); //Get user roles
+
+        if (!IsUser)
+        {
+            _navigationManager.NavigateTo("/unauthorized");
+        }
+
+
+        <!-- Fetch visitors, communities, subscriptions, and initialize the visitor variable -->
+        Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+        visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
+
+        <!-- Fetch communities and subscriptions -->
+        Communities = await _client.GetFromJsonAsync<List<Community>>($"{Endpoints.CommunityEndpoint}");
+        Subscriptions = await _client.GetFromJsonAsync<List<Subscription>>($"{Endpoints.SubscriptionEndpoint}");
+
+        <!-- Filter user subscriptions based on the current visitor -->
+        foreach (var sub in Subscriptions)
+        {
+            if (sub.UserId == visitor.Id)
+            {
+                UserSubscriptions.Add(sub);
+            }
+        }
+    }
+
+    <!-- Method to get subscribed communities -->
+    private IEnumerable<Community> GetSubscribedCommunities()
+    {
+        // Check if the Subscriptions and Communities lists are not null
+        if (UserSubscriptions != null && Communities != null)
+        {
+            // Filter communities where the user has subscribed
+            var subscribedCommunityIds = UserSubscriptions.Select(s => s.CommunityId);
+            return Communities.Where(c => subscribedCommunityIds.Contains(c.Id));
+        }
+
+        // Return an empty list if either UserSubscriptions or Communities is null
+        return Enumerable.Empty<Community>();
+    }
+
+    <!-- Method to get not subscribed communities -->
+    private IEnumerable<Community> GetNotSubscribedCommunities()
+    {
+        // Check if the Subscriptions and Communities lists are not null
+        if (UserSubscriptions != null && Communities != null)
+        {
+            // Filter communities where the user has not subscribed
+            var subscribedCommunityIds = UserSubscriptions.Select(s => s.CommunityId);
+            return Communities.Where(c => !subscribedCommunityIds.Contains(c.Id));
+        }
+
+        // Return an empty list if either UserSubscriptions or Communities is null
+        return Enumerable.Empty<Community>();
+    }
+
+    <!-- Method to handle community subscription -->
+    private async Task Subscribe(int communityId)
+    {
+        <!-- Set user and community information in the subscription instance -->
+        subscription.UserId = visitor.Id;
+        subscription.CommunityId = communityId;
+
+        <!-- Send a POST request to subscribe to the community -->
+        var response = await _client.PostAsJsonAsync($"{Endpoints.SubscriptionEndpoint}", subscription);
+
+        <!-- Check the response status and display appropriate alerts -->
+        if (response.IsSuccessStatusCode)
+        {
+            await js.InvokeAsync<object>("alert", "Successfully subscribed to the community.");
+            await OnInitializedAsync();
+        }
+        else
+        {
+            await js.InvokeAsync<object>("alert", "Failed to subscribe. Please try again.");
+        }
+    }
+
+    <!-- Method to get subscriptions for the current visitor and community -->
+    private IEnumerable<Subscription> GetSubscriptionsForCurrentVisitorAndCommunity(int communityId)
+    {
+        return Subscriptions?.Where(s => s.UserId == visitor.Id && s.CommunityId == communityId) ?? Enumerable.Empty<Subscription>();
+    }
+
+    <!-- Method to handle community unsubscription -->
+    private async Task Unsubscribe(int communityId)
+    {
+        <!-- Check if the visitor and user subscriptions are not null -->
+        if (visitor != null && UserSubscriptions != null)
+        {
+            <!-- Filter subscriptions for the current user and selected community -->
+            var subscriptionToRemove = UserSubscriptions.FirstOrDefault(s => s.UserId == visitor.Id && s.CommunityId == communityId);
+
+            <!-- If a subscription is found, confirm unsubscription with a user prompt -->
+            if (subscriptionToRemove != null)
+            {
+                var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to unsubscribe?");
+
+                <!-- If confirmed, send a DELETE request to the server -->
+                if (confirm)
+                {
+                    try
+                    {
+                        var response = await _client.DeleteAsync($"{Endpoints.SubscriptionEndpoint}/{subscriptionToRemove.Id}");
+
+                        <!-- Check the response status and display appropriate alerts -->
+                        if (response.IsSuccessStatusCode)
+                        {
+                            _navigationManager.NavigateTo("/subscribe", forceLoad: true);
+                            visitor.Subscriptions.Remove(subscriptionToRemove);
+                            await js.InvokeAsync<object>("alert", "Successfully unsubscribed from the community.");
+                        }
+                        else
+                        {
+                            await js.InvokeAsync<object>("alert", "Failed to unsubscribe. Please try again.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Exception during unsubscribe: {ex.Message}");
+                    }
+                }
+            }
+        }
+    }
+
+    private List<Community> GetPagedCommunities()
+    {
+        // Get all communities, subscribed and unsubscribed
+        var allCommunities = Communities;
+
+        // Calculate the start index for pagination
+        int startIndex = (currentPage - 1) * itemsPerPage;
+
+        // Take the specified number of items for the current page
+        return allCommunities.Skip(startIndex).Take(itemsPerPage).ToList();
+    }
+
+    <!-- Method to navigate to the previous page of paged communities -->
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            UpdatePagedCommunities();
+        }
+    }
+
+    <!-- Method to navigate to the next page of paged communities -->
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            UpdatePagedCommunities();
+        }
+    }
+
+    private void UpdatePagedCommunities()
+    {
+        // Update the paged communities based on the current page
+        PagedCommunities = GetPagedCommunities();
+    }
+
+
+    <!-- Method to check if the user has subscribed to a community -->
+    private bool HasUserSubscribed(int communityId)
+    {
+        return Subscriptions?.Any(s => s.UserId == visitor.Id && s.CommunityId == communityId) ?? false;
+    }
+
+    public void Dispose() //Dispose function
+    {
+        _interceptor.DisposeEvent();
+    }
+}

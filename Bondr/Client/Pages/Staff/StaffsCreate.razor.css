@@ -1,0 +1,133 @@
+﻿#container {
+    box-sizing: border-box;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #26001B;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(to bottom, #210429, #3b064a);
+    box-shadow: #40022e 3px 1px 20px;
+    padding: 20px;
+    display: block;
+}
+
+.card-title{
+    color:white;
+}
+
+.header {
+    color: white;
+    font-family: Consolas, monospace;
+    font-size: 50px;
+    text-align: center;
+}
+
+body {
+    margin: 20px;
+}
+
+label {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    color: white;
+    display: block;
+    margin-bottom: 4px;
+}
+
+input, select {
+    margin-bottom: 15px;
+    width: 60%;
+    padding: 8px;
+    box-sizing: border-box;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+    input:hover, select:hover {
+        box-shadow: white 0px 0px 3px 2px;
+    }
+
+
+.header span {
+    background: none;
+    color: white;
+    font-size: 24px;
+    text-align: center;
+    padding: 10px;
+    margin: 20px 0;
+    animation: none;
+}
+
+input, select {
+    width: 250px;
+}
+
+.bt1 {
+    position: relative;
+    margin-top: 0x;
+    margin-left: 0px;
+    padding: 10px 15px;
+    background: #e69812;
+    font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+    font-size: large;
+    font-weight: 700;
+    width: 250px;
+    border: 2px solid #FF005C;
+    border-radius: 5px;
+    top: 250px;
+    cursor: pointer;
+}
+
+}
+
+.bt1 {
+    margin-top: 25px;
+    margin-left: 0px;
+    padding: 10px 15px;
+    background: #e69812;
+    font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+    font-size: large;
+    font-weight: 700;
+    display: block;
+    border: 2px solid #FF005C;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .bt1:hover {
+        box-shadow: #0000FF 0px 0px 3px 4px;
+    }
+
+button {
+    padding: 10px 15px;
+    background: #06a11b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 250px;
+    margin-left: 100px;
+}
+
+
+#email {
+    user-select: none;
+}
+
+#password {
+    user-select: none;
+}
+
+.password-input-group {
+    display: flex;
+    align-items: center;
+}
+
+.togglepassword {
+    border: solid 1px white;
+    color: white;
+    margin-left: 10px; /* Adjust the margin as needed */
+}
+
+    .togglepassword:hover {
+        color: yellow;
+        border: solid 1px yellow;
+        box-shadow: yellow 0px 0px 3px 2px;
+    }

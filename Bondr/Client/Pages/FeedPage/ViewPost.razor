@@ -7,6 +7,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime js
 
+
 <div id="container">
     <div id="top">
         <div id="post-container">
@@ -149,7 +150,7 @@
     private Post editPost = new Post();
     private Comment updateComment = new Comment();
 
-    private int commentsPerPage = 20; //How many comments per page
+    private int commentsPerPage = 10; //How many comments per page
     private int currentPage = 1;
     private int totalPages => (int)Math.Ceiling((double)(Comments?.Count ?? 0) / commentsPerPage);
     private bool IsFirstPage => currentPage == 1;
@@ -158,10 +159,28 @@
     private Visitor visitor;
     Post tPost = new Post();
 
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAuthenticated, IsAuthenticated2;
+
     protected override async Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent(); // Monitor Events
+
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        // Check user role
+        IsAuthenticated = user.IsInRole("User");
+        IsAuthenticated2 = user.IsInRole("Admin");
+
+        if (!(IsAuthenticated || IsAuthenticated2))
+        {
+            _navManager.NavigateTo("/unauthorized");
+        }
+
         Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
         visitor = Visitors.FirstOrDefault(item => item.Email == user.Identity?.Name);
 
@@ -199,6 +218,7 @@
         }
     }
 
+    // Get function
     private string GetGenreName(int? genreId)
     {
         if (genreId.HasValue)

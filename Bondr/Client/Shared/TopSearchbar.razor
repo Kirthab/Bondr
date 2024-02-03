@@ -1,8 +1,75 @@
-﻿@inject NavigationManager Navigation
+﻿@inject NavigationManager _navManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime js
+@inject HttpClient _client
 
+<!-- Search term and submit button for searchbar -->
 <div class="search">
     <form method="get" action="">
-        <input type="text" class="searchTerm" placeholder="Looking for something?" required>
-        <button type="submit" class="searchButton">Search</button>
+        <input type="text" class="searchTerm" placeholder="Looking for someone?" @bind="searchVisitor.Username" required>
+        <button type="button" class="searchButton" @onclick="SearchProfile">Search</button>
     </form>
 </div>
+
+@code {
+    private IList<Visitor>? Visitors;
+    private Visitor searchVisitor = new Visitor();
+
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin, IsUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Get all visitors
+            Visitors = await _client.GetFromJsonAsync<List<Visitor>>($"{Endpoints.VisitorEndpoint}");
+        }
+        catch (Exception ex)
+        {
+            // No handling needed
+        }
+    }
+
+    // Handle the form submission
+    private async Task SearchProfile()
+    {
+        // Get current user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");  // Get user role
+        IsUser = user.IsInRole("User");    // Get user role
+
+        if (!(IsAdmin || IsUser))
+        {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
+        else
+        {
+            // Trim and check if the search term is empty
+            var trimmedSearchTerm = searchVisitor.Username?.Trim();
+            if (!string.IsNullOrEmpty(trimmedSearchTerm))
+            {
+                // Find the first Visitor with the specified username
+                var foundVisitor = Visitors?.FirstOrDefault(v => v.Username == trimmedSearchTerm);
+
+                if (foundVisitor != null)
+                {
+                    _navManager.NavigateTo("/searchuser/" + foundVisitor.Id);
+                }
+                else
+                {
+                    await js.InvokeAsync<object>("alert", "Profile does not exist!");
+                }
+            }
+            else
+            {
+                await js.InvokeAsync<object>("alert", "Please enter a search term!");
+            }
+        }
+    }
+}

@@ -8,30 +8,27 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Pages\FeedPage - Kirthan\FeedPage.razor.css" />
+    <None Remove="Pages\FeedPage\FeedPage.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Pages\FeedPage - Kirthan\FeedPage.razor.css" />
+    <Content Include="Pages\FeedPage\FeedPage.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Components\BackToList.razor" />
-    <None Include="Pages\AdminPages - Haziq\AdminCom.razor" />
-    <None Include="Pages\AdminPages - Haziq\AdminHome.razor" />
-    <None Include="Pages\AdminPages - Haziq\AdminStaff.razor" />
-    <None Include="Pages\AdminPages - Haziq\AdminVisitors.razor" />
-    <None Include="Pages\AdminPages - Haziq\GenreControl.razor" />
+    <None Include="Pages\AdminPages\AdminCom.razor" />
+    <None Include="Pages\AdminPages\AdminHome.razor" />
+    <None Include="Pages\AdminPages\AdminVisitors.razor" />
+    <None Include="Pages\AdminPages\GenreControl.razor" />
     <None Include="Pages\Community - Haziq\ComFeed.razor" />
     <None Include="Pages\Community - Haziq\ComPage.razor" />
     <None Include="Pages\Community - Haziq\CreateCom.razor" />
     <None Include="Pages\Community - Haziq\EditCom.razor" />
     <None Include="Pages\Community - Haziq\FormComponent.razor" />
-    <None Include="Pages\Staff - Haziq\Create.razor" />
-    <None Include="Pages\Staff - Haziq\Edit.razor" />
-    <None Include="Pages\Staff - Haziq\FormComponent.razor" />
-    <None Include="Pages\Staff - Haziq\ListStaff.razor" />
-    <None Include="Pages\Staff - Haziq\ViewStaff.razor" />
+    <None Include="Pages\Staff\FormComponent.razor" />
+    <None Include="Pages\Staff\ListStaff.razor" />
+    <None Include="Pages\Staff\ViewStaff.razor" />
   </ItemGroup>
 
   <ItemGroup>

@@ -94,33 +94,49 @@ namespace Bondr.Server.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            // Delete Visitor
-            var visitor = _context.Visitor.FirstOrDefault(v => v.Email == user.Email);
 
-            if (visitor != null)
+            if(User.IsInRole("User"))
             {
-                var posts = _context.Post.Where(p => p.UserId == visitor.Id).ToList();
-                foreach (var post in posts)
-                {
-                    var comments = _context.Comment.Where(c => c.PostId == post.Id).ToList();
+                // Delete Visitor
+                var visitor = _context.Visitor.FirstOrDefault(v => v.Email == user.Email);
 
-                    foreach (var comment in comments)
+                if (visitor != null)
+                {
+                    var posts = _context.Post.Where(p => p.UserId == visitor.Id).ToList();
+                    foreach (var post in posts)
                     {
-                        _context.Comment.Remove(comment);
+                        var comments = _context.Comment.Where(c => c.PostId == post.Id).ToList();
+
+                        foreach (var comment in comments)
+                        {
+                            _context.Comment.Remove(comment);
+                        }
+
+                        // Save changes for comments within the inner loop
+                        await _context.SaveChangesAsync();
+
+                        _context.Post.Remove(post);
                     }
 
-                    // Save changes for comments within the inner loop
+                    // Save changes for posts outside the outer loop
                     await _context.SaveChangesAsync();
 
-                    _context.Post.Remove(post);
+                    _context.Visitor.Remove(visitor);
+                    // Save changes for visitor outside the loop
+                    await _context.SaveChangesAsync();
                 }
+            }
+            if (User.IsInRole("Admin"))
+            {
+                // Delete Staff
+                var staff = _context.Staff.FirstOrDefault(s => s.Email == user.Email);
 
-                // Save changes for posts outside the outer loop
-                await _context.SaveChangesAsync();
-
-                _context.Visitor.Remove(visitor);
-                // Save changes for visitor outside the loop
-                await _context.SaveChangesAsync();
+                if (staff != null)
+                {
+                    _context.Staff.Remove(staff); if (User.IsInRole("User"))
+                        // Save changes for staff when it exists
+                        await _context.SaveChangesAsync();
+                }
             }
 
 

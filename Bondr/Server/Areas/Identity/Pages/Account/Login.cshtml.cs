@@ -106,24 +106,41 @@ namespace Bondr.Server.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
-
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    // Get user
+                    var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+
+                    // Check if the user has the "Admin" role
+                    var isAdmin = await _signInManager.UserManager.IsInRoleAsync(user, "Admin");
+
+                    // Log roles to server logs
+                    var roles = await _signInManager.UserManager.GetRolesAsync(user);
+                    _logger.LogInformation($"User Roles after login: {string.Join(", ", roles)}");
+
+                    if (isAdmin)
+                    {
+                        returnUrl = "~/admin"; // Set returnUrl for users with the "Admin" role
+                    }
+                    else
+                    {
+                        returnUrl = "/"; // Set returnUrl for other cases
+                    }
+
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
+
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
+
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User account locked out.");

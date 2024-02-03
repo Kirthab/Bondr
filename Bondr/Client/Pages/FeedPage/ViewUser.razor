@@ -5,6 +5,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime js
 
+
 <!-- Specific View -->
 @page "/searchuser/{visitorId}"
 
@@ -53,6 +54,7 @@
 
 
 @code {
+
     [Parameter] public string visitorId { get; set; }  //Get current Id
     Visitor? visitor = new Visitor();
     private string whichImg;
@@ -69,16 +71,34 @@
     <!-- Profile card arrays -->
     private string[] cards = { "../Images/ProfileCards/4.jpg", "../Images/ProfileCards/1.jpg", "../Images/ProfileCards/2.jpg", "../Images/ProfileCards/3.jpg", "../Images/ProfileCards/5.jpg", "../Images/ProfileCards/6.jpg" };
 
+    // This section is to handle authorization of pages
+    private List<System.Security.Claims.Claim> UserClaims;
+    private bool IsAdmin, IsUser;
+
     protected override async Task OnInitializedAsync()
     {
-        //Confirm who is current user
+        _interceptor.MonitorEvent(); // Monitor Events
+
+        // Get curr user
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+
+        // Check first if user is authorized
+        UserClaims = user.Claims.ToList();
+        IsAdmin = user.IsInRole("Admin");  //Get user role
+        IsUser = user.IsInRole("User");  //Get user role
+
+        if (!(IsAdmin || IsUser))
+    {
+            _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
+        }
+
+        //Confirm who is current user
         string getUrl = $"{Endpoints.VisitorEndpoint}/{visitorId}";
         visitor = await _client.GetFromJsonAsync<Visitor>(getUrl);
 
 
-        <!-- Handling of null datas -->
+        // Handling of null datas
         if (visitor.Avatar == null)
         {
             whichImg = "../Images/ProfileImages/profilepicdefult.jpg";
@@ -91,6 +111,7 @@
 
         }
 
+        // Handling of null data
         if (visitor.CardImg == null)
         {
             whichCard = "../Images/ProfileCards/4.jpg";
@@ -103,6 +124,7 @@
 
         }
 
+        // User may not want to share such information
         if (visitor.Gender == null)
         {
             gender = "Not Shared";

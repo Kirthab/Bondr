@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bondr.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240131121354_newdb")]
+    [Migration("20240203053436_newdb")]
     partial class newdb
     {
         /// <inheritdoc />
@@ -100,7 +100,7 @@ namespace Bondr.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9c54b467-42f1-41b0-893f-56897203fb26",
+                            ConcurrencyStamp = "c9d20c2a-dfd7-4d6f-9918-9f917ee1e195",
                             Email = "admin@localhost.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -108,9 +108,9 @@ namespace Bondr.Server.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECH69WbzPnMdXSkN+Tkrdn0L+3X4DjgCe5fPZgmDi3WDbjh04N/Yy5FSDDYXc1L82g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEF6PFxGuQbfGuQD+i0G3fGtW5pefU1vT0vGw4Hl+Z3y5cWdql0bkeIaGf/b+uKsaIQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6d8f9184-1f50-49aa-be3a-4c173256bc7a",
+                            SecurityStamp = "6036a786-f54a-429a-a5ba-ea07d64cd715",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -140,6 +140,7 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -176,12 +177,15 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("StaffId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int?>("SubcriptionId")
@@ -213,9 +217,11 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PostId")
@@ -246,6 +252,70 @@ namespace Bondr.Server.Migrations
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "For Chefs. By Chefs.",
                             Name = "Cooking"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Enter realms of magic and mythical creatures.",
+                            Name = "Fantasy"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Unravel intriguing puzzles and secrets.",
+                            Name = "Mystery"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Embark on thrilling journeys and quests.",
+                            Name = "Adventure"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Laugh out loud with humorous stories.",
+                            Name = "Comedy"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Experience tales of love and passion.",
+                            Name = "Romance"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Travel through time with historically inspired stories.",
+                            Name = "Historical Fiction"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Face your fears with spine-chilling narratives.",
+                            Name = "Horror"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Explore complex human emotions and relationships.",
+                            Name = "Drama"
                         });
                 });
 
@@ -329,18 +399,22 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Position")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PostId")
@@ -361,47 +435,6 @@ namespace Bondr.Server.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Staff");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Age = 58,
-                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "anitamaxwynn@hotmail.com",
-                            Gender = "Female",
-                            Name = "Anita Max Wynn",
-                            Password = "champagnepapi21",
-                            Position = "CEO",
-                            Salary = 20500.0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Age = 25,
-                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "aethelh@hotmail.com",
-                            Gender = "Male",
-                            Name = "Aethelheimarl Hilmard",
-                            Password = "meadowviking16",
-                            Position = "Back-End Engineer",
-                            Salary = 4500.0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Age = 20,
-                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "dyrmater@hotmail.com",
-                            Gender = "Female",
-                            Name = "Illia Dyr",
-                            Password = "dyrmaterillia",
-                            Position = "Media Manager",
-                            Salary = 2500.0
-                        });
                 });
 
             modelBuilder.Entity("Bondr.Shared.Domain.Subscription", b =>
@@ -483,6 +516,9 @@ namespace Bondr.Server.Migrations
                     b.Property<int?>("PostId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
@@ -493,6 +529,7 @@ namespace Bondr.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -675,8 +712,8 @@ namespace Bondr.Server.Migrations
                         new
                         {
                             Id = "ad2bcf0c-20db-474f-8407-5a6b159518ba",
-                            Name = "Administrator",
-                            NormalizedName = "ADMINISTRATOR"
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
                         },
                         new
                         {
