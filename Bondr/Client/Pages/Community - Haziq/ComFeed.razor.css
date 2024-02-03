@@ -30,7 +30,7 @@
     margin-bottom: 20px;
     box-shadow: 0 0 10px rgba(75, 0, 31, 0.7);
     transition: box-shadow 0.3s ease-in-out;
-    color: white; /* Set font color to white */
+    color: white; 
 }
 
     .post:hover {
@@ -38,13 +38,13 @@
     }
 .post-link {
     color: white;
-    text-decoration: none; /* Remove underline */
+    text-decoration: none; 
 }
 .post h4 {
     font-family: 'IBM Plex Sans', sans-serif;
     font-weight: bold;
     color: white;
-    text-decoration: none; /* Remove underline */
+    text-decoration: none; 
 }
 
 

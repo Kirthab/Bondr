@@ -68,12 +68,12 @@
         display: block;
     }
 
-/* Subscribed button */
+
 .subscribed {
     background-color: #4CAF50;
 }
 
-/* Not subscribed button */
+
 .not-subscribed {
     background-color: #d9534f;
 }
