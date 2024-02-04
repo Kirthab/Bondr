@@ -146,18 +146,37 @@
         }
     }
 
-    private async Task UnsubscribeVisitors(List<Subscription> communitySubscriptions)
+    private async Task UnsubscribeVisitors(int communityId, List<Subscription> communitySubscriptions)
     {
-        foreach (var subscriptionToRemove in communitySubscriptions)
+        // Create a list to store subscriptions that need to be removed
+        var subscriptionsToRemove = new List<Subscription>();
+
+        // Filter subscriptions based on the communityId using a foreach loop
+        foreach (var subscription in communitySubscriptions)
         {
+            // Check if the subscription belongs to the specified community
+            if (subscription.CommunityId == communityId)
+            {
+                // Add the subscription to the list of subscriptions to be removed
+                subscriptionsToRemove.Add(subscription);
+            }
+        }
+
+        // Iterate through the filtered subscriptions and perform the necessary actions
+        foreach (var subscriptionToRemove in subscriptionsToRemove)
+        {
+            // Send a DELETE request to the server to unsubscribe the user
             var response = await _client.DeleteAsync($"{Endpoints.SubscriptionEndpoint}/{subscriptionToRemove.Id}");
 
+            // Check if the deletion was successful
             if (response.IsSuccessStatusCode)
             {
+                // Remove the subscription from the UserSubscriptions list
                 UserSubscriptions.Remove(subscriptionToRemove);
             }
             else
             {
+                // Display an alert if there is an error during the unsubscribe operation
                 await js.InvokeAsync<object>("alert", $"Failed to unsubscribe user {subscriptionToRemove.UserId}. Please try again.");
             }
         }
@@ -178,9 +197,9 @@
                 {
                     // Fetch subscriptions related to the community
                     var communitySubscriptions = await GetCommunitySubscriptions(communityId);
-
+                    
                     // Unsubscribe visitors for the community
-                    await UnsubscribeVisitors(communitySubscriptions);
+                    await UnsubscribeVisitors(communityId, communitySubscriptions);
 
                     // Delete posts related to the community
                     await DeletePostsForCommunity(communityId);
@@ -204,7 +223,15 @@
         var allPosts = await _client.GetFromJsonAsync<List<Post>>(Endpoints.PostEndpoint);
 
         // Filter posts for the specific community
-        var communityPosts = allPosts.Where(post => post.CommunityId == communityId).ToList();
+        var communityPosts = new List<Post>();
+
+        foreach (var post in allPosts)
+        {
+            if (post.CommunityId == communityId)
+            {
+                communityPosts.Add(post);
+            }
+        }
 
         var community = Communities.First(q => q.Id == communityId);
         var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {community.Name} feed?");
@@ -217,8 +244,6 @@
                 await _client.DeleteAsync($"{Endpoints.PostEndpoint}/{post.Id}");
             }
         }
-            
-       
     }
 
     

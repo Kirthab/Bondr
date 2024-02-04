@@ -128,8 +128,21 @@
     // Method to get assigned communities for a staff member
     private List<Community> GetAssignedCommunities(int staffId)
     {
-        // Filter communities based on StaffId
-        var assignedCommunities = Communities?.Where(c => c.StaffId == staffId).ToList() ?? new List<Community>();
+        var assignedCommunities = new List<Community>();
+
+        // Check if Communities is not null
+        if (Communities != null)
+        {
+            // Iterate through each community to filter based on StaffId
+            foreach (var community in Communities)
+            {
+                if (community.StaffId == staffId)
+                {
+                    assignedCommunities.Add(community);
+                }
+            }
+        }
+
         return assignedCommunities;
     }
 
