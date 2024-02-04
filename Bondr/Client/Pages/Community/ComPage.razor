@@ -37,7 +37,7 @@
             {
                 <!-- Display a message for no communities -->
                 <div class="alert alert-info text-center" role="alert" style="background-color: #3498db; color: #fff; border: none;">
-                    <strong>Oops!</strong> It seems there are no communities right now. Be the first to create one!
+                    <strong>Oops!</strong> It seems there are no communities right now. Subscribe or create one!
                 </div>
             }
             else
@@ -168,69 +168,33 @@
         PagedCommunities = subscribedCommunities.Skip(startIndex).Take(itemsPerPage).ToList();
     }
 
-    // Method to get subscribed communities
     private IEnumerable<Community> GetSubscribedCommunities()
     {
         // Check if the Subscriptions and Communities lists are not null
         if (UserSubscriptions != null && Communities != null)
         {
-            // Filter communities where the user has subscribed
-            var subscribedCommunityIds = UserSubscriptions.Select(s => s.CommunityId);
-            return Communities.Where(c => subscribedCommunityIds.Contains(c.Id));
+            // Create a list to store subscribed communities
+            List<Community> subscribedCommunities = new List<Community>();
+
+            // Iterate over UserSubscriptions using a foreach loop
+            foreach (var subscription in UserSubscriptions)
+            {
+                // Find the corresponding community in Communities based on subscription.CommunityId
+                var community = Communities.FirstOrDefault(c => c.Id == subscription.CommunityId);
+
+                // If a matching community is found, add it to the subscribedCommunities list
+                if (community != null)
+                {
+                    subscribedCommunities.Add(community);
+                }
+            }
+
+            // Return the list of subscribed communities
+            return subscribedCommunities;
         }
 
         // Return an empty list if either UserSubscriptions or Communities is null
         return Enumerable.Empty<Community>();
-    }
-
-    <!-- Method to delete a community and its associated posts -->
-    async Task Delete(int communityId)
-    {
-        if (Communities != null)
-        {
-            var community = Communities.First(q => q.Id == communityId);
-            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {community.Name}?");
-            if (confirm)
-            {
-                <!-- Delete posts related to the community -->
-                await DeletePostsForCommunityAsync(communityId);
-
-                <!-- Delete the community -->
-                await _client.DeleteAsync($"{Endpoints.CommunityEndpoint}/{communityId}");
-
-                <!-- Fetch communities again after a successful delete -->
-                await FetchCommunitiesAsync();
-
-                <!-- Update the paged communities -->
-                UpdatePagedCommunities();
-            }
-        }
-    }
-
-    <!-- Method to delete posts associated with a community -->
-    async Task DeletePostsForCommunityAsync(int communityId)
-    {
-        <!-- Fetch all posts -->
-        var allPosts = await _client.GetFromJsonAsync<List<Post>>(Endpoints.PostEndpoint);
-
-        <!-- Filter posts for the specific community -->
-        var communityPosts = allPosts.Where(post => post.CommunityId == communityId).ToList();
-
-        <!-- Delete each post -->
-        foreach (var post in communityPosts)
-        {
-            await _client.DeleteAsync($"{Endpoints.PostEndpoint}/{post.Id}");
-        }
-    }
-
-    <!-- Method to delete posts in a community -->
-    private async Task DeletePostsInCommunity(int communityId)
-    {
-        <!-- Call the method to delete posts for the specific community -->
-        await DeletePostsForCommunityAsync(communityId);
-
-        <!-- Refresh the communities after deleting posts -->
-        await FetchCommunitiesAsync();
     }
 
     <!-- Method to edit a community -->

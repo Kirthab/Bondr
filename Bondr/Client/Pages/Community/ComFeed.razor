@@ -108,9 +108,18 @@
     <!-- Method to fetch posts for the specific community -->
     private async Task LoadPosts(int communityId)
     {
-        <!-- Fetch all posts and filter for the specific community -->
+        // Fetch all posts
         AllPosts = await _client.GetFromJsonAsync<List<Post>>(Endpoints.PostEndpoint);
-        FilteredPosts = AllPosts.Where(post => post.CommunityId == CommunityId).ToList();
+
+        // Filter posts for the specific community using a foreach loop
+        FilteredPosts = new List<Post>();
+        foreach (var post in AllPosts)
+        {
+            if (post.CommunityId == communityId)
+            {
+                FilteredPosts.Add(post);
+            }
+        }
     }
 
     <!-- Method to navigate to the previous page -->

@@ -59,7 +59,7 @@
         <br />
 
         <!-- Button to submit the form and create the community -->
-        <button type="submit" class="btn btn-success btn-block" disabled="@IsCommunityNameDuplicate()">
+        <button type="submit" class="btn btn-success btn-block">
             Create Community
         </button>
     </EditForm>
@@ -114,12 +114,22 @@
     <!-- Method to create a new community -->
     private async Task CreateCommunity()
     {
-        <!-- Send a POST request to the server to create the community -->
-        await _client.PostAsJsonAsync(Endpoints.CommunityEndpoint, community);
-        <!-- Subscribe the user to the newly created community -->
-        await SubscribeToNewlyCreatedCommunity();
-        <!-- Navigate to the communities page after successful creation -->
-        _navManager.NavigateTo("/communities/");
+        // Check for duplicate community name
+        if (IsCommunityNameDuplicate())
+        {
+            // Handle duplicate name (show an alert, validation message, etc.)
+            await js.InvokeAsync<object>("alert", "Duplicate community name. Please choose a different name.");
+        }
+        else
+        {
+            <!-- Send a POST request to the server to create the community -->
+            await _client.PostAsJsonAsync(Endpoints.CommunityEndpoint, community);
+            <!-- Subscribe the user to the newly created community -->
+            await SubscribeToNewlyCreatedCommunity();
+            <!-- Navigate to the communities page after successful creation -->
+            _navManager.NavigateTo("/communities/");
+        }
+        
     }
     <!-- Method to subscribe the user to the newly created community -->
     private async Task SubscribeToNewlyCreatedCommunity()
@@ -159,10 +169,21 @@
     <!-- Method to check if the community name is a duplicate -->
     private bool IsCommunityNameDuplicate()
     {
-        <!-- Check if there is any existing community with the same name -->
-        return existingCommunities.Any(c => c.Name?.Equals(community.Name, StringComparison.OrdinalIgnoreCase) ?? false);
-    }
+        // Iterate through existing communities to check for duplicates
+        foreach (var existingCommunity in existingCommunities)
+        {
+            // Check if the name of the existing community is not null and equals the new community's name
+            if (existingCommunity.Name != null &&
+                existingCommunity.Name.Equals(community.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                // If a duplicate is found, return true
+                return true;
+            }
+        }
 
+        // If no duplicate is found, return false
+        return false;
+    }
     <!-- Method called when the component is disposed -->
     public void Dispose()
     {

@@ -5,6 +5,7 @@
 <!-- For IDisposable Error Handling-->
 @inject HttpInterceptorService _interceptor
 @implements IDisposable
+@inject IJSRuntime js
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <!-- Link to external stylesheet for CreateCommunityStyles.css -->
@@ -25,6 +26,7 @@
     // This section is to handle authorization of pages
     private List<System.Security.Claims.Claim> UserClaims;
     private bool IsAdmin, IsUser;
+    List<Community> existingCommunities = new List<Community>();
 
     [Parameter] public int id { get; set; } // Define a parameter for the community ID
     Community? community = new Community(); // Initialize a nullable Community object
@@ -46,6 +48,8 @@
         {
             _navManager.NavigateTo("/unauthorized"); // Kick out the unauthorized hackers!!
         }
+
+        existingCommunities = await _client.GetFromJsonAsync<List<Community>>(Endpoints.CommunityEndpoint);
     }
 
 
@@ -58,11 +62,38 @@
 
     <!-- Method to edit a community -->
     async Task EditCommunity()
+    {   // Check for duplicate community name
+        if (IsCommunityNameDuplicate())
+        {
+            // Handle duplicate name (show an alert, validation message, etc.)
+            await js.InvokeAsync<object>("alert", "Duplicate community name. Please choose a different name.");
+        }
+        else
+        {
+            // Send a PUT request to update the community details
+            await _client.PutAsJsonAsync($"{Endpoints.CommunityEndpoint}/{id}", community);
+
+            // Navigate to the communities page after successful update
+            _navManager.NavigateTo("/communities/");
+        }
+    }
+
+    private bool IsCommunityNameDuplicate()
     {
-        <!-- Send a PUT request to update the community details -->
-        await _client.PutAsJsonAsync($"{Endpoints.CommunityEndpoint}/{id}", community);
-        <!-- Navigate to the communities page after successful update -->
-        _navManager.NavigateTo("/communities/");
+        // Iterate through existing communities to check for duplicates
+        foreach (var existingCommunity in existingCommunities)
+        {
+            // Check if the name of the existing community is not null and equals the new community's name
+            if (existingCommunity.Name != null &&
+                existingCommunity.Name.Equals(community.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                // If a duplicate is found, return true
+                return true;
+            }
+        }
+
+        // If no duplicate is found, return false
+        return false;
     }
 
     <!-- Method called when the component is disposed -->

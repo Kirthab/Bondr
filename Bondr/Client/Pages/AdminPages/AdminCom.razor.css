@@ -71,25 +71,21 @@
 
 /* Edit button */
 .edit-com {
-    @extend #container button;
     background-color: #f0ad4e;
 }
 
 /* Delete button */
-.del-com {
-    @extend #container button;
+.del-com {;
     background-color: #d9534f;
 }
 
 /* View button */
 .view-com {
-    @extend #container button;
     background-color: #5bc0de;
 }
 
 /* Delete Posts button */
 .del-post {
-    @extend #container button;
     background-color: #0069d9;
 }
 

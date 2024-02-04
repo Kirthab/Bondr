@@ -138,8 +138,26 @@ else
     // Method to get assigned communities for a staff member
     private async Task<List<Community>> GetAssignedCommunities(int staffId)
     {
-        // Filter communities based on StaffId
-        return Communities?.Where(c => c.StaffId == staffId).ToList() ?? new List<Community>();
+        // Check if the Communities list is not null
+        if (Communities != null)
+        {
+            var assignedCommunities = new List<Community>();
+
+            // Iterate through Communities to find assigned communities for the staff member
+            foreach (var community in Communities)
+            {
+                // Check if the StaffId of the community matches the provided staffId
+                if (community.StaffId == staffId)
+                {
+                    assignedCommunities.Add(community);
+                }
+            }
+
+            return assignedCommunities;
+        }
+
+        // Return an empty list if Communities is null
+        return new List<Community>();
     }
     private void NavigateBack()
     {

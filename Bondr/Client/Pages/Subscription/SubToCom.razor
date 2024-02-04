@@ -11,17 +11,21 @@
 <div id="container">
     <!-- Heading for the subscription page -->
     <h3>Subscribe to Communities</h3>
-   
+
     <br />
 
+    <div class="community-container">
     <!-- Check if communities are being loaded or if there are no communities -->
     @if (Communities == null || !Communities.Any())
     {
-        <p>No communities found.</p>
+        <!-- Display a message for no communities -->
+        <div class="alert alert-info text-center" role="alert" style="background-color: #3498db; color: #fff; border: none;">
+            <strong>Oops!</strong> It seems there are no communities right now. Be the first to create one!
+        </div>
     }
     else
     {
-        <div class="community-container">
+        
             @foreach (var community in DisplayCommunities)
             {
                 <div class="community-box">
@@ -39,8 +43,9 @@
                     </div>
                 </div>
             }
-        </div>
+        
     }
+    </div>
     <!-- Pagination controls -->
     <div class="pagination">
         <!-- Button to navigate to the previous page -->
@@ -113,35 +118,56 @@
         }
     }
 
-    <!-- Method to get subscribed communities -->
+    // Method to get subscribed communities
     private IEnumerable<Community> GetSubscribedCommunities()
     {
+        List<Community> subscribedCommunities = new List<Community>();
+
         // Check if the Subscriptions and Communities lists are not null
         if (UserSubscriptions != null && Communities != null)
         {
-            // Filter communities where the user has subscribed
-            var subscribedCommunityIds = UserSubscriptions.Select(s => s.CommunityId);
-            return Communities.Where(c => subscribedCommunityIds.Contains(c.Id));
+            // Iterate through UserSubscriptions
+            foreach (var subscription in UserSubscriptions)
+            {
+                // Find the corresponding community based on CommunityId
+                var community = Communities.FirstOrDefault(c => c.Id == subscription.CommunityId);
+
+                // If community is found, add it to the subscribedCommunities list
+                if (community != null)
+                {
+                    subscribedCommunities.Add(community);
+                }
+            }
         }
 
-        // Return an empty list if either UserSubscriptions or Communities is null
-        return Enumerable.Empty<Community>();
+        // Return the list of subscribed communities
+        return subscribedCommunities;
     }
 
-    <!-- Method to get not subscribed communities -->
+    // Method to get not subscribed communities
     private IEnumerable<Community> GetNotSubscribedCommunities()
     {
+        List<Community> notSubscribedCommunities = new List<Community>();
+
         // Check if the Subscriptions and Communities lists are not null
         if (UserSubscriptions != null && Communities != null)
         {
-            // Filter communities where the user has not subscribed
-            var subscribedCommunityIds = UserSubscriptions.Select(s => s.CommunityId);
-            return Communities.Where(c => !subscribedCommunityIds.Contains(c.Id));
+            // Iterate through Communities
+            foreach (var community in Communities)
+            {
+                // Check if the community is not in the subscribed communities
+                if (!UserSubscriptions.Any(sub => sub.CommunityId == community.Id))
+                {
+                    // Add the community to the notSubscribedCommunities list
+                    notSubscribedCommunities.Add(community);
+                }
+            }
         }
 
-        // Return an empty list if either UserSubscriptions or Communities is null
-        return Enumerable.Empty<Community>();
+        // Return the list of not subscribed communities
+        return notSubscribedCommunities;
     }
+
 
     <!-- Method to handle community subscription -->
     private async Task Subscribe(int communityId)
@@ -165,11 +191,29 @@
         }
     }
 
-    <!-- Method to get subscriptions for the current visitor and community -->
+    // Method to get subscriptions for the current visitor and community
     private IEnumerable<Subscription> GetSubscriptionsForCurrentVisitorAndCommunity(int communityId)
     {
-        return Subscriptions?.Where(s => s.UserId == visitor.Id && s.CommunityId == communityId) ?? Enumerable.Empty<Subscription>();
+    List<Subscription> matchingSubscriptions = new List<Subscription>();
+
+    // Check if Subscriptions is not null
+    if (Subscriptions != null)
+    {
+        // Iterate through Subscriptions
+        foreach (var subscription in Subscriptions)
+        {
+            // Check if the subscription matches the current visitor and community
+            if (subscription.UserId == visitor.Id && subscription.CommunityId == communityId)
+            {
+                // Add the matching subscription to the list
+                matchingSubscriptions.Add(subscription);
+            }
+        }
     }
+
+    // Return the list of matching subscriptions
+    return matchingSubscriptions;
+}
 
     <!-- Method to handle community unsubscription -->
     private async Task Unsubscribe(int communityId)
@@ -252,10 +296,21 @@
     }
 
 
-    <!-- Method to check if the user has subscribed to a community -->
+    // Method to check if the user has subscribed to a community
     private bool HasUserSubscribed(int communityId)
     {
-        return Subscriptions?.Any(s => s.UserId == visitor.Id && s.CommunityId == communityId) ?? false;
+        if (Subscriptions != null)
+        {
+            foreach (var subscription in Subscriptions)
+            {
+                if (subscription.UserId == visitor.Id && subscription.CommunityId == communityId)
+                {
+                    return true; // User is subscribed to the community
+                }
+            }
+        }
+
+        return false; // User is not subscribed to the community or subscriptions are null
     }
 
     public void Dispose() //Dispose function

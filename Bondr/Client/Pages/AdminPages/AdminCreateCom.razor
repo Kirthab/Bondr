@@ -88,11 +88,22 @@
         _navManager.NavigateTo("/admin/com");
     }
 
-    <!-- Method to check if the community name is a duplicate -->
     private bool IsCommunityNameDuplicate()
     {
-        <!-- Check if there is any existing community with the same name -->
-        return existingCommunities.Any(c => c.Name?.Equals(community.Name, StringComparison.OrdinalIgnoreCase) ?? false);
+        // Iterate through existing communities to check for duplicates
+        foreach (var existingCommunity in existingCommunities)
+        {
+            // Check if the name of the existing community is not null and equals the new community's name
+            if (existingCommunity.Name != null &&
+                existingCommunity.Name.Equals(community.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                // If a duplicate is found, return true
+                return true;
+            }
+        }
+
+        // If no duplicate is found, return false
+        return false;
     }
 
     <!-- Method called when the component is disposed -->

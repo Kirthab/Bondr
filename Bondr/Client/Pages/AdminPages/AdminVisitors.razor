@@ -90,11 +90,24 @@ else
         _interceptor.DisposeEvent();
     }
 
-    <!-- Method to get the communities for a specific visitor -->
     private List<Community> GetVisitorCommunities(int visitorId)
     {
-        <!-- Filter communities based on visitorId -->
-        return Communities.Where(c => Subscriptions.Any(sub => sub.UserId == visitorId && sub.CommunityId == c.Id)).ToList();
+        var visitorCommunities = new List<Community>();
+
+        foreach (var community in Communities)
+        {
+            foreach (var subscription in Subscriptions)
+            {
+                // Check if there is a subscription for the specific visitor and community
+                if (subscription.UserId == visitorId && subscription.CommunityId == community.Id)
+                {
+                    visitorCommunities.Add(community);
+                    break; // Break the inner loop since the community is already added
+                }
+            }
+        }
+
+        return visitorCommunities;
     }
 
 }
