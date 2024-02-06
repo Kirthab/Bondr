@@ -26,14 +26,11 @@
             @foreach (var post in DisplayedPosts)
             {
                 <div class="post">
-                    <!-- Link to view the full post -->
-                    <a href="/post/viewpost/@post.Id" class="post-link">
                         <div>
                             <!-- Display post title and content -->
                             <h4>@post.Title</h4>
                             <p>@post.Content</p>
                         </div>
-                    </a>
                 </div>
             }
         </div>
